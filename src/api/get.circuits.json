@@ -1,0 +1,32 @@
+[
+    {
+        "id": "circuit_1",
+        "name": "Big Karting Indoor",
+        "distance": "5"
+    },
+    {
+        "id": "circuit_2",
+        "name": "Logroño Karting Indoor",
+        "distance": "55"
+    },
+    {
+        "id": "circuit_3",
+        "name": "Circuito Kotarr Burgos",
+        "distance": "95"
+    },
+    {
+        "id": "circuit_4",
+        "name": "Karting Castroponce",
+        "distance": "155"
+    },
+    {
+        "id": "circuit_2",
+        "name": "Circuito y Museo Fernando Alonso",
+        "distance": "155"
+    },
+    {
+        "id": "circuit_2",
+        "name": "Karting Valladolid",
+        "distance": "255"
+    }
+]

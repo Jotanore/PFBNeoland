@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="./css/reset.css" rel="stylesheet"/>
     <link href="./css/output.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="../node_modules/leaflet/dist/leaflet.css"/>
+    <script defer src="../node_modules/leaflet/dist/leaflet.js" ></script>
     <script defer type="module" src="./js/index.js"></script>
     <title>KartHub - Circuitos</title>
 </head>
@@ -24,64 +26,25 @@
 
     <main>
         <div class="flex flex-row bg-blue-100 p-10">
-            <section class="flex ml-40 basis-3/4 h-96 mr-5 bg-red-100 items-center justify-center">
-            Mapa
+            <section id="map" class="flex ml-40 basis-3/4 h-[40rem] mr-5 bg-red-100 items-center justify-center">
             </section>
 
-            <section class="flex flex-col mr-40 basis-2/5 p-5 bg-green-100 ">
+            <section id="card-container" class="flex flex-col mr-40 basis-2/5 p-5 bg-green-100 ">
                 <article class="mb-5">
                     <div class="bg-purple-200 min-h-12 max-h-24 w-full flex items-center __circuit-header-card">
-                        <span class="mr-4 pl-2">Nombre Karting</span>
-                        <span class="mr-4 pl-2 ">999Km</span>
+                        <span class="mr-4 pl-2">${n.name}</span>
+                        <span class="mr-4 pl-2 ">${n.distance}Km</span>
                     </div>
 
-                    <div class="bg-purple-100 h-56 w-full">
-                        <span class="mr-4 pl-2">Nombre sitio:</span>
-                        <span class="mr-4 pl-2">Nombre sitio:</span>
-                        <br>
-                        <span class="mr-4 pl-2">Nombre sitio:</span>
-                        <span class="mr-4 pl-2">Nombre sitio:</span>
-                        <br>
-                        <span class="mr-4 pl-2">Nombre sitio:</span>
-                        <span class="mr-4 pl-2">Nombre sitio:</span>
+                    <div class="bg-purple-100 flex flex-wrap h-48 p-5 pt-7 w-full __hidden">
+                        <span class="mr-4 pl-2 w-[40%]">Nombre sitio:</span>
+                        <span class="mr-4 pl-2 w-[40%]">Ubicación:</span>
+                        <span class="mr-4 pl-2 w-[40%]">Mejor tiempo KartHub:</span>
+                        <span class="mr-4 pl-2 w-[40%]">Alquiler:</span>
+                        <span class="mr-4 pl-2 w-[40%]"><a href="#">Sitio Web</a></span>
                     </div>
                 </article>
-
-                <article class="mb-5">
-                    <div class="bg-purple-200 min-h-12 max-h-24 w-full flex items-center __circuit-header-card">
-                        <span class="mr-4 pl-2">Nombre Karting</span>
-                        <span class="mr-4 pl-2 ">999Km</span>
-                    </div>
-
-                    <div class="bg-purple-100 h-56 w-full">
-                        <span class="mr-4 pl-2">Nombre sitio:</span>
-                        <span class="mr-4 pl-2">Nombre sitio:</span>
-                        <br>
-                        <span class="mr-4 pl-2">Nombre sitio:</span>
-                        <span class="mr-4 pl-2">Nombre sitio:</span>
-                        <br>
-                        <span class="mr-4 pl-2">Nombre sitio:</span>
-                        <span class="mr-4 pl-2">Nombre sitio:</span>
-                    </div>
-                </article>
-
-                <article class="mb-5">
-                    <div class="bg-purple-200 min-h-12 max-h-24 w-full flex items-center __circuit-header-card">
-                        <span class="mr-4 pl-2">Nombre Karting</span>
-                        <span class="mr-4 pl-2 ">999Km</span>
-                    </div>
-
-                    <div class="bg-purple-100 h-56 w-full">
-                        <span class="mr-4 pl-2">Nombre sitio:</span>
-                        <span class="mr-4 pl-2">Nombre sitio:</span>
-                        <br>
-                        <span class="mr-4 pl-2">Nombre sitio:</span>
-                        <span class="mr-4 pl-2">Nombre sitio:</span>
-                        <br>
-                        <span class="mr-4 pl-2">Nombre sitio:</span>
-                        <span class="mr-4 pl-2">Nombre sitio:</span>
-                    </div>
-                </article>
+            </section>
             </section>
         </div>
         
