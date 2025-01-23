@@ -13,7 +13,7 @@
 <body id="circuits" class="box-border w-screen bg-slate-500">
     <header class=" bg-red-400">
         <nav>
-            <h1 class="font-bold text-4xl flex bg-red-300">Hello sworld!</h1>
+            <h1 class="font-bold text-4xl flex p-4 bg-red-300">KartHub</h1>
             <ul class="flex justify-evenly py-3">
                 <li class="bg-red-200 p-2 px-4 rounded-full"><a href="./index.html">Home</a></li>
                 <li class="bg-red-200 p-2 px-4 rounded-full"><a href="./circuits.html">Circuitos</a></li>
@@ -25,11 +25,11 @@
     </header>
 
     <main>
-        <div class="flex flex-row bg-blue-100 p-10">
-            <section id="map" class="flex ml-40 basis-3/4 h-[40rem] mr-5 bg-red-100 items-center justify-center">
+        <div class="flex flex-row  bg-blue-100 px-[5%] py-10">
+            <section id="map" class="flex basis-3/4 h-[44.5rem] mr-5 bg-red-100 items-center justify-center">
             </section>
 
-            <section id="card-container" class="flex flex-col mr-40 basis-2/5 p-5 bg-green-100 ">
+            <section id="card-container" class="flex overflow-auto flex-col max-h-[44.5rem] basis-2/5 p-5 bg-green-100 ">
                 <article class="mb-5">
                     <div class="bg-purple-200 min-h-12 max-h-24 w-full flex items-center __circuit-header-card">
                         <span class="mr-4 pl-2">${n.name}</span>
@@ -38,10 +38,10 @@
 
                     <div class="bg-purple-100 flex flex-wrap h-48 p-5 pt-7 w-full __hidden">
                         <span class="mr-4 pl-2 w-[40%]">Nombre sitio:</span>
-                        <span class="mr-4 pl-2 w-[40%]">Ubicación:</span>
+                        <span class="mr-4 pl-2 w-[40%]"><a class="font-bold" href="#">Ubicación</a></span>
                         <span class="mr-4 pl-2 w-[40%]">Mejor tiempo KartHub:</span>
                         <span class="mr-4 pl-2 w-[40%]">Alquiler:</span>
-                        <span class="mr-4 pl-2 w-[40%]"><a href="#">Sitio Web</a></span>
+                        <span class="mr-4 pl-2 w-[40%]"><a class="font-bold" href="#">Sitio Web</a></span>
                     </div>
                 </article>
             </section>
