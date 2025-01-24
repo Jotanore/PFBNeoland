@@ -1,6 +1,6 @@
-// @ts-nocheck
+// @ts-check
 'use strict'
-import {Circuit, ForumCard} from '../classes/classes.js'
+import {Circuit, EventCard, ForumCard} from '../classes/classes.js'
 import {MarketItem} from '../classes/classes.js'
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -19,6 +19,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             break
         case 'events':
             console.log(`Estoy en ${page[0].id}`)
+            await getEventData()
             break
         case 'market':
             console.log(`Estoy en ${page[0].id}`)
@@ -26,7 +27,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             break
         case 'forum':
             console.log(`Estoy en ${page[0].id}`)
-            getForumData()
+            await getForumData()
             break
    }
 
@@ -119,6 +120,35 @@ document.addEventListener('DOMContentLoaded', async () => {
 }
 /*=================================EVENTS===========================================*/
 
+async function getEventData(){
+    const API_EVENTS = 'api/get.events.json'
+    const apiEvents = await fetch(API_EVENTS)
+    /** @type {EventCard[]} */
+    const eventArray = await apiEvents.json();
+    eventArray.forEach(function (/** @type {EventCard} */ a){
+        const event = new EventCard(a.title, a.date, a.user, a.description)
+        console.log(event)
+        showEventCard(event)
+    })
+}    
+
+/**
+* 
+* @param {EventCard} event
+*/
+function showEventCard(event){
+const eventFrame = document.getElementById('__event-container')
+console.log(eventFrame)
+const html =
+            `<div class="bg-purple-100 h-24 mx-4 mb-4 flex items-center justify-center">
+                <span class="mr-4 pl-2">${event.title}</span>
+                <span class="mr-4 pl-2">${event.date}</span>
+                <span class="mr-4 pl-2">${event.user}</span>
+                <span class="mr-4 pl-2">${event.description}</span>
+            </div>`
+eventFrame?.insertAdjacentHTML('beforeend', html)
+}
+
 
 
 /*=================================MARKET===========================================*/
@@ -133,8 +163,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             console.log(item)
             showMarketCard(item)
         })
-   }    
+   } 
 
+/**
+* 
+* @param {MarketItem} item
+*/
    function showMarketCard(item){
     const marketFrame = document.getElementById('__market-container')
     const html = `<div class="bg-purple-100 h-52 mx-4 mb-4 p-7 flex ">
@@ -161,24 +195,24 @@ document.addEventListener('DOMContentLoaded', async () => {
 async function getForumData(){
     const API_FORUM = 'api/get.forum.topics.json'
     const apiForum = await fetch(API_FORUM)
-    /** @type {MarketItem[]} */
+    /** @type {ForumCard[]} */
     const forumArray = await apiForum.json();
     forumArray.forEach(function (/** @type {ForumCard} */ a){
-        const item = new ForumCard(a.user, a.article, a.description)
+        const item = new ForumCard(a.user, a.title, a.description)
         console.log(item)
         showForumCard(item)
     })
 }    
 
+/**
+* 
+* @param {ForumCard} item
+*/
 function showForumCard(item){
 const forumFrame = document.getElementById('__forum-container')
 const html = `<div class="bg-purple-100 h-24 mx-4 mb-4 flex items-center justify-center">
-                <span class="mr-4 pl-2">AAAAAAAAAAAAA:</span>
-                <span class="mr-4 pl-2">Nombre sitio:</span>
-                <span class="mr-4 pl-2">Nombre sitio:</span>
-                <span class="mr-4 pl-2">Nombre sitio:</span>
-                <span class="mr-4 pl-2">Nombre sitio:</span>
-                <span class="mr-4 pl-2">Nombre sitio:</span>
+                <span class="mr-4 pl-2">Titulo</span>
+                <span class="mr-4 pl-2">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quas voluptates, omnis, voluptatum illo error ipsum dolor ut iusto beatae, quam dolores odit? Dolorem rerum, molestiae veritatis quos placeat quam architecto!</span>
             </div>`
 forumFrame?.insertAdjacentHTML('beforeend', html)
 }

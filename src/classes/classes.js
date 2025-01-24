@@ -1,24 +1,40 @@
+//@ts-check
+
 
 export class Circuit{
     id
     name
     distance
-
+/**
+ * 
+ * @param {string} id 
+ * @param {string} name 
+ * @param {number} distance 
+ */
     constructor(id, name, distance){
-        this.id = id
+        this.id = String(id) //TODO: timestamp
         this.name = name
         this.distance = distance
     }
 }
 
 export class MarketItem{
+    //TODO: id implement
     user
     article
     price
     location
     description
     img
-
+/**
+ * 
+ * @param {string} user 
+ * @param {string} article 
+ * @param {number} price 
+ * @param {string} location 
+ * @param {string} description 
+ * @param {string} img 
+ */
     constructor(user, article, price, location, description, img){
         this.user = user
         this.article = article
@@ -30,10 +46,16 @@ export class MarketItem{
 }
 
 export class ForumCard{
+    //TODO: ID implement
     user
     title
     description
-
+/**
+ * 
+ * @param {string} user 
+ * @param {string} title 
+ * @param {string} description 
+ */
     constructor(user, title, description){
         this.user = user
         this.title = title
@@ -42,15 +64,22 @@ export class ForumCard{
 }
 
 export class EventCard{
-    user
+    //TODO: id implement
+    title    
     date
-    title
+    user
     description
-
-    constructor(user, date, title, description){        
-        this.user = user
-        this.date = date
+/**
+ * 
+ * @param {string} title 
+ * @param {Date} date 
+ * @param {string} user 
+ * @param {string} description 
+ */
+    constructor(title, date, user, description){        
         this.title = title
+        this.date = date
+        this.user = user
         this.description = description
     }
 }
