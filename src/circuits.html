@@ -10,26 +10,26 @@
     <script defer type="module" src="./js/index.js"></script>
     <title>KartHub - Circuitos</title>
 </head>
-<body id="circuits" class="box-border w-screen bg-slate-500">
-    <header class=" bg-red-400">
+<body id="circuits" class="box-border bg-white">
+    <h1 class="font-bold text-4xl flex p-4  bg-neutral-500">KartHub</h1>
+    <header class="sticky top-0 bg-neutral-400/75 backdrop-blur-sm shadow-sm">
         <nav>
-            <h1 class="font-bold text-4xl flex p-4 bg-red-300">KartHub</h1>
-            <ul class="flex justify-evenly py-3">
-                <li class="bg-red-200 p-2 px-4 rounded-full"><a href="./index.html">Home</a></li>
-                <li class="bg-red-200 p-2 px-4 rounded-full"><a href="./circuits.html">Circuitos</a></li>
-                <li class="bg-red-200 p-2 px-4 rounded-full"><a href="./events.html">Eventos</a></li>
-                <li class="bg-red-200 p-2 px-4 rounded-full"><a href="./market.html">Mercado</a></li>
-                <li class="bg-red-200 p-2 px-4 rounded-full"><a href="./forum.html">Foro</a></li>
+            <ul class="flex justify-end py-3">
+                <li class="bg-neutral-200 p-2 px-4 mx-3 rounded-full hover:bg-amber-200"><a href="./index.html">Inicio</a></li>
+                <li class="bg-amber-400 p-2 px-4 mx-3 rounded-full"><a href="./circuits.html">Circuitos</a></li>
+                <li class="bg-neutral-200 p-2 px-4 mx-3 rounded-full hover:bg-amber-200"><a href="./events.html">Eventos</a></li>
+                <li class="bg-neutral-200 p-2 px-4 mx-3 rounded-full hover:bg-amber-200"><a href="./market.html">Mercado</a></li>
+                <li class="bg-neutral-200 p-2 px-4 mx-3 rounded-full hover:bg-amber-200"><a href="./forum.html">Foro</a></li>
             </ul>
         </nav>
     </header>
 
     <main>
-        <div class="flex flex-row  bg-blue-100 px-[5%] py-10">
+        <div class="flex flex-row  bg-white px-[5%] py-10">
             <section id="map" class="flex basis-3/4 h-[44.5rem] mr-5 bg-red-100 items-center justify-center">
             </section>
 
-            <section id="card-container" class="flex overflow-auto flex-col max-h-[44.5rem] basis-2/5 p-5 bg-green-100 ">
+            <section id="card-container" class="flex overflow-auto flex-col max-h-[44.5rem] basis-2/5 p-5 bg-neutral-100">
                 <article class="mb-5">
                     <div class="bg-purple-200 min-h-12 max-h-24 w-full flex items-center __circuit-header-card">
                         <span class="mr-4 pl-2">${n.name}</span>
