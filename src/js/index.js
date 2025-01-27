@@ -1,7 +1,8 @@
-// @ts-check
+// @ts-nocheck
 'use strict'
 import {Circuit, EventCard, ForumCard} from '../classes/classes.js'
 import {MarketItem} from '../classes/classes.js'
+import { store } from './store/redux.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
 
@@ -98,14 +99,15 @@ document.addEventListener('DOMContentLoaded', async () => {
      
    /**
     * 
-    * @param {Circuit} n
+    * @param {Circuit} circuit
     */
-   function showCircuitCard(n){
+   function showCircuitCard(circuit){
+    store.createCircuit(circuit)
     const circuitFrame = document.getElementById('card-container')
     const html = `<article class="mb-5">
                 <div class="bg-purple-200 min-h-12 max-h-24 w-full flex items-center __circuit-header-card">
-                    <span class="mr-4 pl-2">${n.name}</span>
-                    <span class="mr-4 pl-2 ">${n.distance}Km</span>
+                    <span class="mr-4 pl-2">${circuit.name}</span>
+                    <span class="mr-4 pl-2 ">${circuit.distance}Km</span>
                 </div>
 
                 <div class="bg-purple-100 flex flex-wrap h-48 p-5 pt-7 w-full __hidden">
@@ -137,17 +139,17 @@ async function getEventData(){
 * @param {EventCard} event
 */
 function showEventCard(event){
-const eventFrame = document.getElementById('__event-container')
-console.log(eventFrame)
-const html =
-            `<div class="bg-purple-100 h-24 mx-4 mb-4 flex items-center justify-center">
-                <span class="mr-4 pl-2">${event.title}</span>
-                <span class="mr-4 pl-2">${event.date}</span>
-                <span class="mr-4 pl-2">${event.user}</span>
-                <span class="mr-4 pl-2">${event.description}</span>
-            </div>`
-eventFrame?.insertAdjacentHTML('beforeend', html)
-}
+    store.createEvent(event)
+    const eventFrame = document.getElementById('__event-container')
+    const html =
+                `<div class="bg-purple-100 h-24 mx-4 mb-4 flex items-center justify-center">
+                    <span class="mr-4 pl-2">${event.title}</span>
+                    <span class="mr-4 pl-2">${event.date}</span>
+                    <span class="mr-4 pl-2">${event.user}</span>
+                    <span class="mr-4 pl-2">${event.description}</span>
+                </div>`
+    eventFrame?.insertAdjacentHTML('beforeend', html)
+    }
 
 
 
@@ -170,6 +172,7 @@ eventFrame?.insertAdjacentHTML('beforeend', html)
 * @param {MarketItem} item
 */
    function showMarketCard(item){
+    store.createMarketArticle(item)
     const marketFrame = document.getElementById('__market-container')
     const html = `<div class="bg-purple-100 h-52 mx-4 mb-4 p-7 flex ">
                 <div class="mr-5 min-w-[150px]">

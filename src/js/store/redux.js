@@ -1,40 +1,41 @@
-//@ts-check
+//@ts-nocheck
+import { Circuit, MarketItem, ForumCard, EventCard } from "../../classes/classes.js";
 const ACTION_TYPES = {
 
   CREATE_CIRCUIT: 'CREATE_CIRCUIT',
-  CREATE_CIRCUIT_LIST: 'CREATE_CIRCUIT_LIST',
+  //CREATE_CIRCUIT_LIST: 'CREATE_CIRCUIT_LIST',
   READ_CIRCUIT_LIST: 'READ_CIRCUIT_LIST',
-  UPDATE_CIRCUIT_LIST: 'UPDATE_CIRCUIT_LIST',
+  //UPDATE_CIRCUIT_LIST: 'UPDATE_CIRCUIT_LIST',
   UPDATE_CIRCUIT: 'UPDATE_CIRCUIT',
   DELETE_CIRCUIT: 'DELETE_CIRCUIT',
 
   CREATE_EVENT: 'CREATE_EVENT',
-  CREATE_EVENT_LIST: 'CREATE_EVENT_LIST',
+  //CREATE_EVENT_LIST: 'CREATE_EVENT_LIST',
   READ_EVENT_LIST: 'READ_EVENT_LIST',
-  UPDATE_EVENT_LIST: 'UPDATE_EVENT_LIST',
+  //UPDATE_EVENT_LIST: 'UPDATE_EVENT_LIST',
   UPDATE_EVENT: 'UPDATE_EVENT',
   DELETE_EVENT: 'DELETE_EVENT',
 
   CREATE_MARKET_ARTICLE: 'CREATE_MARKET_ARTICLE',
   READ_MARKET_LIST: 'READ_MARKET_LIST',
-  UPDATE_MARKET_LIST: 'UPDATE_MARKET_LIST',
+  //UPDATE_MARKET_LIST: 'UPDATE_MARKET_LIST',
   UPDATE_MARKET_ARTICLE: 'UPDATE_MARKET_ARTICLE',
   DELETE_MARKET_ARTICLE: 'DELETE_MARKET_ARTICLE',
 
   CREATE_FORUM: 'CREATE_FORUM',
   CREATE_FORUM_ARTICLE: 'CREATE_FORUM_ARTICLE',
   READ_FORUM_LIST: 'READ_FORUM_LIST',
-  UPDATE_FORUM_LIST: 'UPDATE_FORUM_LIST',
+  //UPDATE_FORUM_LIST: 'UPDATE_FORUM_LIST',
   UPDATE_FORUM_ARTICLE: 'UPDATE_FORUM_ARTICLE',
   DELETE_FORUM_ARTICLE: 'DELETE_FORUM_ARTICLE'
 }
 
 /**
  * @typedef {Object.<(string), any>} State
- * @property {Array<>} circuits
- * @property {Array<>} eventList
- * @property {Array<>} marketItems
- * @property {Array<>} forumItems
+ * @property {Array<Circuit>} circuits
+ * @property {Array<EventCard>} eventList
+ * @property {Array<MarketItem>} marketItems
+ * @property {Array<ForumCard>} forumItems
  * @property {boolean} isLoading
  * @property {boolean} error
  */
@@ -59,156 +60,107 @@ const INITIAL_STATE = {
  * @returns {State} The new state
  */
 const appReducer = (state = INITIAL_STATE, action) => {
+  console.log(action)
   switch (action.type) {
           case ACTION_TYPES.CREATE_CIRCUIT:
+            console.log(action.circuit)
               return {
                   ...state,
-                  articles: [
-                    ...state.articles,
-                    action.article
+                  circuits: [
+                    ...state.circuits,
+                    action.circuit
                   ]
               };
-          case ACTION_TYPES.CREATE_CIRCUIT_LIST:
-              return {
-                  ...state,
-                  articles: [
-                    ...state.articles,
-                    action.article
-                  ]
-            };
-          case ACTION_TYPES.READ_CIRCUIT_LIST:
-              return {
-                  ...state,
-                  articles: [
-                    ...state.articles,
-                    action.article
-                  ]
-              };
+/*          case ACTION_TYPES.READ_CIRCUIT_LIST:
+            return state
           case ACTION_TYPES.UPDATE_CIRCUIT_LIST:
             return {
-                ...state,
-                articles: [
-                  ...state.articles,
-                  action.article
-                ]
-            };
-          case ACTION_TYPES.UPDATE_CIRCUIT_LIST:
-            return {
-                ...state,
-                articles: [
-                  ...state.articles,
-                  action.article
-                ]
+              ...state,
+              articles: state.articles.map((article) => {
+                if (article.id === actionWithArticle?.article?.id) {
+                  return actionWithArticle.article
+                }
+                return article
+              })
             };
           case ACTION_TYPES.DELETE_CIRCUIT:
             return {
-                ...state,
-                articles: [
-                  ...state.articles,
-                  action.article
-                ]
+              ...state,
+              articles: state.articles.filter((article) => article.id !== actionWithArticle?.article?.id)
             };
-          
+          */
           case ACTION_TYPES.CREATE_EVENT:
             return {
                 ...state,
                 articles: [
-                  ...state.articles,
-                  action.article
+                  ...state.eventList,
+                  action.event
                 ]
             };
-          case ACTION_TYPES.CREATE_EVENT_LIST:
-          return {
-              ...state,
-              articles: [
-                ...state.articles,
-                action.article
-              ]
-          };
           case ACTION_TYPES.READ_EVENT_LIST:
+            return state
+/*          case ACTION_TYPES.UPDATE_EVENT:
             return {
-                ...state,
-                articles: [
-                  ...state.articles,
-                  action.article
-                ]
-            };
-          case ACTION_TYPES.UPDATE_EVENT_LIST:
-            return {
-                ...state,
-                articles: [
-                  ...state.articles,
-                  action.article
-                ]
-            };
-          case ACTION_TYPES.UPDATE_EVENT:
-            return {
-                ...state,
-                articles: [
-                  ...state.articles,
-                  action.article
-                ]
+              ...state,
+              articles: state.articles.map((article) => {
+                if (article.id === actionWithArticle?.article?.id) {
+                  return actionWithArticle.article
+                }
+                return article
+              })
             };
           case ACTION_TYPES.DELETE_EVENT:
             return {
-                ...state,
-                articles: [
-                  ...state.articles,
-                  action.article
-                ]
+              ...state,
+              articles: state.articles.filter((article) => article.id !== actionWithArticle?.article?.id)
             };
 
-
+*/
           case ACTION_TYPES.CREATE_MARKET_ARTICLE:
-          return {
+            return {
               ...state,
-              articles: [
-                ...state.articles,
-                action.article
+              marketItems: [
+                ...state.marketItems,
+                action.item
               ]
           };
           case ACTION_TYPES.READ_MARKET_LIST:
-          return {
-              ...state,
-              articles: [
-                ...state.articles,
-                action.article
-              ]
-          };
-          case ACTION_TYPES.UPDATE_MARKET_LIST:
+            return state
+/*          case ACTION_TYPES.UPDATE_MARKET_LIST:
             return {
-                ...state,
-                articles: [
-                  ...state.articles,
-                  action.article
-                ]
+              ...state,
+              articles: state.articles.map((article) => {
+                if (article.id === actionWithArticle?.article?.id) {
+                  return actionWithArticle.article
+                }
+                return article
+              })
             };
           case ACTION_TYPES.UPDATE_MARKET_ARTICLE:
             return {
-                ...state,
-                articles: [
-                  ...state.articles,
-                  action.article
-                ]
+              ...state,
+              articles: state.articles.map((article) => {
+                if (article.id === actionWithArticle?.article?.id) {
+                  return actionWithArticle.article
+                }
+                return article
+              })
             };
-          case ACTION_TYPES.DELETE_MARKET_ARTICLE:
+/*          case ACTION_TYPES.DELETE_MARKET_ARTICLE:
             return {
-                ...state,
-                articles: [
-                  ...state.articles,
-                  action.article
-                ]
+              ...state,
+              articles: state.articles.filterarticle) => article.id !== actionWithArticle?.article?.id)
             };
-
+*/
 
             case ACTION_TYPES.CREATE_FORUM:
               return {
                   ...state,
-                  articles: [
-                    ...state.articles,
-                    action.article
+                  forumItems: [
+                    ...state.forumItems,
+                    action.forumcard
                   ]
-              };
+              };/*
             case ACTION_TYPES.CREATE_FORUM_ARTICLE:
             return {
                 ...state,
@@ -216,39 +168,35 @@ const appReducer = (state = INITIAL_STATE, action) => {
                   ...state.articles,
                   action.article
                 ]
-            };
+            };*/
             case ACTION_TYPES.READ_FORUM_LIST:
+              return state
+/*            case ACTION_TYPES.UPDATE_FORUM_LIST:
               return {
-                  ...state,
-                  articles: [
-                    ...state.articles,
-                    action.article
-                  ]
-              };
-            case ACTION_TYPES.UPDATE_FORUM_LIST:
-              return {
-                  ...state,
-                  articles: [
-                    ...state.articles,
-                    action.article
-                  ]
+                ...state,
+                articles: state.articles.map((article) => {
+                  if (article.id === actionWithArticle?.article?.id) {
+                    return actionWithArticle.article
+                  }
+                  return article
+                })
               };
             case ACTION_TYPES.UPDATE_FORUM_ARTICLE:
               return {
-                  ...state,
-                  articles: [
-                    ...state.articles,
-                    action.article
-                  ]
+                ...state,
+                articles: state.articles.map((article) => {
+                  if (article.id === actionWithArticle?.article?.id) {
+                    return actionWithArticle.article
+                  }
+                  return article
+                })
               };
             case ACTION_TYPES.DELETE_FORUM_ARTICLE:
               return {
-                  ...state,
-                  articles: [
-                    ...state.articles,
-                    action.article
-                  ]
+                ...state,
+                articles: state.articles.filter((article) => article.id !== actionWithArticle?.article?.id)
               };
+           */
           default:
               return state;
       }
@@ -263,7 +211,21 @@ const createStore = (reducer) => {
   let currentReducer = reducer
 
   // Actions
-  const createCircuitList = (article) => _dispatch({ type: INITIAL_STATE.CREATE_CIRCUIT_LIST, article });
+  const createCircuit = (circuit) => _dispatch({ type: ACTION_TYPES.CREATE_CIRCUIT, circuit });
+
+  const getAllCircuits = () => currentState.circuits
+
+  const createEvent = (event) => _dispatch({ type: ACTION_TYPES.CREATE_EVENT, event });
+
+  const getAllEvents = () => currentState.events
+
+  const createMarketArticle = (item) => _dispatch({ type: ACTION_TYPES.CREATE_MARKET_ARTICLE, item });
+
+  const getAllMarketArticles = () => currentState.marketItems
+
+  const createForum = (forumcard) => _dispatch({ type: ACTION_TYPES.CREATE_FORUM, forumcard });
+
+  const getAllForumItems = () => currentState.forumItems
 
   // Public methods
   const getState = () => { return currentState };
@@ -298,7 +260,14 @@ const createStore = (reducer) => {
 
   return {
     getState,
-    createCircuitList
+    createCircuit,
+    getAllCircuits,
+    createEvent,
+    getAllEvents,
+    createMarketArticle,
+    getAllMarketArticles,
+    createForum,
+    getAllForumItems
   }
 }
 
