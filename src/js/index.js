@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const modalCloseBtn = document.getElementById('modal-close')
     modalCloseBtn.addEventListener('click', modalCloser)
     
+    
 
    switch (page[0].id){
         case 'index':
