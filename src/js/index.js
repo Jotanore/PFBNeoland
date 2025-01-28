@@ -7,6 +7,9 @@ import { store } from './store/redux.js';
 document.addEventListener('DOMContentLoaded', async () => {
 
     const page = document.getElementsByTagName('body')
+    const modalCloseBtn = document.getElementById('modal-close')
+    modalCloseBtn.addEventListener('click', modalCloser)
+    
 
    switch (page[0].id){
         case 'index':
@@ -17,6 +20,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             await getCircuitData()
             assignCircuitListeners()
             createMap()
+            modalBuilder()
             break
         case 'events':
             console.log(`Estoy en ${page[0].id}`)
@@ -32,9 +36,68 @@ document.addEventListener('DOMContentLoaded', async () => {
             break
    }
 
-
+})
 /*=================================HOME===============================================*/
 
+function modalBuilder(){
+    const page = document.getElementsByTagName('body')
+    switch (page[0].id){
+        case 'index':
+            break
+        case 'circuits':
+            const circuitInfo = store.getAllCircuits()
+            const modalOpenbtns = document.getElementsByClassName('modal-open')
+            console.log(circuitInfo)
+            let j = 0
+            for (let i of modalOpenbtns){
+                /** @type {HTMLElement} */(i).addEventListener('click', circuitModal.bind(i,circuitInfo[j] ))
+                j++
+            } 
+
+            break
+        case 'events':
+            console.log(`Estoy en ${page[0].id}`)
+            break
+        case 'market':
+            console.log(`Estoy en ${page[0].id}`)
+            break
+        case 'forum':
+            console.log(`Estoy en ${page[0].id}`) 
+            break
+    }
+    
+
+
+}
+
+function modalOpener(){
+    const modalWindow = document.getElementById('modal')
+    const modalContent = document.getElementById('modal-content')
+    modalWindow.classList.remove('__hidden')
+}
+
+function modalCloser(){
+    const modalWindow = document.getElementById('modal')
+    const modalContent = document.getElementById('modal-content')
+
+    modalWindow.classList.add('__hidden')
+    modalContent.innerHTML = ''
+}
+
+function circuitModal(circuit){
+    modalOpener()
+    const modalContent = document.getElementById('modal-content')
+
+    modalContent.innerHTML = `<ul>
+                                <li>${circuit.name}	</li>
+                                <li><a href="${circuit.location}">Ubicación</a></li>
+                                <li class="w-[200px] h-auto"><img src="${circuit.map}"></li>
+                                <li><a href="${circuit.url}">WebLink</a></li>
+                                <li>${circuit.description}</li>
+                                <li>Mejor tiempo KH:${circuit.bestlap}</li>
+                                <li>Precio: ${circuit.prices.tandas}</li>
+                            </ul>`
+}
 
 /*=================================CIRCUITS===========================================*/
 
@@ -45,8 +108,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         /** @type {Circuit[]} */
         const circuitArray = await apiCircuit.json();
         circuitArray.forEach(function (/** @type {Circuit} */ a){
-            const circuito = new Circuit(a.id, a.name, a.distance)
+            const circuito = new Circuit(a.id, a.name, a.distance, a.location, a.url, a.description, a.bestlap, a.prices, a.map)
             showCircuitCard(circuito)
+
         })
    }
 
@@ -108,6 +172,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 <div class="bg-purple-200 min-h-12 max-h-24 w-full flex items-center __circuit-header-card">
                     <span class="mr-4 pl-2">${circuit.name}</span>
                     <span class="mr-4 pl-2 ">${circuit.distance}Km</span>
+                    <button class="mr-4 pl-2 modal-open">Ver más</button>
                 </div>
 
                 <div class="bg-purple-100 flex flex-wrap h-48 p-5 pt-7 w-full __hidden">
@@ -220,4 +285,3 @@ const html = `<div class="bg-purple-100 h-24 mx-4 mb-4 flex items-center justify
 forumFrame?.insertAdjacentHTML('beforeend', html)
 }
 
-});

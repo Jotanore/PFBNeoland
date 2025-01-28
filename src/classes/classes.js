@@ -5,16 +5,36 @@ export class Circuit{
     id
     name
     distance
+    location
+    url
+    description
+    bestlap
+    prices
+    map
 /**
  * 
  * @param {string} id 
  * @param {string} name 
  * @param {number} distance 
+ * @param {string} location 
+ * @param {string} url 
+ * @param {string} description
+ * @param {string} bestlap
+ * @param {object} prices
+ * @param {string} map
+ * 
+ * 
  */
-    constructor(id, name, distance){
+    constructor(id, name, distance, location, url, description, bestlap, prices, map){
         this.id = String(id) //TODO: timestamp
         this.name = name
         this.distance = distance
+        this.location = location
+        this.url = url
+        this.description = description
+        this.bestlap = bestlap
+        this.prices = prices
+        this.map = map
     }
 }
 

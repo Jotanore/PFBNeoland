@@ -2,31 +2,104 @@
     {
         "id": "circuit_1",
         "name": "Big Karting Indoor",
-        "distance": "5"
+        "distance": "5",
+        "location": "https://www.google.com/maps/place/Big+Karting+Vitoria+SOLO+INDOOR/@42.9120871,-2.7122809,19.31z/data=!4m6!3m5!1s0xd4fc6b30e288609:0x26e8e28fa5a1ced5!8m2!3d42.9120746!4d-2.7124191!16s%2Fg%2F11cl_5f8cn?entry=ttu&g_ep=EgoyMDI1MDEyMi4wIKXMDSoASAFQAw%3D%3D",
+        "url": "https://bigkartingvitoria.com/",
+        "description": "El Circuito de Kotarr también conocido como Circuito de Velocidad Kotarr es un circuito de velocidad tipo corto que se encuentra en Tubilla del Lago. Es el primer circuito de velocidad de toda Castilla y León y fue inaugurado en agosto de 2008.",
+        "bestlap": "1:00:00",
+        "prices": {
+            "tandas": "20€",
+            "miniGP": "30€",
+            "GP": "50€",
+            "SuperGP": "70€"
+            
+        },
+        "map": "imgs/kotar.JPG"
+
     },
     {
         "id": "circuit_2",
         "name": "Logroño Karting Indoor",
-        "distance": "55"
+        "distance": "55",
+        "location": "https://www.google.com/maps/place/Big+Karting+Vitoria+SOLO+INDOOR/@42.9120871,-2.7122809,19.31z/data=!4m6!3m5!1s0xd4fc6b30e288609:0x26e8e28fa5a1ced5!8m2!3d42.9120746!4d-2.7124191!16s%2Fg%2F11cl_5f8cn?entry=ttu&g_ep=EgoyMDI1MDEyMi4wIKXMDSoASAFQAw%3D%3D",
+        "url": "https://bigkartingvitoria.com/",
+        "description": "El Circuito de Kotarr también conocido como Circuito de Velocidad Kotarr es un circuito de velocidad tipo corto que se encuentra en Tubilla del Lago. Es el primer circuito de velocidad de toda Castilla y León y fue inaugurado en agosto de 2008.",
+        "bestlap": "1:00:00",
+        "prices": {
+            "tandas": "20€",
+            "miniGP": "30€",
+            "GP": "50€",
+            "SuperGP": "70€"
+            
+        },
+        "map": "imgs/kotar.JPG"
     },
     {
         "id": "circuit_3",
         "name": "Circuito Kotarr Burgos",
-        "distance": "95"
+        "distance": "95",
+        "location": "https://www.google.com/maps/place/Big+Karting+Vitoria+SOLO+INDOOR/@42.9120871,-2.7122809,19.31z/data=!4m6!3m5!1s0xd4fc6b30e288609:0x26e8e28fa5a1ced5!8m2!3d42.9120746!4d-2.7124191!16s%2Fg%2F11cl_5f8cn?entry=ttu&g_ep=EgoyMDI1MDEyMi4wIKXMDSoASAFQAw%3D%3D",
+        "url": "https://bigkartingvitoria.com/",
+        "description": "El Circuito de Kotarr también conocido como Circuito de Velocidad Kotarr es un circuito de velocidad tipo corto que se encuentra en Tubilla del Lago. Es el primer circuito de velocidad de toda Castilla y León y fue inaugurado en agosto de 2008.",
+        "bestlap": "1:00:00",
+        "prices": {
+            "tandas": "20€",
+            "miniGP": "30€",
+            "GP": "50€",
+            "SuperGP": "70€"
+            
+        },
+        "map": "imgs/kotar.JPG"
     },
     {
         "id": "circuit_4",
         "name": "Karting Castroponce",
-        "distance": "155"
+        "distance": "155",
+        "location": "https://www.google.com/maps/place/Big+Karting+Vitoria+SOLO+INDOOR/@42.9120871,-2.7122809,19.31z/data=!4m6!3m5!1s0xd4fc6b30e288609:0x26e8e28fa5a1ced5!8m2!3d42.9120746!4d-2.7124191!16s%2Fg%2F11cl_5f8cn?entry=ttu&g_ep=EgoyMDI1MDEyMi4wIKXMDSoASAFQAw%3D%3D",
+        "url": "https://bigkartingvitoria.com/",
+        "description": "El Circuito de Kotarr también conocido como Circuito de Velocidad Kotarr es un circuito de velocidad tipo corto que se encuentra en Tubilla del Lago. Es el primer circuito de velocidad de toda Castilla y León y fue inaugurado en agosto de 2008.",
+        "bestlap": "1:00:00",
+        "prices": {
+            "tandas": "20€",
+            "miniGP": "30€",
+            "GP": "50€",
+            "SuperGP": "70€"
+            
+        },
+        "map": "imgs/kotar.JPG"
     },
     {
-        "id": "circuit_2",
+        "id": "circuit_5",
         "name": "Circuito y Museo Fernando Alonso",
-        "distance": "155"
+        "distance": "155",
+        "location": "https://www.google.com/maps/place/Big+Karting+Vitoria+SOLO+INDOOR/@42.9120871,-2.7122809,19.31z/data=!4m6!3m5!1s0xd4fc6b30e288609:0x26e8e28fa5a1ced5!8m2!3d42.9120746!4d-2.7124191!16s%2Fg%2F11cl_5f8cn?entry=ttu&g_ep=EgoyMDI1MDEyMi4wIKXMDSoASAFQAw%3D%3D",
+        "url": "https://bigkartingvitoria.com/",
+        "description": "El Circuito de Kotarr también conocido como Circuito de Velocidad Kotarr es un circuito de velocidad tipo corto que se encuentra en Tubilla del Lago. Es el primer circuito de velocidad de toda Castilla y León y fue inaugurado en agosto de 2008.",
+        "bestlap": "1:00:00",
+        "prices": {
+            "tandas": "20€",
+            "miniGP": "30€",
+            "GP": "50€",
+            "SuperGP": "70€"
+            
+        },
+        "map": "imgs/kotar.JPG"
     },
     {
-        "id": "circuit_2",
+        "id": "circuit_6",
         "name": "Karting Valladolid",
-        "distance": "255"
+        "distance": "255",
+        "location": "https://www.google.com/maps/place/Big+Karting+Vitoria+SOLO+INDOOR/@42.9120871,-2.7122809,19.31z/data=!4m6!3m5!1s0xd4fc6b30e288609:0x26e8e28fa5a1ced5!8m2!3d42.9120746!4d-2.7124191!16s%2Fg%2F11cl_5f8cn?entry=ttu&g_ep=EgoyMDI1MDEyMi4wIKXMDSoASAFQAw%3D%3D",
+        "url": "https://bigkartingvitoria.com/",
+        "description": "El Circuito de Kotarr también conocido como Circuito de Velocidad Kotarr es un circuito de velocidad tipo corto que se encuentra en Tubilla del Lago. Es el primer circuito de velocidad de toda Castilla y León y fue inaugurado en agosto de 2008.",
+        "bestlap": "1:00:00",
+        "prices": {
+            "tandas": "20€",
+            "miniGP": "30€",
+            "GP": "50€",
+            "SuperGP": "70€"
+            
+        },
+        "map": "imgs/kotar.JPG"
     }
 ]

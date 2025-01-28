@@ -227,6 +227,7 @@ const createStore = (reducer) => {
 
   const getAllForumItems = () => currentState.forumItems
 
+  const getCircuitById = (id) => currentState.circuits.find((circuit) => circuit.id === id);
   // Public methods
   const getState = () => { return currentState };
 
@@ -267,7 +268,8 @@ const createStore = (reducer) => {
     createMarketArticle,
     getAllMarketArticles,
     createForum,
-    getAllForumItems
+    getAllForumItems,
+    getCircuitById
   }
 }
 
