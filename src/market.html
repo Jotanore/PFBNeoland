@@ -9,7 +9,12 @@
     <title>KartHub - Mercado</title>
 </head>
 <body id="market" class="box-border bg-white">
-    <h1 class="font-bold text-4xl flex p-4 bg-neutral-500">KartHub</h1>
+    <div class="flex p-4 bg-neutral-500 items-center">
+        <h1 class="font-bold text-4xl ">KartHub</h1>
+        <div class="flex justify-end w-full">
+            <h2 class="p-2 px-4 bg-neutral-200 rounded-full"><a href="./login.html">SignUp/Login</a></h2>
+        </div>
+    </div>
     <header class="sticky top-0 bg-neutral-400/75 backdrop-blur-sm shadow-sm">
         <nav>
             <ul class="flex justify-end py-3">
@@ -23,24 +28,35 @@
     </header>
 
     <main class="bg-white px-[5%] pt-5">
-        <section id="__market-container" class=" pt-5 pb-5 bg-neutral-100">
+        <section class="p-5 mb-2 bg-neutral-100">
+            <form id="market-form" action="#" enctype="multipart/form-data">
+                <fieldset>
+                    <legend class="pb-5">Nuevo artículo</legend>
+                    <label for="imagen">Subir imagen:</label>
+                    <input type="file" id="imagen" name="imagen" accept="image/*">
+                    <label for="name">Nombre del articulo</label>
+                    <input id="name" type="text" name="usuario"/>
+                    <label for="location">Ubicación</label>
+                    <input id="location" type="text" name="ubicacion"/>
+                    <label for="price">Precio</label>
+                    <input id="price" type="text" name="price"/>
+                    <label for="description">Descripción</label>
+                    <textarea id="description"></textarea>
+                    <label for="terms">Acepto las normas</label>
+                    <input  id="terms" type="checkbox">
+                    <button type="reset">Restablecer</button>
+                    <button class="bg-amber-400 p-2 px-4 mx-3 rounded-full" type="submit">Enviar</button>
+                </fieldset>
+              </form>
+        </section>
+        <section id="__market-container" class="pt-5 pb-5 bg-neutral-100">
         </section>
     </main>
-    <div id="modal" class="fixed flex justify-center items-center top-0 left-0 w-full h-full bg-neutral-600/50 z-[999] backdrop-blur-sm">
+    <div id="modal" class="fixed flex justify-center items-center top-0 left-0 w-full h-full bg-neutral-600/50 z-[999] backdrop-blur-sm __hidden">
         <div class="bg-white w-[70%] h-[90%] rounded-md overflow-auto">
             <span id="modal-close" class="flex justify-end pr-2"><a href="#">&times;</a></span>
             <div id="modal-content" class="bg-stone-300 w-full h-[98%] ">
-                <ul>
-                    <li>Nombre</li>
-                    <li>Localizacion</li>
-                    <li>Mapa</li>
-                    <li>Web</li>
-                    <li>Descripcion</li>
-                    <li>Mejor vuelta KH</li>
-                    <li>Precios</li>
-                </ul>
             </div>
-
         </div>
     </div>
 </body>

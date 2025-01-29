@@ -9,7 +9,12 @@
     <title>KartHub - Mercado</title>
 </head>
 <body id="forum" class="box-border bg-white">
-    <h1 class="font-bold text-4xl flex p-4 bg-neutral-500">KartHub</h1>
+    <div class="flex p-4 bg-neutral-500 items-center">
+        <h1 class="font-bold text-4xl ">KartHub</h1>
+        <div class="flex justify-end w-full">
+            <h2 class="p-2 px-4 bg-neutral-200 rounded-full"><a href="./login.html">SignUp/Login</a></h2>
+        </div>
+    </div>
     <header class="sticky top-0 bg-neutral-400/75 backdrop-blur-sm shadow-sm">
         <nav>
             <ul class="flex justify-end py-3">
@@ -23,11 +28,22 @@
     </header>
 
     <main class=" bg-white px-[5%] pt-5">
+        <section class="p-5 mb-2 bg-neutral-100">
+            <form id="event-form" action="#" enctype="multipart/form-data">
+                <fieldset>
+                    <legend class="pb-5">Nueva Entrada</legend>
+                    <label for="name">Nombre del articulo</label>
+                    <input id="name" type="text" name="usuario"/>
+                    <label for="description">Descripción</label>
+                    <textarea id="description" ></textarea>
+                    <label for="terms">Acepto las normas</label>
+                    <input  id="terms" type="checkbox">
+                    <button type="reset">Restablecer</button>
+                    <button class="bg-amber-400 p-2 px-4 mx-3 rounded-full" type="submit">Enviar</button>
+                </fieldset>
+              </form>
+        </section>
         <section id="__forum-container" class=" pt-5 pb-5 bg-neutral-100 h-screen">
-            <div class="bg-purple-100 h-24 mx-4 mb-4 flex items-center justify-center">
-                <span class="mr-4 pl-2">Titulo</span>
-                <span class="mr-4 pl-2">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quas voluptates, omnis, voluptatum illo error ipsum dolor ut iusto beatae, quam dolores odit? Dolorem rerum, molestiae veritatis quos placeat quam architecto!</span>
-            </div>
         </section>
     </main>
 

@@ -16,7 +16,9 @@ export class Circuit{
  * @param {string} id 
  * @param {string} name 
  * @param {number} distance 
- * @param {string} location 
+ * @param {Object} location
+ * @param {string} location.latitude
+ * @param {string} location.longitude 
  * @param {string} url 
  * @param {string} description
  * @param {string} bestlap
@@ -101,5 +103,22 @@ export class EventCard{
         this.date = date
         this.user = user
         this.description = description
+    }
+}
+
+export class User{
+    name
+    email
+    password
+/**
+ * 
+ * @param {string} name 
+ * @param {string} email 
+ * @param {string} password 
+ */
+    constructor(name, email, password){
+        this.name = name
+        this.email = email
+        this.password = password
     }
 }

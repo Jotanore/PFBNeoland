@@ -11,7 +11,12 @@
     <title>KartHub - Circuitos</title>
 </head>
 <body id="circuits" class="box-border bg-white">
-    <h1 class="font-bold text-4xl flex p-4  bg-neutral-500">KartHub</h1>
+    <div class="flex p-4 bg-neutral-500 items-center">
+        <h1 class="font-bold text-4xl ">KartHub</h1>
+        <div class="flex justify-end w-full">
+            <h2 class="p-2 px-4 bg-neutral-200 rounded-full"><a href="./login.html">SignUp/Login</a></h2>
+        </div>
+    </div>
     <header class="sticky top-0 bg-neutral-400/75 backdrop-blur-sm shadow-sm">
         <nav>
             <ul class="flex justify-end py-3">
@@ -30,20 +35,6 @@
             </section>
 
             <section id="card-container" class="flex overflow-auto flex-col max-h-[44.5rem] basis-2/5 p-5 bg-neutral-100">
-                <article class="mb-5">
-                    <div class="bg-purple-200 min-h-12 max-h-24 w-full flex items-center __circuit-header-card">
-                        <span class="mr-4 pl-2">${n.name}</span>
-                        <span class="mr-4 pl-2 ">${n.distance}Km</span>
-                    </div>
-
-                    <div class="bg-purple-100 flex flex-wrap h-48 p-5 pt-7 w-full __hidden">
-                        <span class="mr-4 pl-2 w-[40%]">Nombre sitio:</span>
-                        <span class="mr-4 pl-2 w-[40%]"><a class="font-bold" href="#">Ubicación</a></span>
-                        <span class="mr-4 pl-2 w-[40%]">Mejor tiempo KartHub:</span>
-                        <span class="mr-4 pl-2 w-[40%]">Alquiler:</span>
-                        <span class="mr-4 pl-2 w-[40%]"><a class="font-bold" href="#">Sitio Web</a></span>
-                    </div>
-                </article>
             </section>
             </section>
         </div>
@@ -52,17 +43,7 @@
         <div class="bg-white w-[70%] h-[90%] rounded-md overflow-auto">
             <span id="modal-close" class="flex justify-end pr-2"><a href="#">&times;</a></span>
             <div id="modal-content" class="bg-stone-300 w-full h-[98%] ">
-                <ul>
-                    <li>Nombre</li>
-                    <li>Localizacion</li>
-                    <li>Mapa</li>
-                    <li>Web</li>
-                    <li>Descripcion</li>
-                    <li>Mejor vuelta KH</li>
-                    <li>Precios</li>
-                </ul>
             </div>
-
         </div>
     </div>
 </body>
