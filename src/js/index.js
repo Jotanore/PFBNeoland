@@ -9,8 +9,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const page = document.getElementsByTagName('body')
     const modalCloseBtn = document.getElementById('modal-close')
     modalCloseBtn.addEventListener('click', modalCloser)
-    
-    
 
    switch (page[0].id){
         case 'index':
