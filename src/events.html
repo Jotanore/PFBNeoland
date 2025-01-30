@@ -29,17 +29,13 @@
 
     <main class="bg-white pt-5 px-[5%] h-screen">
         <section class="p-5 mb-2 bg-neutral-100">
-            <form id="event-form" action="#" enctype="multipart/form-data">
+            <form id="form" action="#" enctype="multipart/form-data">
                 <fieldset>
                     <legend class="pb-5">Nuevo Evento</legend>
-                    <label for="imagen">Subir imagen:</label>
-                    <input type="file" id="imagen" name="imagen" accept="image/*">
-                    <label for="name">Nombre del articulo</label>
+                    <label for="name">Titulo</label>
                     <input id="name" type="text" name="usuario"/>
-                    <label for="location">Ubicación</label>
-                    <input  id="location" type="text" name="usuario"/>
-                    <label for="price">Precio</label>
-                    <input id="price" type="text" name="price"/>
+                    <label for="eventDate">Fecha</label>
+                    <input  id="eventDate" type="date" name="usuario"/>
                     <label for="description">Descripción</label>
                     <textarea id="description" ></textarea>
                     <label for="terms">Acepto las normas</label>
