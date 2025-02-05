@@ -8,7 +8,7 @@
     <script defer type="module" src="./js/index.js"></script>
     <title>KartHub - Inicio</title>
 </head>
-<body id="login" class="box-border bg-white">
+<body id="profile" class="box-border bg-white">
     <div>
         <h1 class="font-bold text-4xl flex p-4 bg-neutral-500">KartHub</h1>
     </div>
@@ -28,36 +28,36 @@
         <section class="bg-neutral-100 py-10 h-screen px-40 mb-4">
             <h2 class="bg-neutral-200 text-5xl font-bold text-center py-8">Perfil</h2>
             <ul class="mb-[20%]">
-                <li>Nombre</li>
-                <li>Apellidos</li>
-                <li>Email</li>
-                <li>Localizacion</li>
-                <li>Circuito preferido</li>
-                <li>Kart</li>
-                <li>Youtube</li>
-                <li>Instagram</li>
+                <li id="user-name">Nombre</li>
+                <li id="user-surname">Apellidos</li>
+                <li id="user-email">Email</li>
+                <li id="user-location">Localizacion</li>
+                <li id="user-prefCircuit">Circuito preferido</li>
+                <li id="user-kart">Kart</li>
+                <li id="user-youtubeURL">Youtube</li>
+                <li id="user-instagramUser">Instagram</li>
             </ul>
-            <form class="mt-3" id="market-form" action="#" enctype="multipart/form-data">
+            <form class="mt-3" id="profile-update-form" action="#" enctype="multipart/form-data">
                 <fieldset class="flex flex-row items-center flex-wrap">
                     <img class="w-40 h-40 rounded-full" src="imgs/kotar.JPG" alt="${item.img}">
-                    <label for="name">Nombre</label>
-                    <input id="name" type="text" name="nombre"/>
-                    <label for="surname">Apellidos</label>
-                    <input id="surname" type="text" name="apellidos"/>
-                    <label for="location">Localización</label>
-                    <input id="location" type="text" name="localización"/>
-                    <label for="prefCircuit">Circuito preferido</label>
-                    <input id="prefCircuit" type="text" name="circuitoPref"/>
-                    <label for="kart">Kart</label>
-                    <input id="kart" type="text" name="kart"/>
-                    <label for="youtubeURL">Youtube</label>
-                    <input id="youtubeURL" type="text" name="instagram"/>
-                    <label for="instagramUser">Instagram</label>
-                    <input id="instagramUser" type="text" name="instagram"/>
+                    <label for="profile-name">Nombre</label>
+                    <input id="profile-name" type="text" name="nombre"/>
+                    <label for="profile-surname">Apellidos</label>
+                    <input id="profile-surname" type="text" name="apellidos"/>
+                    <label for="profile-location">Localización</label>
+                    <input id="profile-location" type="text" name="localización"/>
+                    <label for="-profile-prefCircuit">Circuito preferido</label>
+                    <input id="profile-prefCircuit" type="text" name="circuitoPref"/>
+                    <label for="profile-kart">Kart</label>
+                    <input id="profile-kart" type="text" name="kart"/>
+                    <label for="profile-youtubeURL">Youtube</label>
+                    <input id="profile-youtubeURL" type="text" name="instagram"/>
+                    <label for="profile-instagramUser">Instagram</label>
+                    <input id="profile-instagramUser" type="text" name="instagram"/>
                     <label for="password">Cambiar contraseña</label>
-                    <input id="password" type="password" name="password"/>
-                    <label for="passwordRepeat">Repetir contraseña</label>
-                    <input id="passwordRepeat" type="password" name="password"/>
+                    <input id="profile-password" type="profile-password" name="password"/>
+                    <label for="profile-passwordRepeat">Repetir contraseña</label>
+                    <input id="profile-passwordRepeat" type="password" name="password"/>
                     <button class="bg-amber-400 p-2 px-4 mx-3 mt-3 rounded-full" type="submit">Enviar</button>
                 </fieldset>
               </form>

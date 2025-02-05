@@ -1,6 +1,6 @@
 // @ts-nocheck
 'use strict'
-import {Circuit, EventCard, ForumCard} from '../classes/classes.js'
+import {Circuit, EventCard, ForumCard, User } from '../classes/classes.js'
 import {MarketItem} from '../classes/classes.js'
 import { store } from './store/redux.js';
 
@@ -8,17 +8,39 @@ import { store } from './store/redux.js';
  * @type {number[]}
  */
 let userCoords = null;
-let map  
-const NODE_SERVER = `http://127.0.0.1:6431/`
-
+let map
+let userlog = false
+const NODE_SERVER = `http://127.0.0.1:1338/`
+/*
+const NODE_SERVER_GET_CIRCUITS =`http://127.0.0.1:6431/get.circuits.json`
+const NODE_SERVER_GET_MARKET_ITEMS =`http://127.0.0.1:6431/get.articles.json`
+const NODE_SERVER_GET_EVENTS =`http://127.0.0.1:6431/get.events.json`
+const NODE_SERVER_GET_FORUM_TOPICS =`http://127.0.0.1:6431/get.forum.topics.json`
+*/
 document.addEventListener('DOMContentLoaded', async () => {
 
     const page = document.getElementsByTagName('body')
     const modalCloseBtn = document.getElementById('modal-close')
     modalCloseBtn?.addEventListener('click', modalCloser)
+    console.log("user: ", getUserFromSession())
+    if (getUserFromSession() != null) {
+        userlog = true
+    }
 
     await setUserCoords();
     switch (page[0].id){
+            case 'login':
+                console.log(`Estoy en ${page[0].id}`)
+                userRegister()
+                userLogin()
+                break
+            case 'profile':
+                console.log(`Estoy en ${page[0].id}`)
+                if (userlog) {
+                    fillUserProfile()
+                    updateUserProfile()
+                }
+                break
             case 'index':
                 console.log(`Estoy en ${page[0].id}`)
                 break
@@ -94,10 +116,10 @@ function eventModalBinder(){
     let j
     const modalOpenbtns = document.getElementsByClassName('modal-open')
     const eventInfo = store.getAllEvents()
-    j = 0
+    j = modalOpenbtns.length-1
     for (let i of modalOpenbtns){
         /** @type {HTMLElement} */(i).addEventListener('click', eventModal.bind(i,eventInfo[j] ))
-        j++
+        j--
     }
 }
 
@@ -105,10 +127,10 @@ function circuitModalBinder(){
     let j
     const modalOpenbtns = document.getElementsByClassName('modal-open')
     const circuitInfo = store.getAllCircuits()
-    j = 0
+    j = modalOpenbtns.length-1
     for (let i of modalOpenbtns){
         /** @type {HTMLElement} */(i).addEventListener('click', circuitModal.bind(i,circuitInfo[j] ))
-        j++
+        j--
     } 
 }
 
@@ -137,7 +159,8 @@ function formManager(e){
 
 
         const description = document.getElementById('description').value
-        const user = 'place holder'
+        const user = 'user'
+        const id = "000"
 
         const eventTitle = document.getElementById('eventName')?.value
         const eventDate = document.getElementById('eventDate')?.value
@@ -158,18 +181,23 @@ function formManager(e){
         if (itemImg) {
         imageUrl = URL.createObjectURL(itemImg);
         }*/
+        let searchParams
         switch (page[0].id){
             case 'market':
-                    const item = new MarketItem(user, itemName, itemPrice, itemLocation, description, itemImg)
+                    const item = new MarketItem(id,user, itemName, itemPrice, itemLocation, description, itemImg)
+                    searchParams = new URLSearchParams(item).toString()
                     store.createMarketArticle(item)
                     console.log(item)
-                    showMarketCard()
+                    fetch(`${NODE_SERVER}create/article?${searchParams}`)
+                    drawArticle(item)
                 break
             case 'events':
-                    const event = new EventCard(user, eventTitle, eventDate, description)
+                    const event = new EventCard(id, eventTitle, eventDate, user, description)
+                    searchParams = new URLSearchParams(event).toString()
                     store.createEvent(event)
                     console.log(event)
-                    showEventCard()
+                    fetch(`${NODE_SERVER}create/event?${searchParams}`)
+                    drawEvent(event)
                 break    
             
         }
@@ -178,6 +206,135 @@ function formManager(e){
     })
 }
 
+function userRegister(){
+    document.getElementById('signup-form').addEventListener('submit', async function (e){
+        e.preventDefault()
+
+        const newUser = {
+            id: `id_${Date.now()}`,
+            email: document.getElementById('sign-email').value,
+            password: document.getElementById('sign-password').value
+        }
+
+        const user = new User(newUser.id, "username", "name", newUser.email, newUser.password)
+        // const searchParams = new URLSearchParams(user).toString()
+        // console.log(searchParams)
+        // fetch(`${NODE_SERVER}create/user?${searchParams}`)
+
+        let headers = new Headers()
+        
+        headers.append('Content-Type', user ? 'application/json' : 'application/x-www-form-urlencoded')
+        headers.append('Access-Control-Allow-Origin', '*')
+        if (newUser) {
+        headers.append('Content-Length', String(JSON.stringify(user).length))
+        }
+        console.log("antes de fetch", user)
+        const apiData = await fetch(`${NODE_SERVER}create/user`, {
+        // Si la petición tarda demasiado, la abortamos
+        signal: AbortSignal.timeout(3000),
+        method: "POST",
+        // @ts-expect-error TODO
+        body: user ? new URLSearchParams(user) : undefined,
+        headers: headers
+        });
+    })
+}
+function userLogin(){
+    document.getElementById('login-form').addEventListener('submit', async function (e){
+        e.preventDefault()
+
+        const userLog = {
+            email: document.getElementById('login-email').value,
+            password: document.getElementById('login-password').value
+        }
+
+        console.log(userLog)
+        const searchParams = new URLSearchParams(userLog).toString()
+        const usersApi = await fetch(`${NODE_SERVER}read/users`)
+        const usersArray = await usersApi.json()
+        console.log(usersArray)
+
+        for (let user of usersArray){
+            if (user.email === userLog.email && user.password === userLog.password){
+                console.log("user logged")
+                const userNoPass = {...user}
+                delete userNoPass.password
+                sessionStorage.setItem('user', JSON.stringify(userNoPass))
+                alert("Bienvenido")
+                window.location.href = "profile.html"
+            }else{
+                alert("user not found")
+            }
+        }
+    })
+}
+
+function getUserFromSession(){
+    return JSON.parse(sessionStorage.getItem('user'))
+}
+
+function fillUserProfile(){
+    const user = getUserFromSession()
+    if (user){
+        document.getElementById('user-name').innerHTML = user.name
+        document.getElementById('user-surname').innerHTML = user.surnames
+        document.getElementById('user-email').innerHTML = user.email
+        document.getElementById('user-location').innerHTML = user.location
+        document.getElementById('user-prefCircuit').innerHTML = user.prefCircuit
+        document.getElementById('user-kart').innerHTML = user.kart
+        document.getElementById('user-youtubeURL').innerHTML = user.youtube
+        document.getElementById('user-instagramUser').innerHTML = user.instagram
+    }
+}
+
+function updateUserProfile(){
+    const storedUser = getUserFromSession()  
+
+    document.getElementById('profile-update-form').addEventListener('submit', async function (e){
+        e.preventDefault()
+
+        const newUser = {
+            name: document.getElementById('profile-name').value,
+            email: document.getElementById('profile-surname').value,
+            location: document.getElementById('profile-location').value,
+            prefCircuit: document.getElementById('profile-prefCircuit').value,
+            kart: document.getElementById('profile-kart').value,
+            youtube: document.getElementById('profile-youtubeURL').value,
+            instagram: document.getElementById('profile-instagramUser').value,
+            password: document.getElementById('profile-password').value
+        }
+
+        const confirmPassword = document.getElementById('profile-passwordRepeat').value
+
+        // if (newUser.password !== confirmPassword){ 
+        //     alert("Contraseña no coincide")
+        //     return 
+        // }
+        console.log(newUser)
+        // await fetch(`${NODE_SERVER}update/user/${storedUser.id}/PUT/${newUser}`)
+
+        let headers = new Headers()
+
+        headers.append('Content-Type', newUser ? 'application/json' : 'application/x-www-form-urlencoded')
+        headers.append('Access-Control-Allow-Origin', '*')
+        if (newUser) {
+        headers.append('Content-Length', String(JSON.stringify(newUser).length))
+        }
+        console.log("antes de fetch", newUser)
+        const apiData = await fetch(`${NODE_SERVER}update/user/${storedUser.id}`, {
+        // Si la petición tarda demasiado, la abortamos
+        signal: AbortSignal.timeout(3000),
+        method: "PUT",
+        // @ts-expect-error TODO
+        body: newUser ? new URLSearchParams(newUser) : undefined,
+        headers: headers
+        });
+
+        // const searchParams = new URLSearchParams(user).toString()
+        // console.log(searchParams)
+        // fetch(`${NODE_SERVER}update/user?${searchParams}`)
+    })
+}
 /**
  * 
  * @param {Object} circuit
@@ -295,8 +452,8 @@ function marketModal(item){
      */
     async function getCircuitData(){
         //Get the info via JSON
-        const API_CIRCUITS = 'api/get.circuits.json'
-        const apiCircuit = await fetch(NODE_SERVER)
+        //const API_CIRCUITS = 'api/get.circuits.json'
+        const apiCircuit = await fetch(`${NODE_SERVER}read/circuits`)
         /** @type {Circuit[]} */
         // Convert to array
         const circuitArray = await apiCircuit.json();
@@ -443,14 +600,14 @@ function marketModal(item){
  */
 async function getEventData(){
     // Obtain data via JSON
-    const API_EVENTS = 'api/get.events.json'
-    const apiEvents = await fetch(API_EVENTS)
+    //const API_EVENTS = 'api/get.events.json'
+    const apiEvents = await fetch(`${NODE_SERVER}read/events`)
     /** @type {EventCard[]} */
     // Convert to array
     const eventArray = await apiEvents.json();
     // Create EventCard Object and push to store
     eventArray.forEach(function (/** @type {EventCard} */ a){
-        const event = new EventCard(a.title, a.date, a.user, a.description)
+        const event = new EventCard(a.id, a.title, a.date, a.user, a.description)
         store.createEvent(event)
     })
 }    
@@ -465,7 +622,12 @@ function showEventCard(event){
     const eventArray = store.getAllEvents()
     // Creates the event cards
     eventArray.forEach(function (/** @type {EventCard} */ event){
-        const eventFrame = document.getElementById('__event-container')
+        drawEvent(event)
+    })
+}
+
+function drawEvent(event){
+    const eventFrame = document.getElementById('__event-container')
         const html =
                 `<div class="bg-purple-100 h-24 mx-4 mb-4 flex items-center justify-center modal-open">
                     <span class="mr-4 pl-2">${event.title}</span>
@@ -475,7 +637,6 @@ function showEventCard(event){
                 </div>`
         eventFrame?.insertAdjacentHTML('afterbegin', html)
         
-    })
 }
 
 
@@ -489,8 +650,8 @@ function showEventCard(event){
  */
    async function getMarketData(){
         //Get the info via JSON
-        const API_MARKET = 'api/get.articles.json'
-        const apiMarket = await fetch(API_MARKET)
+        //const API_MARKET = 'api/get.articles.json'
+        const apiMarket = await fetch(`${NODE_SERVER}read/articles`)
         /** @type {MarketItem[]} */
         // Convert to array
         const marketArray = await apiMarket.json();
@@ -510,12 +671,16 @@ function showEventCard(event){
     // Get all marketItems from store
     const marketList = store.getAllMarketArticles()
     console.log(marketList)
-    const marketFrame = document.getElementById('__market-container')
-    //Clear the marketFrame
-    marketFrame.innerHTML = ''
-    // Creates the marketItem cards and appends them
+    // Creates the marketItem cards and draws them
     marketList.forEach(function (/** @type {MarketItem} */ item){
-        const html = `<div class="bg-purple-100 h-52 mx-4 mb-4 p-7 flex modal-open">
+        drawArticle(item)
+    })
+    
+}
+
+function drawArticle(item){
+    const marketFrame = document.getElementById('__market-container')
+    const html = `<div class="bg-purple-100 h-52 mx-4 mb-4 p-7 flex modal-open">
                 <div class="mr-5 min-w-[150px]">
                     <img src="${item.img}" alt="${item.img}">
                 </div>
@@ -532,8 +697,6 @@ function showEventCard(event){
                 <span class="bg-slate-500 text-3xl font-bold mr-4">${item.price}€</span>
             </div>`
     marketFrame?.insertAdjacentHTML('afterbegin', html)
-    })
-    
 }
 
     
@@ -546,8 +709,8 @@ function showEventCard(event){
  */
 async function getForumData(){
     //Get the info via JSON
-    const API_FORUM = 'api/get.forum.topics.json'
-    const apiForum = await fetch(API_FORUM)
+    //const API_FORUM = 'api/get.forum.topics.json'
+    const apiForum = await fetch(`${NODE_SERVER}read/forum-topics`)
     /** @type {ForumCard[]} */
     // Convert to array
     const forumArray = await apiForum.json();

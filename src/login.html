@@ -28,14 +28,26 @@
     </header>
 
     <main class="bg-white px-[5%] pt-5 h-screen ">
-        <section class="bg-neutral-100 py-10 h-screen px-40 mb-4">
-            <h2 class="bg-neutral-200 text-5xl font-bold text-center py-8">Login</h2>
-            <form class="mt-3" id="market-form" action="#" enctype="multipart/form-data">
+        <section class="bg-neutral-100 py-10 px-40 mb-4">
+            <h2 class="bg-neutral-200 text-5xl font-bold text-center py-8">Sign up</h2>
+            <form class="mt-3" id="signup-form" action="#" enctype="multipart/form-data">
                 <fieldset class="flex flex-col items-center">
-                    <label for="username">Nombre de usuario</label>
-                    <input id="username" type="text" name="usuario"/>
-                    <label for="passowrd">Contraseña</label>
-                    <input id="password" type="password" name="password"/>
+                    <label for="sign-email" >Email</label>
+                    <input id="sign-email" type="email" placeholder="a@a.a" name="email"/>
+                    <label for="sign-password">Contraseña</label>
+                    <input id="sign-password" type="password" name="password"/>
+                    <button class="bg-amber-400 p-2 px-4 mx-3 mt-3 rounded-full" type="submit">Enviar</button>
+                </fieldset>
+              </form>    
+        </section>
+        <section class="bg-neutral-100 py-10 px-40 mb-4">
+            <h2 class="bg-neutral-200 text-5xl font-bold text-center py-8">Login</h2>
+            <form class="mt-3" id="login-form" action="#" enctype="multipart/form-data">
+                <fieldset class="flex flex-col items-center">
+                    <label for="login-email">Email</label>
+                    <input id="login-email" type="email" placeholder="a@a.a" name="email"/>
+                    <label for="login-password">Contraseña</label>
+                    <input id="login-password" type="password" name="password"/>
                     <button class="bg-amber-400 p-2 px-4 mx-3 mt-3 rounded-full" type="submit">Enviar</button>
                 </fieldset>
               </form>
