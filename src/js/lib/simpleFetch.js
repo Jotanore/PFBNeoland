@@ -1,4 +1,4 @@
-import { HttpError } from 'classes/HttpError'
+import { HttpError } from '../../classes/HttpError.js'
 
 export async function simpleFetch (url, options) {
   const result = await fetch(url, options);

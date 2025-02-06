@@ -1,8 +1,10 @@
-// @ts-nocheck
+// @ts-noheck
 'use strict'
 import {Circuit, EventCard, ForumCard, User } from '../classes/classes.js'
+import { HttpError } from '../classes/HttpError.js';
 import {MarketItem} from '../classes/classes.js'
 import { store } from './store/redux.js';
+import { simpleFetch } from './lib/simpleFetch.js';
 
 /**
  * @type {number[]}
@@ -10,7 +12,7 @@ import { store } from './store/redux.js';
 let userCoords = null;
 let map
 let userlog = false
-const NODE_SERVER = `http://127.0.0.1:1338/`
+const NODE_SERVER = `http://127.0.0.1:6431/`
 /*
 const NODE_SERVER_GET_CIRCUITS =`http://127.0.0.1:6431/get.circuits.json`
 const NODE_SERVER_GET_MARKET_ITEMS =`http://127.0.0.1:6431/get.articles.json`
@@ -55,14 +57,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                 await getEventData()
                 formManager()
                 showEventCard()
-                modalBuilder()
                 break
             case 'market':
                 console.log(`Estoy en ${page[0].id}`)
                 await getMarketData()
                 formManager()
                 showMarketCard()
-                modalBuilder()
                 break
             case 'forum':
                 console.log(`Estoy en ${page[0].id}`)
@@ -78,61 +78,61 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 
 
-function modalBuilder(){
-    const page = document.getElementsByTagName('body')
-    switch (page[0].id){
-        case 'index':
-            break
-        case 'circuits':
-            circuitModalBinder()
-            break
-        case 'events':
-            eventModalBinder()
-            break
-        case 'market':
-            marketModalBinder()
-            break
-        case 'forum':
-            console.log(`Estoy en ${page[0].id}`) 
-            break
-    }
+// function modalBuilder(){
+//     const page = document.getElementsByTagName('body')
+//     switch (page[0].id){
+//         case 'index':
+//             break
+//         case 'circuits':
+//             circuitModalBinder()
+//             break
+//         case 'events':
+//             eventModalBinder()
+//             break
+//         case 'market':
+//             break
+//         case 'forum':
+//             console.log(`Estoy en ${page[0].id}`) 
+//             break
+//     }
     
 
 
-}
+// }
 
-function marketModalBinder(){
-    let j
-    const modalOpenbtns = document.getElementsByClassName('modal-open')
-    const marketInfo = store.getAllMarketArticles()
-    j = 0
-    for (let i of modalOpenbtns){
-        /** @type {HTMLElement} */(i).addEventListener('click', marketModal.bind(i,marketInfo[j] ))
-        j++
-    } 
-}
+// function marketModalBinder(){
+//     let j
+//     const modalOpenbtns = document.getElementsByClassName('modal-open')
+//     const marketInfo = store.getAllMarketArticles()
+//     j = 0
+//     for (let i of modalOpenbtns){
+//         /** @type {HTMLElement} */(i).addEventListener('click', marketModal.bind(i, marketInfo[j] ))
+//         j++
+//     } 
+// }
 
-function eventModalBinder(){
-    let j
-    const modalOpenbtns = document.getElementsByClassName('modal-open')
-    const eventInfo = store.getAllEvents()
-    j = modalOpenbtns.length-1
-    for (let i of modalOpenbtns){
-        /** @type {HTMLElement} */(i).addEventListener('click', eventModal.bind(i,eventInfo[j] ))
-        j--
-    }
-}
 
-function circuitModalBinder(){
-    let j
-    const modalOpenbtns = document.getElementsByClassName('modal-open')
-    const circuitInfo = store.getAllCircuits()
-    j = modalOpenbtns.length-1
-    for (let i of modalOpenbtns){
-        /** @type {HTMLElement} */(i).addEventListener('click', circuitModal.bind(i,circuitInfo[j] ))
-        j--
-    } 
-}
+// function eventModalBinder(){
+//     let j
+//     const modalOpenbtns = document.getElementsByClassName('modal-open')
+//     const eventInfo = store.getAllEvents()
+//     j = modalOpenbtns.length-1
+//     for (let i of modalOpenbtns){
+//         /** @type {HTMLElement} */(i).addEventListener('click', eventModal.bind(i,eventInfo[j] ))
+//         j--
+//     }
+// }
+
+// function circuitModalBinder(){
+//     let j
+//     const modalOpenbtns = document.getElementsByClassName('modal-open')
+//     const circuitInfo = store.getAllCircuits()
+//     j = modalOpenbtns.length-1
+//     for (let i of modalOpenbtns){
+//         /** @type {HTMLElement} */(i).addEventListener('click', circuitModal.bind(i,circuitInfo[j] ))
+//         j--
+//     } 
+// }
 
 window.openCircuitModal = function (circuit){
     modalOpener()
@@ -154,13 +154,13 @@ function modalCloser(){
 
 function formManager(e){
     const page = document.getElementsByTagName('body')
-    document.getElementById('form').addEventListener('submit', function (e){
+    document.getElementById('form').addEventListener('submit', async function (e){
         e.preventDefault()
 
 
         const description = document.getElementById('description').value
         const user = 'user'
-        const id = "000"
+        let id
 
         const eventTitle = document.getElementById('eventName')?.value
         const eventDate = document.getElementById('eventDate')?.value
@@ -181,28 +181,52 @@ function formManager(e){
         if (itemImg) {
         imageUrl = URL.createObjectURL(itemImg);
         }*/
-        let searchParams
+        let searchParams = ''
+        let headers = ''
+        let apiData = ''
+        let payload = ''
         switch (page[0].id){
             case 'market':
+                    payload = ''
+                    apiData = ''
+                    id = `id_${Date.now()}`
                     const item = new MarketItem(id,user, itemName, itemPrice, itemLocation, description, itemImg)
                     searchParams = new URLSearchParams(item).toString()
                     store.createMarketArticle(item)
                     console.log(item)
-                    fetch(`${NODE_SERVER}create/article?${searchParams}`)
+                    //fetch(`${NODE_SERVER}create/article?${searchParams}`)
+
+
+                    console.log("antes de fetch", item)
+                    payload = JSON.stringify(item)
+                    console.log(payload)
+                    apiData = await getAPIData(`${NODE_SERVER}create/article`,'POST', payload);
+
+
                     drawArticle(item)
                 break
             case 'events':
+                    payload = ''
+                    apiData = ''
+                    id = `id_${Date.now()}`
                     const event = new EventCard(id, eventTitle, eventDate, user, description)
                     searchParams = new URLSearchParams(event).toString()
                     store.createEvent(event)
                     console.log(event)
-                    fetch(`${NODE_SERVER}create/event?${searchParams}`)
+                    //fetch(`${NODE_SERVER}create/event?${searchParams}`)
+
+                    console.log("antes de fetch", event)
+                    payload = JSON.stringify(event)
+                    console.log(payload)
+                    apiData = await getAPIData(`${NODE_SERVER}create/event`,'POST', payload);
+
+
                     drawEvent(event)
                 break    
             
         }
 
-        event.target.reset();
+        e.target.reset();
     })
 }
 
@@ -221,22 +245,14 @@ function userRegister(){
         // console.log(searchParams)
         // fetch(`${NODE_SERVER}create/user?${searchParams}`)
 
-        let headers = new Headers()
+
+
+        //TODO SIMPLEFETCH FUNCTION
         
-        headers.append('Content-Type', user ? 'application/json' : 'application/x-www-form-urlencoded')
-        headers.append('Access-Control-Allow-Origin', '*')
-        if (newUser) {
-        headers.append('Content-Length', String(JSON.stringify(user).length))
-        }
         console.log("antes de fetch", user)
-        const apiData = await fetch(`${NODE_SERVER}create/user`, {
-        // Si la petición tarda demasiado, la abortamos
-        signal: AbortSignal.timeout(3000),
-        method: "POST",
-        // @ts-expect-error TODO
-        body: user ? new URLSearchParams(user) : undefined,
-        headers: headers
-        });
+        const payload = JSON.stringify(user)
+        console.log(payload)
+        const apiData = await getAPIData(`${NODE_SERVER}create/user`,'POST', payload );
     })
 }
 function userLogin(){
@@ -250,8 +266,7 @@ function userLogin(){
 
         console.log(userLog)
         const searchParams = new URLSearchParams(userLog).toString()
-        const usersApi = await fetch(`${NODE_SERVER}read/users`)
-        const usersArray = await usersApi.json()
+        const usersArray = await getAPIData(`${NODE_SERVER}read/users` , 'GET')
         console.log(usersArray)
 
         for (let user of usersArray){
@@ -414,6 +429,40 @@ function marketModal(item){
     }
 }
 
+async function getAPIData(apiURL, method, data) {
+    let apiData
+  
+    try {
+      let headers = new Headers()
+      headers.append('Content-Type', 'application/json')
+      headers.append('Access-Control-Allow-Origin', '*')
+      if (data) {
+        headers.append('Content-Length', String(JSON.stringify(data).length))
+      }
+      apiData = await simpleFetch(apiURL, {
+        // Si la petición tarda demasiado, la abortamos
+        signal: AbortSignal.timeout(3000),
+        method: method,
+        body: data ?? undefined,
+        headers: headers
+      });
+    } catch (/** @type {any | HttpError} */err) {
+      if (err.name === 'AbortError') {
+        console.error('Fetch abortado');
+      }
+      if (err instanceof HttpError) {
+        if (err.response.status === 404) {
+          console.error('Not found');
+        }
+        if (err.response.status === 500) {
+          console.error('Internal server error');
+        }
+      }
+    }
+  
+    return apiData
+  }
+
 /*=================================CIRCUITS===========================================*/
 
 /**
@@ -453,10 +502,7 @@ function marketModal(item){
     async function getCircuitData(){
         //Get the info via JSON
         //const API_CIRCUITS = 'api/get.circuits.json'
-        const apiCircuit = await fetch(`${NODE_SERVER}read/circuits`)
-        /** @type {Circuit[]} */
-        // Convert to array
-        const circuitArray = await apiCircuit.json();
+        const circuitArray = await getAPIData(`${NODE_SERVER}read/circuits` , 'GET')
         //Iterate Array, create the Circuit Object and push to store
         circuitArray.forEach(function (/** @type {Circuit} */ a){
             const circuito = new Circuit(a.id, a.name, a.distance, a.location, a.url, a.description, a.bestlap, a.prices, a.map)
@@ -509,18 +555,31 @@ function marketModal(item){
         const circuitFrame = document.getElementById('card-container')
         // Creates the circuit cards and appends them
         circuitArray.forEach(async function (/** @type {Circuit} */ circuit){            
-            const html = `<article class="mb-5 circuit-card zoom-to-marker" data-lat="${circuit.location.latitude}" data-lng="${circuit.location.longitude}">
-                                <div class="bg-purple-200 min-h-12 max-h-24 w-full flex items-center ">
-                                    <span class="mr-4 pl-2">${circuit.name}</span>
-                                    <span class="mr-4 pl-2 ">${circuit.distance}Km</span>
-                                    <button class="mr-4 pl-2 modal-open">Ver más</button>
-                                </div>
-                            </article>`
-        circuitFrame?.insertAdjacentHTML('beforeend', html)
+            drawCircuitCard(circuit)
         })
-        
-        modalBuilder()
         bindCircuitCardsFocus()
+    }
+
+    function drawCircuitCard(circuit){
+        const circuitFrame = document.getElementById('card-container')
+        const html = `<article class="mb-5 circuit-card zoom-to-marker" data-lat="${circuit.location.latitude}" data-lng="${circuit.location.longitude}">
+                            <div class="bg-purple-200 min-h-12 max-h-24 w-full flex items-center ">
+                                <span class="mr-4 pl-2">${circuit.name}</span>
+                                <span class="mr-4 pl-2 ">${circuit.distance}Km</span>
+                                <button class="mr-4 pl-2 modal-open border-black bg-gray-400">Ver más</button>
+                            </div>
+                        </article>`
+        circuitFrame?.insertAdjacentHTML('beforeend', html)
+
+        
+        const lastCard = circuitFrame.lastElementChild;
+        const modalButton = lastCard.querySelector('.modal-open');
+
+        modalButton.addEventListener('click', function(event){
+            event.stopPropagation();
+            circuitModal(circuit)
+        });
+    
     }
 
     function bindCircuitCardsFocus(){
@@ -601,10 +660,7 @@ function marketModal(item){
 async function getEventData(){
     // Obtain data via JSON
     //const API_EVENTS = 'api/get.events.json'
-    const apiEvents = await fetch(`${NODE_SERVER}read/events`)
-    /** @type {EventCard[]} */
-    // Convert to array
-    const eventArray = await apiEvents.json();
+    const eventArray = await getAPIData(`${NODE_SERVER}read/events` , 'GET')
     // Create EventCard Object and push to store
     eventArray.forEach(function (/** @type {EventCard} */ a){
         const event = new EventCard(a.id, a.title, a.date, a.user, a.description)
@@ -629,17 +685,52 @@ function showEventCard(event){
 function drawEvent(event){
     const eventFrame = document.getElementById('__event-container')
         const html =
-                `<div class="bg-purple-100 h-24 mx-4 mb-4 flex items-center justify-center modal-open">
+                `<div class="bg-purple-100 h-24 mx-4 mb-4 flex items-center justify-center modal-open event-card">
                     <span class="mr-4 pl-2">${event.title}</span>
                     <span class="mr-4 pl-2">${event.date}</span>
                     <span class="mr-4 pl-2">${event.user}</span>
                     <span class="mr-4 pl-2">${event.description}</span>
+                    <button data-id="${event.id}" class="border-2 border-black bg-gray-400 delete-event">Delete</button>
                 </div>`
         eventFrame?.insertAdjacentHTML('afterbegin', html)
         
+
+    const lastCard = eventFrame.firstElementChild;
+    const deleteBtn = lastCard.querySelector('.delete-event');
+
+    deleteBtn.addEventListener('click', deleteEventCard);
+
+    lastCard.addEventListener('click', function(e){
+        // If click on delete button return
+        if (e.target.classList.contains('delete-event')) return;
+        eventModal(event); // O bien, openMarketModal(item)
+    });
 }
 
+async function deleteEventCard(event) {
+    // Encuentra el contenedor de la tarjeta (por ejemplo, con la clase 'event-card')
+    event.stopPropagation()
 
+    const eventId = event.target.getAttribute('data-id');
+
+    if (!eventId) {
+        console.error("No se encontró el ID del evento.");
+        return;
+    }
+
+    const card = event.target.closest('.event-card');
+    if (card) {
+        card.remove(); // Elimina la tarjeta del DOM
+    }
+
+
+    try {
+        const apiData = await getAPIData(`${NODE_SERVER}delete/event/${eventId}`, 'DELETE');
+        console.log("Respuesta del servidor:", apiData);
+    } catch (error) {
+        console.error("Error eliminando el evento:", error);
+    }
+}
 
 /*=================================MARKET===========================================*/
 
@@ -651,10 +742,7 @@ function drawEvent(event){
    async function getMarketData(){
         //Get the info via JSON
         //const API_MARKET = 'api/get.articles.json'
-        const apiMarket = await fetch(`${NODE_SERVER}read/articles`)
-        /** @type {MarketItem[]} */
-        // Convert to array
-        const marketArray = await apiMarket.json();
+        const marketArray = await getAPIData(`${NODE_SERVER}read/articles` , 'GET')
         //Iterate Array, create the MarketItem Object and push to store
         marketArray.forEach(function (/** @type {MarketItem} */ a){
             const item = new MarketItem(a.id, a.user, a.article, a.price, a.location, a.description, a.img)
@@ -678,9 +766,13 @@ function drawEvent(event){
     
 }
 
-function drawArticle(item){
+/**
+ * Draws a market item card
+ * @param {MarketItem} item
+ */
+    function drawArticle(item){
     const marketFrame = document.getElementById('__market-container')
-    const html = `<div class="bg-purple-100 h-52 mx-4 mb-4 p-7 flex modal-open">
+    const html = `<div class="bg-purple-100 h-52 mx-4 mb-4 p-7 flex modal-open market-card">
                 <div class="mr-5 min-w-[150px]">
                     <img src="${item.img}" alt="${item.img}">
                 </div>
@@ -688,7 +780,9 @@ function drawArticle(item){
                     <div class="h-[35%]">                    
                         <span class="text-2xl font-bold mr-4 ">${item.article}</span>
                         <span class="mr-4 pl-2">${item.user}</span>
-                        <span class="mr-4 pl-2">${item.location}</span></div>
+                        <span class="mr-4 pl-2">${item.location}</span>
+                        <button class="border-2 border-black bg-gray-400 delete-item">Delete</button>
+                        </div>
 
                     <div class="h-[40%]">
                         <span class="">${item.description}</span>
@@ -697,6 +791,29 @@ function drawArticle(item){
                 <span class="bg-slate-500 text-3xl font-bold mr-4">${item.price}€</span>
             </div>`
     marketFrame?.insertAdjacentHTML('afterbegin', html)
+
+    const lastCard = marketFrame.firstElementChild;
+    const deleteBtn = lastCard.querySelector('.delete-item');
+    deleteBtn.addEventListener('click', deleteMarketCard);
+
+    lastCard.addEventListener('click', function(e){
+        // If click on delete button return
+        if (e.target.classList.contains('delete-item')) return;
+        marketModal(item); // O bien, openMarketModal(item)
+    });
+}
+
+/**
+ * Deletes a market card
+ * @param {Event} event 
+ */
+function deleteMarketCard(event) {
+    // Encuentra el contenedor de la tarjeta (por ejemplo, con la clase 'market-card')
+    event.stopPropagation()
+    const card = event.target.closest('.market-card');
+    if (card) {
+        card.remove(); // Elimina la tarjeta del DOM
+    }
 }
 
     
@@ -710,10 +827,7 @@ function drawArticle(item){
 async function getForumData(){
     //Get the info via JSON
     //const API_FORUM = 'api/get.forum.topics.json'
-    const apiForum = await fetch(`${NODE_SERVER}read/forum-topics`)
-    /** @type {ForumCard[]} */
-    // Convert to array
-    const forumArray = await apiForum.json();
+    const forumArray = await getAPIData(`${NODE_SERVER}read/forum-topics` , 'GET')
     //Iterate Array, create the ForumCard Object and push to store
     forumArray.forEach(function (/** @type {ForumCard} */ a){
         const item = new ForumCard(a.user, a.title, a.description)
