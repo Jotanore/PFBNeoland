@@ -13,6 +13,7 @@ let userCoords = null;
 let map
 let userlog = false
 const NODE_SERVER = `http://127.0.0.1:6431/`
+
 /*
 const NODE_SERVER_GET_CIRCUITS =`http://127.0.0.1:6431/get.circuits.json`
 const NODE_SERVER_GET_MARKET_ITEMS =`http://127.0.0.1:6431/get.articles.json`
@@ -29,54 +30,63 @@ document.addEventListener('DOMContentLoaded', async () => {
         userlog = true
     }
 
+    
+
     await setUserCoords();
     switch (page[0].id){
-            case 'login':
-                console.log(`Estoy en ${page[0].id}`)
-                userRegister()
-                userLogin()
-                break
             case 'profile':
                 console.log(`Estoy en ${page[0].id}`)
                 if (userlog) {
                     fillUserProfile()
+                    fillUserForm()
                     updateUserProfile()
                 }
                 break
             case 'index':
+                assignIndexListeners()
+                credentialsBtnManager()
+                checkSignRedirectionFlag()
+                userRegister()
+                userLogin()
                 console.log(`Estoy en ${page[0].id}`)
                 break
             case 'circuits':
                 console.log(`Estoy en ${page[0].id}`)
+                credentialsBtnManager()
                 await getCircuitData()
                 await showCircuitCard()
                 createMap()
                 break
             case 'events':
                 console.log(`Estoy en ${page[0].id}`)
+                credentialsBtnManager()
                 await getEventData()
                 formManager()
                 showEventCard()
                 break
             case 'market':
                 console.log(`Estoy en ${page[0].id}`)
+                credentialsBtnManager()
                 await getMarketData()
                 formManager()
                 showMarketCard()
                 break
             case 'forum':
                 console.log(`Estoy en ${page[0].id}`)
+                credentialsBtnManager()
                 await getForumData()
                 showForumCard()
                 break
+            case 'raceline':
+            console.log(`Estoy en ${page[0].id}`)
+            credentialsBtnManager()
+            break
     }
 
 })
 
 
-/*=================================HOME===============================================*/
-
-
+/*=================================GENERIC FUNCTIONS===============================================*/
 
 // function modalBuilder(){
 //     const page = document.getElementsByTagName('body')
@@ -230,203 +240,31 @@ function formManager(e){
     })
 }
 
-function userRegister(){
-    document.getElementById('signup-form').addEventListener('submit', async function (e){
-        e.preventDefault()
+function credentialsBtnManager(){
+    document.getElementById('credentials-btn').addEventListener('click', () => {
 
-        const newUser = {
-            id: `id_${Date.now()}`,
-            email: document.getElementById('sign-email').value,
-            password: document.getElementById('sign-password').value
+        if(document.body.id === 'index'){
+            // Si ya estás en index, muestra el formulario directamente
+            showCredentialsForm();
+        } else {
+            // Si no estás en index, establece el flag y redirige a index.html
+            sessionStorage.setItem('showSigninForm', 'true');
+            window.location.href = 'index.html';
         }
-
-        const user = new User(newUser.id, "username", "name", newUser.email, newUser.password)
-        // const searchParams = new URLSearchParams(user).toString()
-        // console.log(searchParams)
-        // fetch(`${NODE_SERVER}create/user?${searchParams}`)
-
-
-
-        //TODO SIMPLEFETCH FUNCTION
         
-        console.log("antes de fetch", user)
-        const payload = JSON.stringify(user)
-        console.log(payload)
-        const apiData = await getAPIData(`${NODE_SERVER}create/user`,'POST', payload );
-    })
+    });
+    if (userlog){
+        document.getElementById('credentials-btn').classList.add('__hidden')
+        document.getElementById('profile-btn').classList.remove('__hidden')
+    }else{
+        document.getElementById('credentials-btn').classList.remove('__hidden')
+        document.getElementById('profile-btn').classList.add('__hidden')    
 }
-function userLogin(){
-    document.getElementById('login-form').addEventListener('submit', async function (e){
-        e.preventDefault()
 
-        const userLog = {
-            email: document.getElementById('login-email').value,
-            password: document.getElementById('login-password').value
-        }
-
-        console.log(userLog)
-        const searchParams = new URLSearchParams(userLog).toString()
-        const usersArray = await getAPIData(`${NODE_SERVER}read/users` , 'GET')
-        console.log(usersArray)
-
-        for (let user of usersArray){
-            if (user.email === userLog.email && user.password === userLog.password){
-                console.log("user logged")
-                const userNoPass = {...user}
-                delete userNoPass.password
-                sessionStorage.setItem('user', JSON.stringify(userNoPass))
-                alert("Bienvenido")
-                window.location.href = "profile.html"
-            }else{
-                alert("user not found")
-            }
-        }
-    })
 }
 
 function getUserFromSession(){
     return JSON.parse(sessionStorage.getItem('user'))
-}
-
-function fillUserProfile(){
-    const user = getUserFromSession()
-    if (user){
-        document.getElementById('user-name').innerHTML = user.name
-        document.getElementById('user-surname').innerHTML = user.surnames
-        document.getElementById('user-email').innerHTML = user.email
-        document.getElementById('user-location').innerHTML = user.location
-        document.getElementById('user-prefCircuit').innerHTML = user.prefCircuit
-        document.getElementById('user-kart').innerHTML = user.kart
-        document.getElementById('user-youtubeURL').innerHTML = user.youtube
-        document.getElementById('user-instagramUser').innerHTML = user.instagram
-    }
-}
-
-function updateUserProfile(){
-    const storedUser = getUserFromSession()  
-
-    document.getElementById('profile-update-form').addEventListener('submit', async function (e){
-        e.preventDefault()
-
-        const newUser = {
-            name: document.getElementById('profile-name').value,
-            email: document.getElementById('profile-surname').value,
-            location: document.getElementById('profile-location').value,
-            prefCircuit: document.getElementById('profile-prefCircuit').value,
-            kart: document.getElementById('profile-kart').value,
-            youtube: document.getElementById('profile-youtubeURL').value,
-            instagram: document.getElementById('profile-instagramUser').value,
-            password: document.getElementById('profile-password').value
-        }
-
-        const confirmPassword = document.getElementById('profile-passwordRepeat').value
-
-        // if (newUser.password !== confirmPassword){ 
-        //     alert("Contraseña no coincide")
-        //     return 
-        // }
-        console.log(newUser)
-        // await fetch(`${NODE_SERVER}update/user/${storedUser.id}/PUT/${newUser}`)
-
-        let headers = new Headers()
-
-        headers.append('Content-Type', newUser ? 'application/json' : 'application/x-www-form-urlencoded')
-        headers.append('Access-Control-Allow-Origin', '*')
-        if (newUser) {
-        headers.append('Content-Length', String(JSON.stringify(newUser).length))
-        }
-        console.log("antes de fetch", newUser)
-        const apiData = await fetch(`${NODE_SERVER}update/user/${storedUser.id}`, {
-        // Si la petición tarda demasiado, la abortamos
-        signal: AbortSignal.timeout(3000),
-        method: "PUT",
-        // @ts-expect-error TODO
-        body: newUser ? new URLSearchParams(newUser) : undefined,
-        headers: headers
-        });
-
-        // const searchParams = new URLSearchParams(user).toString()
-        // console.log(searchParams)
-        // fetch(`${NODE_SERVER}update/user?${searchParams}`)
-    })
-}
-/**
- * 
- * @param {Object} circuit
- * @param {string} circuit.name
- * @param {string} circuit.location
- * @param {string} circuit.url
- * @param {string} circuit.map
- * @param {string} circuit.description
- * @param {string} circuit.bestlap
- * @param {string} circuit.prices
- *  
- */
-function circuitModal(circuit){
-    modalOpener()
-    const modalContent = document.getElementById('modal-content')
-
-    if (modalContent){
-    modalContent.innerHTML = `<ul>
-                                <li>${circuit.name}	</li>
-                                <li><a href="${circuit.location}">Ubicación</a></li>
-                                <li class="w-[200px] h-auto"><img src="${circuit.map}"></li>
-                                <li><a href="${circuit.url}">WebLink</a></li>
-                                <li>${circuit.description}</li>
-                                <li>Mejor tiempo KH:${circuit.bestlap}</li>
-                                <li>Precio: ${circuit.prices}</li>
-                            </ul>`
-    }
-}
-
-/**
- * 
- * @param {Object} event
- * @param {string} event.user
- * @param {Date} event.date
- * @param {string} event.title
- * @param {string} event.description
- */
-function eventModal(event){
-    modalOpener()
-    const modalContent = document.getElementById('modal-content')
-    console.log(modalContent)
-
-    if (modalContent){
-    modalContent.innerHTML = `<ul>
-                                <li>${event.title}</li>
-                                <li>${event.user}</li>
-                                <li><a href="${event.date}">Ubicación</a></li>
-                                <li>${event.description}</li>
-                            </ul>`
-    }
-}
-
-
-/**
- * 
- * @param {Object} item
- * @param {string} item.user
- * @param {string} item.article
- * @param {number} item.price
- * @param {string} item.location
- * @param {string} item.description
- * @param {string} item.img
- */
-function marketModal(item){
-    modalOpener()
-    const modalContent = document.getElementById('modal-content')
-
-    if (modalContent){
-    modalContent.innerHTML = `<ul>
-                                <li>${item.article}</li>
-                                <li>${item.user}</li>
-                                <li><a href="${item.location}">Ubicación</a></li>
-                                <li class="w-[200px] h-auto"><img src="${item.img}"></li>
-                                <li>${item.description}</li>
-                                <li>Precio: ${item.price}</li>
-                            </ul>`
-    }
 }
 
 async function getAPIData(apiURL, method, data) {
@@ -462,6 +300,202 @@ async function getAPIData(apiURL, method, data) {
   
     return apiData
   }
+
+/*=================================PROFILE===============================================*/
+function fillUserForm(){
+    const userData = JSON.parse(sessionStorage.getItem('user'))
+    document.getElementById('profile-username').placeholder = userData.username || '';
+    document.getElementById('profile-name').placeholder = userData.name || '';
+    document.getElementById('profile-surname').placeholder = userData.surnames || '';
+    document.getElementById('profile-location').placeholder = userData.location || '';
+    document.getElementById('profile-prefCircuit').placeholder = userData.prefCircuit || '';
+    document.getElementById('profile-kart').placeholder = userData.kart || '';
+    document.getElementById('profile-youtubeURL').placeholder = userData.youtube || '';
+    document.getElementById('profile-instagramUser').placeholder = userData.instagram || '';
+
+}
+
+function userLogOut(){
+    sessionStorage.removeItem('user')
+    window.location.href = 'index.html'
+}
+
+function fillUserProfile(){
+    const user = getUserFromSession()
+    if (user){
+        document.getElementById('user-username').innerHTML = user.username
+        document.getElementById('user-name').innerHTML = user.name
+        document.getElementById('user-surname').innerHTML = user.surnames
+        //document.getElementById('user-email').innerHTML = "user.email"
+        document.getElementById('user-location').innerHTML = user.location
+        document.getElementById('user-prefCircuit').innerHTML = user.prefCircuit
+        document.getElementById('user-kart').innerHTML = user.kart
+        document.getElementById('user-youtubeURL').innerHTML = user.youtube
+        document.getElementById('user-instagramUser').innerHTML = user.instagram
+    }
+    document.getElementById("edit-profile-btn").addEventListener('click', showProfileform)
+    document.getElementById("logout-btn").addEventListener('click', userLogOut)
+    document.getElementById("profile-update-btn").addEventListener('click', showProfile)
+}
+
+function showProfileform(){
+    document.getElementById("profile-update-form").classList.remove("__hidden")
+    document.getElementById("profile-container").classList.add("__hidden")
+}
+
+function showProfile(){
+    document.getElementById("profile-container").classList.remove("__hidden")
+    document.getElementById("profile-update-form").classList.add("__hidden")
+}
+
+function updateUserProfile(){
+    const storedUser = getUserFromSession()  
+
+    document.getElementById('profile-update-form').addEventListener('submit', async function (e){
+        e.preventDefault()
+
+        const newUser = {
+            id: storedUser.id,
+            username: document.getElementById('profile-username').value ? document.getElementById('profile-username').value : storedUser.username,
+            name: document.getElementById('profile-name').value ? document.getElementById('profile-name').value : storedUser.name,
+            surnames: document.getElementById('profile-surname').value ? document.getElementById('profile-surname').value : storedUser.surnames,    
+            //email: document.getElementById('profile-email').value ? document.getElementById('profile-email').value : storedUser.email,
+            location: document.getElementById('profile-location').value ? document.getElementById('profile-location').value : storedUser.location,
+            prefCircuit: document.getElementById('profile-prefCircuit').value ? document.getElementById('profile-prefCircuit').value : storedUser.prefCircuit,
+            kart: document.getElementById('profile-kart').value ? document.getElementById('profile-kart').value : storedUser.kart,
+            youtube: document.getElementById('profile-youtubeURL').value ? document.getElementById('profile-youtubeURL').value : storedUser.youtube,
+            instagram: document.getElementById('profile-instagramUser').value ? document.getElementById('profile-instagramUser').value : storedUser.instagram
+        }
+
+        const confirmPassword = document.getElementById('profile-passwordRepeat').value
+
+        // if (newUser.password !== confirmPassword){ 
+        //     alert("Contraseña no coincide")
+        //     return 
+        // }
+        console.log(newUser)
+        // await fetch(`${NODE_SERVER}update/user/${storedUser.id}/PUT/${newUser}`)
+
+        
+        console.log("antes de fetch", newUser)
+        const payload = JSON.stringify(newUser)
+        console.log("payload",payload)
+        const apiData = await getAPIData(`${NODE_SERVER}update/user/${storedUser.id}`, "PUT", payload);
+
+        console.log("Respuesta del servidor:", apiData);
+        sessionStorage.setItem('user', JSON.stringify(newUser))
+
+        document.getElementById('user-username').textContent ? document.getElementById('user-username').textContent = newUser.username : storedUser.username
+        document.getElementById('user-name').textContent ? document.getElementById('user-name').textContent = newUser.name : storedUser.name
+        document.getElementById('user-surname').textContent ? document.getElementById('user-surname').textContent = newUser.surnames : storedUser.surnames
+        //document.getElementById('user-email').textContent ? document.getElementById('user-email').textContent = newUser.email : storedUser.email
+        document.getElementById('user-location').textContent ? document.getElementById('user-location').textContent = newUser.location : storedUser.location
+        document.getElementById('user-prefCircuit').textContent ? document.getElementById('user-prefCircuit').textContent = newUser.prefCircuit : storedUser.prefCircuit
+        document.getElementById('user-kart').textContent ? document.getElementById('user-kart').textContent = newUser.kart : storedUser.kart
+        document.getElementById('user-youtubeURL').textContent ? document.getElementById('user-youtubeURL').textContent = newUser.youtube : storedUser.youtube
+        document.getElementById('user-instagramUser').textContent ? document.getElementById('user-instagramUser').textContent = newUser.instagram : storedUser.instagram
+
+        // const searchParams = new URLSearchParams(user).toString()
+        // console.log(searchParams)
+        // fetch(`${NODE_SERVER}update/user?${searchParams}`)
+
+        e.target.reset();
+    })
+}
+
+/*=================================INDEX===========================================*/
+
+function assignIndexListeners(){
+
+    document.getElementById('credentials-btn').addEventListener('click', showCredentialsForm)
+
+    document.getElementById('signup-link').addEventListener('click', showRegisterForm)
+
+    document.getElementById('login-link').addEventListener('click', showLoginForm)
+}
+
+function showLoginForm(){
+    document.getElementById('login-form').classList.remove('__hidden')
+    document.getElementById('signup-form').classList.add('__hidden')
+
+}
+
+function showCredentialsForm(){
+    document.getElementById('credentials-container').classList.remove('__hidden')
+    document.getElementById('landing-container').classList.add('__hidden')
+    document.getElementById('credentials-btn').classList.add('__hidden')
+}
+
+function showRegisterForm(){
+    document.getElementById('login-form').classList.add('__hidden')
+    document.getElementById('signup-form').classList.remove('__hidden')
+    document.getElementById('credentials-btn').classList.add('__hidden')
+}
+
+function userRegister(){
+    document.getElementById('signup-form').addEventListener('submit', async function (e){
+        e.preventDefault()
+
+        const newUser = {
+            id: `id_${Date.now()}`,
+            email: document.getElementById('sign-email').value,
+            password: document.getElementById('sign-password').value
+        }
+
+        const user = new User(newUser.id, "username", "name", newUser.email, newUser.password, "surnames", "Location", "Bio", "img", "prefCircuit", "kart", "youtube", "instagram", "role", "token")
+        // const searchParams = new URLSearchParams(user).toString()
+        // console.log(searchParams)
+        // fetch(`${NODE_SERVER}create/user?${searchParams}`)
+
+
+
+        //TODO SIMPLEFETCH FUNCTION
+        
+        console.log("antes de fetch", user)
+        const payload = JSON.stringify(user)
+        console.log(payload)
+        const apiData = await getAPIData(`${NODE_SERVER}create/user`,'POST', payload );
+
+        const userWithoutPassword = { ...newUser }
+            delete userWithoutPassword.password
+            sessionStorage.setItem('user', JSON.stringify(userWithoutPassword))
+            alert('Bienvenido')
+            window.location.href = 'profile.html'
+    })
+}
+
+function checkSignRedirectionFlag(){
+    if (sessionStorage.getItem('showSigninForm') === 'true') {
+        showCredentialsForm();
+        // Una vez mostrado, eliminas el flag para evitar ejecuciones repetidas
+        sessionStorage.removeItem('showSigninForm');
+    }
+}
+
+function userLogin() {
+    document.getElementById('login-form').addEventListener('submit', async function (event) {
+        event.preventDefault()
+
+        const loginCredentials = {
+            email: document.getElementById('login-email').value,
+            password: document.getElementById('login-password').value
+        }
+
+        const users = await getAPIData(`${NODE_SERVER}read/users`, 'GET')
+
+        const userFound = users.find(user => user.email === loginCredentials.email && user.password === loginCredentials.password)
+
+        if (userFound) {
+            const userWithoutPassword = { ...userFound }
+            delete userWithoutPassword.password
+            sessionStorage.setItem('user', JSON.stringify(userWithoutPassword))
+            alert('Bienvenido')
+            window.location.href = 'profile.html'
+        } else {
+            alert('Usuario no encontrado')
+        }
+    })
+}
 
 /*=================================CIRCUITS===========================================*/
 
@@ -649,6 +683,35 @@ async function getAPIData(apiURL, method, data) {
 
     }
 
+    /**
+ * 
+ * @param {Object} circuit
+ * @param {string} circuit.name
+ * @param {string} circuit.location
+ * @param {string} circuit.url
+ * @param {string} circuit.map
+ * @param {string} circuit.description
+ * @param {string} circuit.bestlap
+ * @param {string} circuit.prices
+ *  
+ */
+function circuitModal(circuit){
+    modalOpener()
+    const modalContent = document.getElementById('modal-content')
+
+    if (modalContent){
+    modalContent.innerHTML = `<ul>
+                                <li>${circuit.name}	</li>
+                                <li><a href="${circuit.location}">Ubicación</a></li>
+                                <li class="w-[200px] h-auto"><img src="${circuit.map}"></li>
+                                <li><a href="${circuit.url}">WebLink</a></li>
+                                <li>${circuit.description}</li>
+                                <li>Mejor tiempo KH:${circuit.bestlap}</li>
+                                <li>Precio: ${circuit.prices}</li>
+                            </ul>`
+    }
+}
+
    
 /*=================================EVENTS===========================================*/
 
@@ -729,6 +792,29 @@ async function deleteEventCard(event) {
         console.log("Respuesta del servidor:", apiData);
     } catch (error) {
         console.error("Error eliminando el evento:", error);
+    }
+}
+
+/**
+ * 
+ * @param {Object} event
+ * @param {string} event.user
+ * @param {Date} event.date
+ * @param {string} event.title
+ * @param {string} event.description
+ */
+function eventModal(event){
+    modalOpener()
+    const modalContent = document.getElementById('modal-content')
+    console.log(modalContent)
+
+    if (modalContent){
+    modalContent.innerHTML = `<ul>
+                                <li>${event.title}</li>
+                                <li>${event.user}</li>
+                                <li><a href="${event.date}">Ubicación</a></li>
+                                <li>${event.description}</li>
+                            </ul>`
     }
 }
 
@@ -816,6 +902,31 @@ function deleteMarketCard(event) {
     }
 }
 
+/**
+ * 
+ * @param {Object} item
+ * @param {string} item.user
+ * @param {string} item.article
+ * @param {number} item.price
+ * @param {string} item.location
+ * @param {string} item.description
+ * @param {string} item.img
+ */
+function marketModal(item){
+    modalOpener()
+    const modalContent = document.getElementById('modal-content')
+
+    if (modalContent){
+    modalContent.innerHTML = `<ul>
+                                <li>${item.article}</li>
+                                <li>${item.user}</li>
+                                <li><a href="${item.location}">Ubicación</a></li>
+                                <li class="w-[200px] h-auto"><img src="${item.img}"></li>
+                                <li>${item.description}</li>
+                                <li>Precio: ${item.price}</li>
+                            </ul>`
+    }
+}
     
 /*=================================FORUM===========================================*/
 
@@ -855,3 +966,4 @@ function showForumCard(item){
     
     }
 
+/*=================================RACELINE CREATOR===========================================*/
