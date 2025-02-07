@@ -9,7 +9,13 @@
     <title>KartHub - Inicio</title>
 </head>
 <body id="index" class="box-border bg-white">
-    <h1 class="font-bold text-4xl flex p-4 bg-neutral-500">KartHub</h1>
+    <div class="flex p-4 bg-neutral-500 items-center">
+        <h1 class="font-bold text-4xl ">KartHub</h1>
+        <div class="flex justify-end w-full">
+            <h2 id="credentials-btn" class="p-2 px-4 bg-neutral-200 rounded-full"><a>SignUp/Login</a></h2>
+            <h2 id="profile-btn" class="p-2 px-4 bg-neutral-200 rounded-full __hidden"><a href="./profile.html">Profile</a></h2>
+        </div>
+    </div>
     <header class="sticky top-0 bg-neutral-400/75 backdrop-blur-sm shadow-sm">
             <ul class=" flex justify-end py-3">
                 <!--TODO: NAV HITBOX-->
@@ -18,11 +24,12 @@
                 <li class="bg-neutral-200 p-2 px-4 mx-3 rounded-full hover:bg-amber-200"><a href="./events.html">Eventos</a></li>
                 <li class="bg-neutral-200 p-2 px-4 mx-3 rounded-full hover:bg-amber-200"><a href="./market.html">Mercado</a></li>
                 <li class="bg-neutral-200 p-2 px-4 mx-3 rounded-full hover:bg-amber-200"><a href="./forum.html">Foro</a></li>
+                <li class="bg-neutral-200 p-2 px-4 mx-3 rounded-full hover:bg-amber-200"><a href="./raceline.creator.html">Creador de trazadas</a></li>
             </ul>
         </nav>
     </header>
 
-    <main class="bg-white px-[5%] pt-5 h-screen ">
+    <main id="landing-container" class="bg-white px-[5%] pt-5 h-screen ">
         <section class="bg-neutral-100 py-10 h-screen px-40 mb-4">
             <h2 class="bg-neutral-200 text-5xl font-bold text-center py-8">Bienvenido a KartHub!</h2>
             <article class="mb-8">
@@ -40,5 +47,67 @@
         </section>
     </main>
 
+    <main id="credentials-container" class="bg-gray-100 px-6 pt-10 min-h-screen flex flex-col items-center __hidden">
+        <!-- Sign Up Section -->
+        <section id="signup-form" class="bg-white shadow-lg rounded-lg p-8 w-full max-w-lg mb-6 __hidden">
+            <h2 class="text-3xl font-bold text-gray-800 text-center mb-6">Sign Up</h2>
+            <form id="signup-form" action="#" enctype="multipart/form-data" class="space-y-4">
+                <div class="flex flex-col">
+                    <label for="sign-email" class="text-gray-700 font-semibold">Email</label>
+                    <input id="sign-email" type="email" name="email" placeholder="a@a.a" 
+                        class="p-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-amber-400">
+                </div>
+                <div class="flex flex-col">
+                    <label for="sign-password" class="text-gray-700 font-semibold">Contraseña</label>
+                    <input id="sign-password" type="password" name="password"
+                        class="p-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-amber-400">
+                </div>
+                <button type="submit"
+                    class="w-full bg-amber-400 text-white font-bold py-2 rounded-lg hover:bg-amber-500 transition duration-300">
+                    Enviar
+                </button>
+                <div class="flex items-center my-4">
+                    <hr class="flex-grow border-gray-300">
+                    <span class="mx-4 text-gray-500">o</span>
+                    <hr class="flex-grow border-gray-300">
+                </div>
+                <p class="text-center text-gray-700">
+                    ¿Ya tienes cuenta?
+                    <a id="login-link" class="text-amber-500 font-semibold hover:underline">Entra</a>
+                </p>
+            </form>
+            
+        </section>
+    
+        <!-- Login Section -->
+        <section id="login-form"class="bg-white shadow-lg rounded-lg p-8 w-full max-w-lg">
+            <h2 class="text-3xl font-bold text-gray-800 text-center mb-6">Login</h2>
+            <form id="login-form" action="#" enctype="multipart/form-data" class="space-y-4">
+                <div class="flex flex-col">
+                    <label for="login-email" class="text-gray-700 font-semibold">Email</label>
+                    <input id="login-email" type="email" name="email" placeholder="a@a.a" 
+                        class="p-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-amber-400">
+                </div>
+                <div class="flex flex-col">
+                    <label for="login-password" class="text-gray-700 font-semibold">Contraseña</label>
+                    <input id="login-password" type="password" name="password"
+                        class="p-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-amber-400">
+                </div>
+                <button type="submit"
+                    class="w-full bg-amber-500 text-white font-bold py-2 rounded-lg hover:bg-amber-600 transition duration-300">
+                    Enviar
+                </button>
+            </form>
+            <div class="flex items-center my-4">
+                <hr class="flex-grow border-gray-300">
+                <span class="mx-4 text-gray-500">o</span>
+                <hr class="flex-grow border-gray-300">
+            </div>
+            <p class="text-center text-gray-700">
+                ¿No tienes cuenta?
+                <a id="signup-link" class="text-amber-500 font-semibold hover:underline">Crea una</a>
+            </p>
+        </section>
+    </main>
 </body>
 </html>
