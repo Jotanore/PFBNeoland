@@ -20,47 +20,139 @@
                 <li class="bg-neutral-200 p-2 px-4 mx-3 rounded-full hover:bg-amber-200"><a href="./events.html">Eventos</a></li>
                 <li class="bg-neutral-200 p-2 px-4 mx-3 rounded-full hover:bg-amber-200"><a href="./market.html">Mercado</a></li>
                 <li class="bg-neutral-200 p-2 px-4 mx-3 rounded-full hover:bg-amber-200"><a href="./forum.html">Foro</a></li>
+                <li class="bg-neutral-200 p-2 px-4 mx-3 rounded-full hover:bg-amber-200"><a href="./raceline.creator.html">Creador de trazadas</a></li>
             </ul>
         </nav>
     </header>
 
     <main class="bg-white px-[5%] pt-5 h-screen ">
         <section class="bg-neutral-100 py-10 h-screen px-40 mb-4">
-            <h2 class="bg-neutral-200 text-5xl font-bold text-center py-8">Perfil</h2>
-            <ul class="mb-[20%]">
-                <li id="user-name">Nombre</li>
-                <li id="user-surname">Apellidos</li>
-                <li id="user-email">Email</li>
-                <li id="user-location">Localizacion</li>
-                <li id="user-prefCircuit">Circuito preferido</li>
-                <li id="user-kart">Kart</li>
-                <li id="user-youtubeURL">Youtube</li>
-                <li id="user-instagramUser">Instagram</li>
-            </ul>
-            <form class="mt-3" id="profile-update-form" action="#" enctype="multipart/form-data">
-                <fieldset class="flex flex-row items-center flex-wrap">
-                    <img class="w-40 h-40 rounded-full" src="imgs/kotar.JPG" alt="${item.img}">
-                    <label for="profile-name">Nombre</label>
-                    <input id="profile-name" type="text" name="nombre"/>
-                    <label for="profile-surname">Apellidos</label>
-                    <input id="profile-surname" type="text" name="apellidos"/>
-                    <label for="profile-location">Localización</label>
-                    <input id="profile-location" type="text" name="localización"/>
-                    <label for="-profile-prefCircuit">Circuito preferido</label>
-                    <input id="profile-prefCircuit" type="text" name="circuitoPref"/>
-                    <label for="profile-kart">Kart</label>
-                    <input id="profile-kart" type="text" name="kart"/>
-                    <label for="profile-youtubeURL">Youtube</label>
-                    <input id="profile-youtubeURL" type="text" name="instagram"/>
-                    <label for="profile-instagramUser">Instagram</label>
-                    <input id="profile-instagramUser" type="text" name="instagram"/>
-                    <label for="password">Cambiar contraseña</label>
-                    <input id="profile-password" type="profile-password" name="password"/>
-                    <label for="profile-passwordRepeat">Repetir contraseña</label>
-                    <input id="profile-passwordRepeat" type="password" name="password"/>
-                    <button class="bg-amber-400 p-2 px-4 mx-3 mt-3 rounded-full" type="submit">Enviar</button>
+            <div id="profile-container"class="bg-white p-6 rounded-lg shadow-lg max-w-3xl mx-auto mt-5">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-4 text-center">Perfil de Usuario</h2>
+            
+                <ul class="grid grid-cols-1 md:grid-cols-2 gap-6 text-gray-700">
+                    <!-- Imagen de perfil -->
+                    <li class="md:col-span-2 flex flex-col items-center">
+                        <strong class="text-gray-900">Foto de perfil:</strong>
+                        <img class="w-40 h-40 rounded-full border-4 border-purple-500 shadow-md mt-2" 
+                             src="imgs/kotar.JPG" alt="Foto de perfil">
+                    </li>
+            
+                    <li><strong class="text-gray-900">Usuario:</strong> <span id="user-username" class="text-purple-600">NombreUsuario</span></li>
+                    <li><strong class="text-gray-900">Nombre:</strong> <span id="user-name" class="text-purple-600">Nombre</span></li>
+                    <li><strong class="text-gray-900">Apellidos:</strong> <span id="user-surname" class="text-purple-600">Apellidos</span></li>
+                    <li><strong class="text-gray-900">Email:</strong> <span id="user-email" class="text-purple-600">Email</span></li>
+                    <li><strong class="text-gray-900">Localización:</strong> <span id="user-location" class="text-purple-600">Localización</span></li>
+                    <li><strong class="text-gray-900">Circuito preferido:</strong> <span id="user-prefCircuit" class="text-purple-600">Circuito preferido</span></li>
+                    <li><strong class="text-gray-900">Kart:</strong> <span id="user-kart" class="text-purple-600">Kart</span></li>
+                    <li><strong class="text-gray-900">Youtube:</strong> 
+                        <a id="user-youtubeURL" href="#" class="text-blue-500 hover:underline">Youtube</a>
+                    </li>
+                    <li><strong class="text-gray-900">Instagram:</strong> 
+                        <a id="user-instagramUser" href="#" class="text-blue-500 hover:underline">Instagram</a>
+                    </li>
+                </ul>
+
+                <div class="flex justify-evenly mt-6">
+                    <button id="edit-profile-btn" class="bg-amber-400 hover:bg-amber-500 text-white font-bold py-2 px-6 rounded-full shadow-md">
+                        Editar perfil
+                    </button>
+                    <button id="logout-btn"class="bg-amber-400 hover:bg-amber-500 text-white font-bold py-2 px-6 rounded-full shadow-md ">
+                        Cerrar sesión
+                    </button>
+                </div>
+            </div>
+            
+            <form class="mt-5 bg-white p-6 rounded-lg shadow-lg max-w-3xl mx-auto __hidden" 
+                id="profile-update-form" action="#" enctype="multipart/form-data">
+                
+                <fieldset class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+
+                    <div class="flex flex-col items-center">
+                        <img class="w-40 h-40 rounded-full border-4 border-purple-500 shadow-md" 
+                            src="imgs/kotar.JPG" alt="Foto de perfil">
+                        <label for="profile-image" class="mt-2 text-purple-600 cursor-pointer text-sm font-semibold">
+                            Cambiar foto
+                            <input id="profile-image" type="file" class="hidden">
+                        </label>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label for="profile-username" class="text-gray-700 font-semibold">Nombre de Usuario</label>
+                            <input id="profile-username" type="text" name="nombreusuario"
+                                class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        </div>
+
+                        <div>
+                            <label for="profile-name" class="text-gray-700 font-semibold">Nombre</label>
+                            <input id="profile-name" type="text" name="nombre"
+                                class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        </div>
+
+                        <div>
+                            <label for="profile-surname" class="text-gray-700 font-semibold">Apellidos</label>
+                            <input id="profile-surname" type="text" name="apellidos"
+                                class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        </div>
+
+                        <div>
+                            <label for="profile-location" class="text-gray-700 font-semibold">Localización</label>
+                            <input id="profile-location" type="text" name="localización"
+                                class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        </div>
+                    </div>
                 </fieldset>
-              </form>
+
+                <fieldset class="mt-6 space-y-4">
+                    <div>
+                        <label for="profile-prefCircuit" class="text-gray-700 font-semibold">Circuito preferido</label>
+                        <input id="profile-prefCircuit" type="text" name="circuitoPref"
+                            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    </div>
+
+                    <div>
+                        <label for="profile-kart" class="text-gray-700 font-semibold">Kart</label>
+                        <input id="profile-kart" type="text" name="kart"
+                            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    </div>
+
+                    <div>
+                        <label for="profile-youtubeURL" class="text-gray-700 font-semibold">Youtube</label>
+                        <input id="profile-youtubeURL" type="text" name="youtube"
+                            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    </div>
+
+                    <div>
+                        <label for="profile-instagramUser" class="text-gray-700 font-semibold">Instagram</label>
+                        <input id="profile-instagramUser" type="text" name="instagram"
+                            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    </div>
+                </fieldset>
+
+
+                <fieldset class="mt-6 space-y-4">
+                    <div>
+                        <label for="profile-password" class="text-gray-700 font-semibold">Nueva contraseña</label>
+                        <input id="profile-password" type="password" name="password"
+                            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500">
+                    </div>
+
+                    <div>
+                        <label for="profile-passwordRepeat" class="text-gray-700 font-semibold">Repetir contraseña</label>
+                        <input id="profile-passwordRepeat" type="password" name="password"
+                            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500">
+                    </div>
+                </fieldset>
+
+
+                <div class="text-center mt-6">
+                    <button id="profile-update-btn" class="bg-amber-400 hover:bg-amber-500 text-white font-bold py-2 px-6 rounded-full shadow-md">
+                        Guardar cambios
+                    </button>
+                </div>
+            </form>
+
         </section>
     </main>
 
