@@ -5,25 +5,25 @@
 /**
  * @typedef {Object} timeRow
  * @property {string} time
- * @property {string} id
+ * @property {string} _id
  */
 export class Circuit{
-    id
+    _id
     name
-    distance
     location
     url
     description
     bestlap
     prices
     map
-    timeTable
+    //timeTable
+    //raceLines
 /**
  * 
- * @param {string} id 
+ * @param {string} _id 
  * @param {string} name 
- * @param {number} distance 
  * @param {Object} location
+ * @param {string} location.province
  * @param {string} location.latitude
  * @param {string} location.longitude 
  * @param {string} url 
@@ -34,10 +34,9 @@ export class Circuit{
  * @param {Array<timeRow>} timeTable
  * 
  */
-    constructor(id, name, distance, location, url, description, bestlap, prices, map, timeTable = []){
-        this.id = String(id) //TODO: timestamp
+    constructor(_id, name, location, url, description, bestlap, prices, map, timeTable = []){
+        this._id = String(_id) 
         this.name = name
-        this.distance = distance
         this.location = location
         this.url = url
         this.description = description
@@ -49,26 +48,25 @@ export class Circuit{
 }
 
 export class MarketItem{
-    //TODO: id implement
-    id
-    user
+    _id
+    user_id
     article
     price
     location
     description
     img
 /**
- * @param {string} id
- * @param {string} user 
+ * @param {string} _id
+ * @param {string} user_id
  * @param {string} article 
  * @param {number} price 
  * @param {string} location 
  * @param {string} description 
  * @param {string} img 
  */
-    constructor(id, user, article, price, location, description, img){
-        this.id = id
-        this.user = user
+    constructor(_id, user_id, article, price, location, description, img){
+        this._id = _id
+        this.user_id = user_id
         this.article = article
         this.price = price
         this.location = location
@@ -79,47 +77,51 @@ export class MarketItem{
 
 export class ForumCard{
     //TODO: ID implement
-    user
+    _id
+    user_id
     title
     description
 /**
- * 
- * @param {string} user 
+ * @param {string} _id 
+ * @param {string} user_id 
  * @param {string} title 
  * @param {string} description 
  */
-    constructor(user, title, description){
-        this.user = user
+    constructor(_id, user_id, title, description){
+        this._id = _id
+        this.user_id = user_id
         this.title = title
         this.description = description
     }
 }
 
 export class EventCard{
-    //TODO: id implement
-    id
+    _id
     title    
     date
-    user
+    user_id
     description
+    location
 /**
- * @param {string} id
+ * @param {string} _id
  * @param {string} title 
  * @param {Date} date 
- * @param {string} user 
- * @param {string} description 
+ * @param {string} user_id 
+ * @param {string} description
+ * @param {string} location 
  */
-    constructor(id, title, date, user, description){ 
-        this.id = id       
+    constructor(_id, title, date, user_id, description, location){
+        this._id = _id       
         this.title = title
         this.date = date
-        this.user = user
+        this.user_id = user_id
         this.description = description
+        this.location = location
     }
 }
 
 export class User{
-    id
+    _id
     username
     name
     email
@@ -134,9 +136,10 @@ export class User{
     instagram
     role
     token
+
 /**
  * 
- * @param {string} id
+ * @param {string} _id
  * @param {string} username
  * @param {string} name 
  * @param {string} email 
@@ -150,10 +153,10 @@ export class User{
  * @param {string} youtube
  * @param {string} instagram
  * @param {string} role
- * @param {string} token 
+ * @param {string} token
  */
-    constructor(id,username, name, email, password, surnames, location, bio, img, prefCircuit, kart, youtube, instagram, role, token){
-        this.id = id
+    constructor(_id,username, name, email, password, surnames, location, bio, img, prefCircuit, kart, youtube, instagram, role, token){
+        this._id = _id
         this.username = username
         this.name = name
         this.email = email
@@ -168,5 +171,53 @@ export class User{
         this.instagram = instagram
         this.role = role
         this.token = token
+    }
+}
+
+export class Timetable{
+
+    _id
+    user_id
+    lapTime
+    circuit_id
+    lapRecord 
+
+/**
+ * 
+ * @param {string} _id
+ * @param {string} user_id
+ * @param {string} lapTime  
+ * @param {string} circuit_id
+ * @param {string} lapRecord
+ */
+
+    constructor(_id, user_id, lapTime, circuit_id, lapRecord){
+        this._id = _id
+        this.user_id = user_id
+        this.lapTime = lapTime
+        this.circuit_id = circuit_id
+        this.lapRecord = lapRecord
+    }
+}
+
+export class RaceLines{
+
+    _id
+    user_id
+    circuit_id 
+    img
+
+/** 
+ * 
+ * @param {string} _id  
+ * @param {string} user_id
+ * @param {string} circuit_id
+ * @param {string} img
+ */
+    constructor(_id, user_id, circuit_id, img){
+        this._id = _id  
+        this.user_id = user_id
+        this.circuit_id = circuit_id
+        this.img = img
     }
 }
