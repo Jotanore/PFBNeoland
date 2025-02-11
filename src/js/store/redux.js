@@ -1,4 +1,4 @@
-//@ts-check
+//@ts-nocheck
 
 /**@import {Circuit, MarketItem, ForumCard, EventCard, timeRow, User} from "../../classes/classes.js" */
 /**

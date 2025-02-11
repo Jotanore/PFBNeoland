@@ -5,7 +5,6 @@ import { HttpError } from '../classes/HttpError.js';
 import {MarketItem} from '../classes/classes.js'
 import { store } from './store/redux.js';
 import { simpleFetch } from './lib/simpleFetch.js';
-
 /**
  * @type {number[]}
  */
@@ -13,6 +12,7 @@ let userCoords = null;
 let map
 let userlog = false
 const NODE_SERVER = `http://127.0.0.1:6431/`
+let circuitArray
 
 /*
 const NODE_SERVER_GET_CIRCUITS =`http://127.0.0.1:6431/get.circuits.json`
@@ -54,7 +54,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 console.log(`Estoy en ${page[0].id}`)
                 credentialsBtnManager()
                 await getCircuitData()
-                await showCircuitCard()
                 createMap()
                 break
             case 'events':
@@ -62,14 +61,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                 credentialsBtnManager()
                 await getEventData()
                 formManager()
-                showEventCard()
                 break
             case 'market':
                 console.log(`Estoy en ${page[0].id}`)
                 credentialsBtnManager()
                 await getMarketData()
                 formManager()
-                showMarketCard()
                 break
             case 'forum':
                 console.log(`Estoy en ${page[0].id}`)
@@ -169,11 +166,12 @@ function formManager(e){
 
 
         const description = document.getElementById('description').value
-        const user = 'user'
-        let id
+        const sessionUser = getUserFromSession()
+        const user = 'userImplement'
 
         const eventTitle = document.getElementById('eventName')?.value
         const eventDate = document.getElementById('eventDate')?.value
+        const eventLocation = 'location'//document.getElementById('eventLocation')?.value
         
         const itemName = document.getElementById('itemName')?.value
         const itemPrice = document.getElementById('itemPrice')?.value
@@ -192,25 +190,34 @@ function formManager(e){
         imageUrl = URL.createObjectURL(itemImg);
         }*/
         let searchParams = ''
-        let headers = ''
         let apiData = ''
         let payload = ''
         switch (page[0].id){
             case 'market':
                     payload = ''
                     apiData = ''
-                    id = `id_${Date.now()}`
-                    const item = new MarketItem(id,user, itemName, itemPrice, itemLocation, description, itemImg)
-                    searchParams = new URLSearchParams(item).toString()
-                    store.createMarketArticle(item)
-                    console.log(item)
+
+                    const marketItem = {
+                        title: eventTitle,
+                        date: eventDate,
+                        user_id: user,
+                        location: itemLocation,
+                        description: description,
+                    }
+                    
+                    console.log("antes de fetch", marketItem)
+                    payload = JSON.stringify(marketItem)
+                    console.log(payload)
+                    apiData = await getAPIData(`${NODE_SERVER}create/article`,'POST', payload);
+
+                    const item = new MarketItem(apiData._id, apiData.user_id, apiData.article, apiData.price, apiData.location, apiData.description, apiData.img)
+                    // const item = new MarketItem('',user, itemName, itemPrice, itemLocation, description, itemImg)
+                    //searchParams = new URLSearchParams(item).toString()
+                    console.log(apiData)
                     //fetch(`${NODE_SERVER}create/article?${searchParams}`)
 
 
-                    console.log("antes de fetch", item)
-                    payload = JSON.stringify(item)
-                    console.log(payload)
-                    apiData = await getAPIData(`${NODE_SERVER}create/article`,'POST', payload);
+
 
 
                     drawArticle(item)
@@ -218,17 +225,27 @@ function formManager(e){
             case 'events':
                     payload = ''
                     apiData = ''
-                    id = `id_${Date.now()}`
-                    const event = new EventCard(id, eventTitle, eventDate, user, description)
-                    searchParams = new URLSearchParams(event).toString()
-                    store.createEvent(event)
+
+                    const eventObject = {
+                        user_id: user,
+                        article: itemName,
+                        price: itemPrice,
+                        location: eventLocation,
+                        description: description,
+                        img: itemImg
+                    }
+
+                    console.log("antes de fetch", eventObject)
+                    payload = JSON.stringify(eventObject)
+                    console.log(payload)
+                    apiData = await getAPIData(`${NODE_SERVER}create/event`,'POST', payload);
+
+                    const event = new EventCard('',eventTitle, eventDate, user, description)
+                    //searchParams = new URLSearchParams(event).toString()
                     console.log(event)
                     //fetch(`${NODE_SERVER}create/event?${searchParams}`)
 
-                    console.log("antes de fetch", event)
-                    payload = JSON.stringify(event)
-                    console.log(payload)
-                    apiData = await getAPIData(`${NODE_SERVER}create/event`,'POST', payload);
+
 
 
                     drawEvent(event)
@@ -326,7 +343,7 @@ function fillUserProfile(){
         document.getElementById('user-username').innerHTML = user.username
         document.getElementById('user-name').innerHTML = user.name
         document.getElementById('user-surname').innerHTML = user.surnames
-        //document.getElementById('user-email').innerHTML = "user.email"
+        document.getElementById('user-email').innerHTML = user.email
         document.getElementById('user-location').innerHTML = user.location
         document.getElementById('user-prefCircuit').innerHTML = user.prefCircuit
         document.getElementById('user-kart').innerHTML = user.kart
@@ -336,6 +353,13 @@ function fillUserProfile(){
     document.getElementById("edit-profile-btn").addEventListener('click', showProfileform)
     document.getElementById("logout-btn").addEventListener('click', userLogOut)
     document.getElementById("profile-update-btn").addEventListener('click', showProfile)
+    document.getElementById("discard-btn").addEventListener('click',function(e) {
+        e.preventDefault();
+    
+        const form = document.getElementById('profile-update-form');
+        form.reset(); 
+        showProfile(); 
+    });
 }
 
 function showProfileform(){
@@ -355,7 +379,6 @@ function updateUserProfile(){
         e.preventDefault()
 
         const newUser = {
-            id: storedUser.id,
             username: document.getElementById('profile-username').value ? document.getElementById('profile-username').value : storedUser.username,
             name: document.getElementById('profile-name').value ? document.getElementById('profile-name').value : storedUser.name,
             surnames: document.getElementById('profile-surname').value ? document.getElementById('profile-surname').value : storedUser.surnames,    
@@ -437,12 +460,35 @@ function userRegister(){
         e.preventDefault()
 
         const newUser = {
-            id: `id_${Date.now()}`,
+            username: document.getElementById('username').value,
             email: document.getElementById('sign-email').value,
             password: document.getElementById('sign-password').value
         }
 
-        const user = new User(newUser.id, "username", "name", newUser.email, newUser.password, "surnames", "Location", "Bio", "img", "prefCircuit", "kart", "youtube", "instagram", "role", "token")
+        console.log("antes de fetch", newUser)
+        let payload = JSON.stringify(newUser)
+        console.log(payload)
+        let apiData = await getAPIData(`${NODE_SERVER}create/user`,'POST', payload );
+        console.log(apiData)
+
+        const userFill = {
+            username: apiData.username,
+            name: 'Nombre',
+            email: apiData.email,
+            password: apiData.password,
+            surnames: 'Apellidos',
+            location: 'Ubicación',
+            bio: 'Bio',
+            img: '',
+            prefCircuit: 'Circuito Preferido',
+            kart: 'Kart',
+            youtube: 'Youtube Link',
+            instagram: 'Instagram User',
+            role: 'user',
+            token: ''
+
+        }
+
         // const searchParams = new URLSearchParams(user).toString()
         // console.log(searchParams)
         // fetch(`${NODE_SERVER}create/user?${searchParams}`)
@@ -451,12 +497,11 @@ function userRegister(){
 
         //TODO SIMPLEFETCH FUNCTION
         
-        console.log("antes de fetch", user)
-        const payload = JSON.stringify(user)
+        payload = JSON.stringify(userFill)
         console.log(payload)
-        const apiData = await getAPIData(`${NODE_SERVER}create/user`,'POST', payload );
+        apiData = await getAPIData(`${NODE_SERVER}update/user/${apiData._id}`,'PUT', payload );
 
-        const userWithoutPassword = { ...newUser }
+        const userWithoutPassword = { ...userFill }
             delete userWithoutPassword.password
             sessionStorage.setItem('user', JSON.stringify(userWithoutPassword))
             alert('Bienvenido')
@@ -536,12 +581,21 @@ function userLogin() {
     async function getCircuitData(){
         //Get the info via JSON
         //const API_CIRCUITS = 'api/get.circuits.json'
-        const circuitArray = await getAPIData(`${NODE_SERVER}read/circuits` , 'GET')
+        circuitArray = await getAPIData(`${NODE_SERVER}read/circuits` , 'GET')
         //Iterate Array, create the Circuit Object and push to store
-        circuitArray.forEach(function (/** @type {Circuit} */ a){
-            const circuito = new Circuit(a.id, a.name, a.distance, a.location, a.url, a.description, a.bestlap, a.prices, a.map)
-            store.createCircuit(circuito)
+        // Waits for getUserToCircuitDistance to get the distance to each circuit and stores it on circuit.distance
+        await circuitArray.forEach(async function (/** @type {Circuit} */ circuit){
+            circuit.distance = await getUserToCircuitDistance(circuit.location)
         })
+        // Sorts circuits by distance to user
+        circuitArray.sort(function (a, b) {
+            return a.distance - b.distance;
+        });
+        // Creates the circuit cards and appends them
+        circuitArray.forEach(async function (/** @type {Circuit} */ circuit){            
+            drawCircuitCard(circuit)
+        })
+        bindCircuitCardsFocus()
     }
 
 /**
@@ -571,28 +625,6 @@ function userLogin() {
    }
 
      
-   /**
-    * Function that creates the circuit cards and rearranges them by distance to user
-    * Calls modalBuilder to assign info to modal
-    */
-    async function showCircuitCard(){
-        // Get all circuits from store
-        const circuitArray = store.getAllCircuits()
-        // Waits for getUserToCircuitDistance to get the distance to each circuit and stores it on circuit.distance
-        await circuitArray.forEach(async function (/** @type {Circuit} */ circuit){
-            circuit.distance = await getUserToCircuitDistance(circuit.location)
-        })
-        // Sorts circuits by distance to user
-        circuitArray.sort(function (a, b) {
-            return a.distance - b.distance;
-        });
-        const circuitFrame = document.getElementById('card-container')
-        // Creates the circuit cards and appends them
-        circuitArray.forEach(async function (/** @type {Circuit} */ circuit){            
-            drawCircuitCard(circuit)
-        })
-        bindCircuitCardsFocus()
-    }
 
     function drawCircuitCard(circuit){
         const circuitFrame = document.getElementById('card-container')
@@ -638,7 +670,7 @@ function userLogin() {
         
     }   
     function createMap(){
-            const coords = [40.187,-4.504]
+            //const coords = [40.187,-4.504]
 
             // @ts-expect-error External declaration
             map = L.map('map').setView([40.187,-4.504], 6);
@@ -650,10 +682,9 @@ function userLogin() {
             }).addTo(map);
             
 
-            const circuitList = store.getAllCircuits()
             
             
-            for (let circuit of circuitList){
+            for (let circuit of circuitArray){
                 const markerCoords = [circuit.location.latitude, circuit.location.longitude]
                 // @ts-expect-error External declaration
                 L.marker(markerCoords).addTo(map)
@@ -667,7 +698,7 @@ function userLogin() {
                                     </button>
                                 </div>
                             `)
-            .bindTooltip(`${circuit.name}`, {
+                .bindTooltip(`${circuit.name}`, {
                                     direction: "top",
                                     permanent: false,
                                     offset: [-15, -20] })
@@ -721,29 +752,11 @@ function circuitModal(circuit){
  * Pushes them to store
  */
 async function getEventData(){
-    // Obtain data via JSON
-    //const API_EVENTS = 'api/get.events.json'
     const eventArray = await getAPIData(`${NODE_SERVER}read/events` , 'GET')
-    // Create EventCard Object and push to store
-    eventArray.forEach(function (/** @type {EventCard} */ a){
-        const event = new EventCard(a.id, a.title, a.date, a.user, a.description)
-        store.createEvent(event)
-    })
-}    
-
-/**
-* Obtains the events via store
-* Creates the event cards
-* @param {EventCard} event
-*/
-function showEventCard(event){
-    // Get all events from store
-    const eventArray = store.getAllEvents()
-    // Creates the event cards
     eventArray.forEach(function (/** @type {EventCard} */ event){
         drawEvent(event)
     })
-}
+}    
 
 function drawEvent(event){
     const eventFrame = document.getElementById('__event-container')
@@ -751,13 +764,12 @@ function drawEvent(event){
                 `<div class="bg-purple-100 h-24 mx-4 mb-4 flex items-center justify-center modal-open event-card">
                     <span class="mr-4 pl-2">${event.title}</span>
                     <span class="mr-4 pl-2">${event.date}</span>
-                    <span class="mr-4 pl-2">${event.user}</span>
+                    <span class="mr-4 pl-2">${event.user_id}</span>
                     <span class="mr-4 pl-2">${event.description}</span>
-                    <button data-id="${event.id}" class="border-2 border-black bg-gray-400 delete-event">Delete</button>
+                    <button data-id="${event._id}" class="border-2 border-black bg-gray-400 delete-event">Delete</button>
                 </div>`
         eventFrame?.insertAdjacentHTML('afterbegin', html)
         
-
     const lastCard = eventFrame.firstElementChild;
     const deleteBtn = lastCard.querySelector('.delete-event');
 
@@ -826,31 +838,12 @@ function eventModal(event){
  * Pushes them to store
  */
    async function getMarketData(){
-        //Get the info via JSON
-        //const API_MARKET = 'api/get.articles.json'
         const marketArray = await getAPIData(`${NODE_SERVER}read/articles` , 'GET')
-        //Iterate Array, create the MarketItem Object and push to store
-        marketArray.forEach(function (/** @type {MarketItem} */ a){
-            const item = new MarketItem(a.id, a.user, a.article, a.price, a.location, a.description, a.img)
-            store.createMarketArticle(item)
+        marketArray.forEach(function (/** @type {MarketItem} */ item){
+                drawArticle(item)
+
         })
    } 
-
-/**
-* Obtains the market items via store
-* Creates the market item cards
-* @param {MarketItem} item
-*/
-   function showMarketCard(){
-    // Get all marketItems from store
-    const marketList = store.getAllMarketArticles()
-    console.log(marketList)
-    // Creates the marketItem cards and draws them
-    marketList.forEach(function (/** @type {MarketItem} */ item){
-        drawArticle(item)
-    })
-    
-}
 
 /**
  * Draws a market item card
@@ -865,9 +858,9 @@ function eventModal(event){
                 <article class="bg-white px-4 ml-5 h-full">
                     <div class="h-[35%]">                    
                         <span class="text-2xl font-bold mr-4 ">${item.article}</span>
-                        <span class="mr-4 pl-2">${item.user}</span>
+                        <span class="mr-4 pl-2">${item.user_id}</span>
                         <span class="mr-4 pl-2">${item.location}</span>
-                        <button class="border-2 border-black bg-gray-400 delete-item">Delete</button>
+                        <button data-id="${item._id}" class="border-2 border-black bg-gray-400 delete-item">Delete</button>
                         </div>
 
                     <div class="h-[40%]">
@@ -893,12 +886,22 @@ function eventModal(event){
  * Deletes a market card
  * @param {Event} event 
  */
-function deleteMarketCard(event) {
+async function deleteMarketCard(event) {
     // Encuentra el contenedor de la tarjeta (por ejemplo, con la clase 'market-card')
+    const marketId = event.target.getAttribute('data-id');
+    console.log(marketId)
+
     event.stopPropagation()
     const card = event.target.closest('.market-card');
     if (card) {
         card.remove(); // Elimina la tarjeta del DOM
+    }
+
+    try {
+        const apiData = await getAPIData(`${NODE_SERVER}delete/article/${marketId}`, 'DELETE');
+        console.log("Respuesta del servidor:", apiData);
+    } catch (error) {
+        console.error("Error eliminando el evento:", error);
     }
 }
 
