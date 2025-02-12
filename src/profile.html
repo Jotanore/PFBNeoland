@@ -26,41 +26,55 @@
     </header>
 
     <main class="bg-white px-[5%] pt-5 h-screen ">
-        <section class="bg-neutral-100 py-10 h-screen px-40 mb-4">
-            <div id="profile-container"class="bg-white p-6 rounded-lg shadow-lg max-w-3xl mx-auto mt-5">
-                <h2 class="text-2xl font-semibold text-gray-800 mb-4 text-center">Perfil de Usuario</h2>
-            
-                <ul class="grid grid-cols-1 md:grid-cols-2 gap-6 text-gray-700">
-                    <!-- Imagen de perfil -->
-                    <li class="md:col-span-2 flex flex-col items-center">
-                        <strong class="text-gray-900">Foto de perfil:</strong>
-                        <img class="w-40 h-40 rounded-full border-4 border-purple-500 shadow-md mt-2" 
-                             src="imgs/kotar.JPG" alt="Foto de perfil">
-                    </li>
-            
-                    <li><strong class="text-gray-900">Usuario:</strong> <span id="user-username" class="text-purple-600">NombreUsuario</span></li>
-                    <li><strong class="text-gray-900">Nombre:</strong> <span id="user-name" class="text-purple-600">Nombre</span></li>
-                    <li><strong class="text-gray-900">Apellidos:</strong> <span id="user-surname" class="text-purple-600">Apellidos</span></li>
-                    <li><strong class="text-gray-900">Email:</strong> <span id="user-email" class="text-purple-600">Email</span></li>
-                    <li><strong class="text-gray-900">Localización:</strong> <span id="user-location" class="text-purple-600">Localización</span></li>
-                    <li><strong class="text-gray-900">Circuito preferido:</strong> <span id="user-prefCircuit" class="text-purple-600">Circuito preferido</span></li>
-                    <li><strong class="text-gray-900">Kart:</strong> <span id="user-kart" class="text-purple-600">Kart</span></li>
-                    <li><strong class="text-gray-900">Youtube:</strong> 
-                        <a id="user-youtubeURL" href="#" class="text-blue-500 hover:underline">Youtube</a>
-                    </li>
-                    <li><strong class="text-gray-900">Instagram:</strong> 
-                        <a id="user-instagramUser" href="#" class="text-blue-500 hover:underline">Instagram</a>
-                    </li>
-                </ul>
+        <section class="bg-neutral-100 py-10 h-screen px-20 mb-4">
+            <div class="flex flex-col md:flex-row gap-6">
+                <div id="profile-container"class="bg-white p-6 rounded-lg shadow-lg w-full md:w-[60%]">
+                    <h2 class="text-2xl font-semibold text-gray-800 mb-4 text-center">Perfil de Usuario</h2>
+                
+                    <ul class="grid grid-cols-1 md:grid-cols-2 gap-6 text-gray-700">
+                        <!-- Imagen de perfil -->
+                        <li class="md:col-span-2 flex flex-col items-center">
+                            <strong class="text-gray-900">Foto de perfil:</strong>
+                            <img class="w-40 h-40 rounded-full border-4 border-purple-500 shadow-md mt-2" 
+                                src="imgs/kotar.JPG" alt="Foto de perfil">
+                        </li>
+                
+                        <li><strong class="text-gray-900">Usuario:</strong> <span id="user-username" class="text-purple-600">NombreUsuario</span></li>
+                        <li><strong class="text-gray-900">Nombre:</strong> <span id="user-name" class="text-purple-600">Nombre</span></li>
+                        <li><strong class="text-gray-900">Apellidos:</strong> <span id="user-surname" class="text-purple-600">Apellidos</span></li>
+                        <li><strong class="text-gray-900">Email:</strong> <span id="user-email" class="text-purple-600">Email</span></li>
+                        <li><strong class="text-gray-900">Localización:</strong> <span id="user-location" class="text-purple-600">Localización</span></li>
+                        <li><strong class="text-gray-900">Circuito preferido:</strong> <span id="user-prefCircuit" class="text-purple-600">Circuito preferido</span></li>
+                        <li><strong class="text-gray-900">Kart:</strong> <span id="user-kart" class="text-purple-600">Kart</span></li>
+                        <li><strong class="text-gray-900">Youtube:</strong> 
+                            <a id="user-youtubeURL" href="#" class="text-blue-500 hover:underline">Youtube</a>
+                        </li>
+                        <li><strong class="text-gray-900">Instagram:</strong> 
+                            <a id="user-instagramUser" href="#" class="text-blue-500 hover:underline">Instagram</a>
+                        </li>
+                    </ul>
 
-                <div class="flex justify-evenly mt-6">
-                    <button id="edit-profile-btn" class="bg-amber-400 hover:bg-amber-500 text-white font-bold py-2 px-6 rounded-full shadow-md">
-                        Editar perfil
-                    </button>
-                    <button id="logout-btn"class="bg-amber-400 hover:bg-amber-500 text-white font-bold py-2 px-6 rounded-full shadow-md ">
-                        Cerrar sesión
-                    </button>
+                    <div class="flex justify-evenly mt-6">
+                        <button id="edit-profile-btn" class="bg-amber-400 hover:bg-amber-500 text-white font-bold py-2 px-6 rounded-full shadow-md">
+                            Editar perfil
+                        </button>
+                        <button id="logout-btn"class="bg-amber-400 hover:bg-amber-500 text-white font-bold py-2 px-6 rounded-full shadow-md ">
+                            Cerrar sesión
+                        </button>
+                    </div>
                 </div>
+            <div id="sidebar" class="w-full md:w-[40%] flex flex-col gap-6">
+                <div id="racelines-container"class="bg-white p-6 rounded-lg shadow-lg min-w-full max-w-3xl mx-auto">
+                    <h2 class="text-2xl font-semibold text-gray-800 mb-4 text-center">Racelines</h2>
+            
+                </div>
+            
+                <div id="event-container" class="bg-white p-6 rounded-lg shadow-lg max-w-3xl mx-auto mt-5 min-w-full">
+                    <h2 class="text-2xl font-semibold text-gray-800 mb-4 text-center">Eventos</h2>
+            
+                </div>
+             </div>    
+                
             </div>
             
             <form class="mt-5 bg-white p-6 rounded-lg shadow-lg max-w-3xl mx-auto __hidden" 
