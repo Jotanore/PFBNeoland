@@ -41,12 +41,12 @@
             </section>
         </div>
     </main>
-    <div id="modal" class="fixed flex justify-center items-center top-0 left-0 w-full h-full bg-neutral-600/50 z-[999] backdrop-blur-sm __hidden">
-        <div class="bg-white w-[70%] h-[90%] rounded-md overflow-auto">
-            <span id="modal-close" class="flex justify-end pr-2"><a href="#">&times;</a></span>
-            <div id="modal-content" class="bg-stone-300 w-full h-[98%] ">
-            </div>
+    <div id="modal" class="fixed inset-0 flex items-center justify-center bg-neutral-600/50 backdrop-blur-sm __hidden z-[9999]">
+        <div class="bg-white w-[90%] h-[90%] max-w-3xl rounded-md overflow-auto relative">
+          <button id="modal-close" class="absolute top-2 right-2 text-3xl text-gray-700 hover:text-gray-900 focus:outline-none">&times;</button>
+          <div id="modal-content" class="p-4">
+          </div>
         </div>
-    </div>
+      </div>
 </body>
 </html>
