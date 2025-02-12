@@ -10,6 +10,7 @@ import { simpleFetch } from './lib/simpleFetch.js';
  */
 let userCoords = null;
 let map
+let canvas
 let userlog = false
 const NODE_SERVER = `http://127.0.0.1:6431/`
 let circuitArray
@@ -23,8 +24,8 @@ const NODE_SERVER_GET_FORUM_TOPICS =`http://127.0.0.1:6431/get.forum.topics.json
 document.addEventListener('DOMContentLoaded', async () => {
 
     const page = document.getElementsByTagName('body')
-    const modalCloseBtn = document.getElementById('modal-close')
-    modalCloseBtn?.addEventListener('click', modalCloser)
+
+    
     console.log("user: ", getUserFromSession())
     if (getUserFromSession() != null) {
         userlog = true
@@ -55,18 +56,21 @@ document.addEventListener('DOMContentLoaded', async () => {
                 credentialsBtnManager()
                 await getCircuitData()
                 createMap()
+                modalManager()
                 break
             case 'events':
                 console.log(`Estoy en ${page[0].id}`)
                 credentialsBtnManager()
                 await getEventData()
                 formManager()
+                modalManager()
                 break
             case 'market':
                 console.log(`Estoy en ${page[0].id}`)
                 credentialsBtnManager()
                 await getMarketData()
                 formManager()
+                modalManager()
                 break
             case 'forum':
                 console.log(`Estoy en ${page[0].id}`)
@@ -77,6 +81,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             case 'raceline':
             console.log(`Estoy en ${page[0].id}`)
             credentialsBtnManager()
+            activateCanvas()
+            showRaceLine()
             break
     }
 
@@ -159,6 +165,19 @@ function modalCloser(){
     if (modalContent) modalContent.innerHTML = ''
 }
 
+function modalManager(){
+    const modalCloseBtn = document.getElementById('modal-close')
+    modalCloseBtn?.addEventListener('click', function(e) {
+        e.stopPropagation()
+        modalCloser()
+    });
+    document.getElementById('modal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            modalCloser()
+        }
+    })
+}
+
 function formManager(e){
     const page = document.getElementsByTagName('body')
     document.getElementById('form').addEventListener('submit', async function (e){
@@ -167,7 +186,7 @@ function formManager(e){
 
         const description = document.getElementById('description').value
         const sessionUser = getUserFromSession()
-        const user = 'userImplement'
+        const user = sessionUser._id
 
         const eventTitle = document.getElementById('eventName')?.value
         const eventDate = document.getElementById('eventDate')?.value
@@ -189,7 +208,6 @@ function formManager(e){
         if (itemImg) {
         imageUrl = URL.createObjectURL(itemImg);
         }*/
-        let searchParams = ''
         let apiData = ''
         let payload = ''
         switch (page[0].id){
@@ -203,6 +221,7 @@ function formManager(e){
                         user_id: user,
                         location: itemLocation,
                         description: description,
+                        img: itemImg
                     }
                     
                     console.log("antes de fetch", marketItem)
@@ -217,9 +236,6 @@ function formManager(e){
                     //fetch(`${NODE_SERVER}create/article?${searchParams}`)
 
 
-
-
-
                     drawArticle(item)
                 break
             case 'events':
@@ -228,11 +244,10 @@ function formManager(e){
 
                     const eventObject = {
                         user_id: user,
-                        article: itemName,
-                        price: itemPrice,
+                        title: eventTitle,
+                        date: eventDate,
                         location: eventLocation,
                         description: description,
-                        img: itemImg
                     }
 
                     console.log("antes de fetch", eventObject)
@@ -240,7 +255,7 @@ function formManager(e){
                     console.log(payload)
                     apiData = await getAPIData(`${NODE_SERVER}create/event`,'POST', payload);
 
-                    const event = new EventCard('',eventTitle, eventDate, user, description)
+                    const event = new EventCard(apiData._id, apiData.title, apiData.date, apiData.user_id, apiData.description, apiData.location)
                     //searchParams = new URLSearchParams(event).toString()
                     console.log(event)
                     //fetch(`${NODE_SERVER}create/event?${searchParams}`)
@@ -320,7 +335,7 @@ async function getAPIData(apiURL, method, data) {
 
 /*=================================PROFILE===============================================*/
 function fillUserForm(){
-    const userData = JSON.parse(sessionStorage.getItem('user'))
+    const userData = getUserFromSession()
     document.getElementById('profile-username').placeholder = userData.username || '';
     document.getElementById('profile-name').placeholder = userData.name || '';
     document.getElementById('profile-surname').placeholder = userData.surnames || '';
@@ -374,7 +389,6 @@ function showProfile(){
 
 function updateUserProfile(){
     const storedUser = getUserFromSession()  
-
     document.getElementById('profile-update-form').addEventListener('submit', async function (e){
         e.preventDefault()
 
@@ -403,9 +417,11 @@ function updateUserProfile(){
         console.log("antes de fetch", newUser)
         const payload = JSON.stringify(newUser)
         console.log("payload",payload)
-        const apiData = await getAPIData(`${NODE_SERVER}update/user/${storedUser.id}`, "PUT", payload);
-
+        const apiData = await getAPIData(`${NODE_SERVER}update/user/${storedUser._id}`, "PUT", payload);
         console.log("Respuesta del servidor:", apiData);
+
+        newUser._id = storedUser._id
+        console.log(newUser)
         sessionStorage.setItem('user', JSON.stringify(newUser))
 
         document.getElementById('user-username').textContent ? document.getElementById('user-username').textContent = newUser.username : storedUser.username
@@ -527,6 +543,7 @@ function userLogin() {
         }
 
         const users = await getAPIData(`${NODE_SERVER}read/users`, 'GET')
+        console.log(users)
 
         const userFound = users.find(user => user.email === loginCredentials.email && user.password === loginCredentials.password)
 
@@ -731,15 +748,41 @@ function circuitModal(circuit){
     const modalContent = document.getElementById('modal-content')
 
     if (modalContent){
-    modalContent.innerHTML = `<ul>
-                                <li>${circuit.name}	</li>
-                                <li><a href="${circuit.location}">Ubicación</a></li>
-                                <li class="w-[200px] h-auto"><img src="${circuit.map}"></li>
-                                <li><a href="${circuit.url}">WebLink</a></li>
-                                <li>${circuit.description}</li>
-                                <li>Mejor tiempo KH:${circuit.bestlap}</li>
-                                <li>Precio: ${circuit.prices}</li>
-                            </ul>`
+    modalContent.innerHTML = `
+            <div class="bg-white p-6 rounded-lg shadow-lg max-w-3xl mx-auto">
+                <h2 class="text-2xl font-bold text-gray-800 text-center mb-4">Información del Circuito</h2>
+                <ul class="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-700">
+                    <li>
+                        <strong class="text-gray-900">Nombre:</strong>
+                        <span>${circuit.name}</span>
+                    </li>
+                    <li>
+                        <strong class="text-gray-900">Ubicación:</strong>
+                        <a href="${circuit.location}" class="text-blue-500 hover:underline" target="_blank">Ver ubicación</a>
+                    </li>
+                    <li class="md:col-span-2">
+                        <strong class="text-gray-900">Mapa:</strong>
+                        <img class="w-full h-auto rounded-md mt-2" src="${circuit.map}" alt="Mapa del circuito">
+                    </li>
+                    <li class="md:col-span-2">
+                        <strong class="text-gray-900">WebLink:</strong>
+                        <a href="${circuit.url}" class="text-blue-500 hover:underline" target="_blank">${circuit.url}</a>
+                    </li>
+                    <li class="md:col-span-2">
+                        <strong class="text-gray-900">Descripción:</strong>
+                        <span>${circuit.description}</span>
+                    </li>
+                    <li>
+                        <strong class="text-gray-900">Mejor tiempo:</strong>
+                        <span>${circuit.bestlap}</span>
+                    </li>
+                    <li>
+                        <strong class="text-gray-900">Precio:</strong>
+                        <span>${circuit.prices}</span>
+                    </li>
+                </ul>
+            </div>
+        `;
     }
 }
 
@@ -753,18 +796,21 @@ function circuitModal(circuit){
  */
 async function getEventData(){
     const eventArray = await getAPIData(`${NODE_SERVER}read/events` , 'GET')
+    console.log(eventArray)
     eventArray.forEach(function (/** @type {EventCard} */ event){
         drawEvent(event)
     })
 }    
 
-function drawEvent(event){
+async function drawEvent(event){
+    const eventCreator = await getAPIData(`${NODE_SERVER}read/user/${event.user_id}`, 'GET')
+    console.log(eventCreator)
     const eventFrame = document.getElementById('__event-container')
         const html =
                 `<div class="bg-purple-100 h-24 mx-4 mb-4 flex items-center justify-center modal-open event-card">
                     <span class="mr-4 pl-2">${event.title}</span>
                     <span class="mr-4 pl-2">${event.date}</span>
-                    <span class="mr-4 pl-2">${event.user_id}</span>
+                    <span class="mr-4 pl-2">${eventCreator.username}</span>
                     <span class="mr-4 pl-2">${event.description}</span>
                     <button data-id="${event._id}" class="border-2 border-black bg-gray-400 delete-event">Delete</button>
                 </div>`
@@ -970,3 +1016,278 @@ function showForumCard(item){
     }
 
 /*=================================RACELINE CREATOR===========================================*/
+function activateCanvas() {
+    canvas = new fabric.Canvas('circuitCanvas');
+
+    // Cargar la imagen de fondo y bloquearla para evitar que se mueva
+    fabric.Image.fromURL('./imgs/kotar.jpg', function(img) {
+        img.scaleToWidth(1000);
+        img.selectable = false;
+        img.evented = false;
+        canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas));
+    });
+
+    // Configurar el pincel de dibujo
+    const brush = new fabric.PencilBrush(canvas);
+    canvas.freeDrawingBrush = brush;
+    brush.color = '#40ff00';
+    brush.width = 5;
+    canvas.isDrawingMode = true;
+
+    // Variables para el panning
+    let isDragging = false;
+    let lastPosX = 0;
+    let lastPosY = 0;
+    let panMode = false;
+
+    // Botón para limpiar trazos (se mantiene la imagen de fondo)
+    const clearButton = document.getElementById("clear");
+    clearButton.addEventListener("click", function() {
+        canvas.getObjects().forEach(function(obj) {
+            if (obj.type !== 'image') {
+                canvas.remove(obj);
+            }
+        });
+    });
+
+    // Modo pan activado con ALT: si se presiona ALT, se desactiva el dibujo y se permite el pan
+    canvas.on('mouse:down', function(opt) {
+        const e = opt.e;
+        if (e.altKey) {
+            canvas.isDrawingMode = false;
+            isDragging = true;
+            canvas.selection = false;
+            lastPosX = e.clientX;
+            lastPosY = e.clientY;
+            
+        }
+    });
+
+    canvas.on('mouse:move', function(opt) {
+        const e = opt.e;
+        if (isDragging) {
+            const vpt = canvas.viewportTransform;
+            vpt[4] += e.clientX - lastPosX;
+            vpt[5] += e.clientY - lastPosY;
+            canvas.requestRenderAll();
+            lastPosX = e.clientX;
+            lastPosY = e.clientY;
+        }
+    });
+
+    canvas.on('mouse:up', function(opt) {
+        if (isDragging) {
+            isDragging = false;
+            canvas.selection = true;
+            clampViewport(canvas);
+        }
+    });
+
+    
+
+    // Pan con arrastre (solo en modo pan/zoom)
+    canvas.on('mouse:down', function(opt) {
+        const e = opt.e;
+        if (!panMode) return; // Solo en modo pan/zoom
+
+        isDragging = true;
+        canvas.selection = false;
+        lastPosX = e.clientX;
+        lastPosY = e.clientY;
+    });
+
+    canvas.on('mouse:move', function(opt) {
+        if (!panMode || !isDragging) return;
+        const e = opt.e;
+        const vpt = canvas.viewportTransform;
+        vpt[4] += e.clientX - lastPosX;
+        vpt[5] += e.clientY - lastPosY;
+        canvas.requestRenderAll();
+        lastPosX = e.clientX;
+        lastPosY = e.clientY;
+    });
+
+    canvas.on('mouse:up', function(opt) {
+        if (!panMode) return;
+        isDragging = false;
+        canvas.selection = true;
+    });
+
+    // Zoom con la rueda del mouse (solo cuando no se hace pan)
+    canvas.on('mouse:wheel', function(opt) {
+        opt.e.preventDefault();
+        opt.e.stopPropagation();
+        const pointer = canvas.getPointer(opt.e);
+        let zoom = canvas.getZoom();
+
+        // Aumentar o disminuir el zoom según la dirección del scroll
+        zoom = opt.e.deltaY < 0 ? zoom * 1.1 : zoom / 1.1;
+
+        // Calcular el zoom mínimo permitido basado en el fondo para que, 
+        // cuando la imagen completa se vea en su lado más corto, no se pueda hacer más zoom out.
+        if (canvas.backgroundImage) {
+            const bg = canvas.backgroundImage;
+            const minZoomWidth = canvas.getWidth() / (bg.width * bg.scaleX);
+            const minZoomHeight = canvas.getHeight() / (bg.height * bg.scaleY);
+            const minZoom = Math.max(minZoomWidth, minZoomHeight);
+            if (zoom < minZoom) {
+                zoom = minZoom;
+            }
+        }
+        
+        if (zoom > 20) zoom = 20;  // Zoom máximo arbitrario
+
+        canvas.zoomToPoint(new fabric.Point(pointer.x, pointer.y), zoom);
+        clampViewport(canvas);
+    });
+
+    // Cambiar el color del pincel
+    document.getElementById('red-brush').addEventListener('click', () => {
+        brush.color = 'red';
+    });
+
+    document.getElementById('yellow-brush').addEventListener('click', () => {
+        brush.color = 'yellow';
+    });
+
+    document.getElementById('green-brush').addEventListener('click', () => {
+        brush.color = '#40ff00';
+    });
+
+     // Botón para cambiar al modo de selección (salir del modo de dibujo)
+     const selectModeBtn = document.getElementById('toggle-select-mode');
+     selectModeBtn.addEventListener('click', () => {
+         // Desactivar el modo de dibujo para poder seleccionar y mover objetos
+         canvas.isDrawingMode = false;
+         panMode = false
+         canvas.selection = true;
+ 
+         // Opcional: Cambiar el texto del botón para indicar el modo actual
+         selectModeBtn.style.backgroundColor ='rgb(37 99 235)'
+
+         drawModeBtn.style.backgroundColor ='rgb(59 130 246)'
+         togglePanButton.style.backgroundColor ='rgb(59 130 246)'
+ 
+         // También puedes, si lo deseas, habilitar la selección de objetos (esto ya está activado por defecto)
+         
+     });
+
+     const drawModeBtn = document.getElementById('toggle-draw-mode');
+     drawModeBtn.addEventListener('click', () => {
+         // Desactivar el modo de dibujo para poder seleccionar y mover objetos
+        panMode = false
+        canvas.selection = false;
+        canvas.isDrawingMode = true;
+ 
+         // Opcional: Cambiar el texto del botón para indicar el modo actual
+        drawModeBtn.style.backgroundColor ='rgb(37 99 235)'
+
+        selectModeBtn.style.backgroundColor = 'rgb(59 130 246)'
+        togglePanButton.style.backgroundColor ='rgb(59 130 246)'
+         // También puedes, si lo deseas, habilitar la selección de objetos (esto ya está activado por defecto)
+     });
+
+     const togglePanButton = document.getElementById('toggle-pan-mode');
+    togglePanButton.addEventListener('click', () => {
+        canvas.isDrawingMode = false;
+        canvas.selection = false;
+        panMode = true 
+
+        togglePanButton.style.backgroundColor ='rgb(37 99 235)'
+
+        drawModeBtn.style.backgroundColor ='rgb(59 130 246)'
+        selectModeBtn.style.backgroundColor = 'rgb(59 130 246)'
+
+    });
+
+    const saveBtn = document.getElementById('save-btn');
+    saveBtn.addEventListener('click', function() {
+        // Obtener la imagen en formato DataURL (PNG por defecto)
+        const dataURL = canvas.toDataURL({
+            format: 'png',
+            quality: 1  // Calidad máxima
+        });
+        
+        // Crear un enlace temporal para descargar la imagen
+        const link = document.createElement('a');
+        link.href = dataURL;
+        link.download = 'circuito.png'; // Nombre del archivo a descargar
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    });
+
+    const uploadToWebBtn = document.getElementById('upload')
+    uploadToWebBtn.addEventListener('click', uploadToWeb)
+}
+
+async function uploadToWeb(){
+
+    const imgURL = canvas.toDataURL({
+        format: 'jpeg', 
+        quality: 0.8     
+    })
+    const raceLine = {
+        user_id: 'user',
+        circuit_id: 'kotar',
+        img: imgURL
+    }
+    console.log(raceLine)
+
+    const payload = JSON.stringify(raceLine)
+    console.log(payload)
+
+    const apiData = await getAPIData(`${NODE_SERVER}create/raceline/`, "POST", payload);
+    console.log("Respuesta del servidor:", apiData);
+
+
+}
+
+
+function clampViewport(canvas) {
+    const bg = canvas.backgroundImage;
+    if (!bg) return;
+    
+    const canvasWidth = canvas.getWidth();
+    const canvasHeight = canvas.getHeight();
+    const zoom = canvas.getZoom();
+    
+    // Dimensiones efectivas del fondo (imagen) con el zoom actual
+    const bgWidth = bg.width * bg.scaleX * zoom;
+    const bgHeight = bg.height * bg.scaleY * zoom;
+    
+    const vt = canvas.viewportTransform; // [a, b, c, d, tx, ty]
+    
+    // Limitar la traslación horizontal (vt[4])
+    if (vt[4] > 0) {
+        vt[4] = 0;
+    } else if (vt[4] < canvasWidth - bgWidth) {
+        vt[4] = canvasWidth - bgWidth;
+    }
+    
+    // Limitar la traslación vertical (vt[5])
+    if (vt[5] > 0) {
+        vt[5] = 0;
+    } else if (vt[5] < canvasHeight - bgHeight) {
+        vt[5] = canvasHeight - bgHeight;
+    }
+    
+    canvas.setViewportTransform(vt);
+}
+
+async function showRaceLine(){
+    const apiData = await getAPIData(`${NODE_SERVER}read/racelines` , 'GET')
+    console.log(apiData)
+
+    const imageURI = apiData[0].img
+
+    const imageContainer = document.getElementById('imageDisplay')
+    imageContainer.src = imageURI
+}
+
+
+  
+
+
+
+
