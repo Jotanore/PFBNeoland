@@ -12,7 +12,7 @@ let userCoords = null;
 let map
 let editCanvas
 let userlog = false
-const NODE_SERVER = `http://127.0.0.1:6431/`
+const NODE_SERVER = `127.0.0.1:6431/`
 let circuitArray
 
 /*
@@ -231,7 +231,7 @@ function formManager(e){
                     console.log("antes de fetch", marketItem)
                     payload = JSON.stringify(marketItem)
                     console.log(payload)
-                    apiData = await getAPIData(`${NODE_SERVER}create/article`,'POST', payload);
+                    apiData = await getAPIData(`${location.protocol}//${NODE_SERVER}create/article`,'POST', payload);
 
                     const item = new MarketItem(apiData._id, apiData.user_id, apiData.article, apiData.price, apiData.location, apiData.description, apiData.img)
                     // const item = new MarketItem('',user, itemName, itemPrice, itemLocation, description, itemImg)
@@ -257,7 +257,7 @@ function formManager(e){
                     console.log("antes de fetch", eventObject)
                     payload = JSON.stringify(eventObject)
                     console.log(payload)
-                    apiData = await getAPIData(`${NODE_SERVER}create/event`,'POST', payload);
+                    apiData = await getAPIData(`${location.protocol}//${NODE_SERVER}create/event`,'POST', payload);
 
                     const event = new EventCard(apiData._id, apiData.title, apiData.date, apiData.user_id, apiData.description, apiData.location)
                     //searchParams = new URLSearchParams(event).toString()
@@ -313,6 +313,11 @@ async function getAPIData(apiURL, method, data) {
       if (data) {
         headers.append('Content-Length', String(JSON.stringify(data).length))
       }
+
+      if (isUserLoggedIn()) {
+        const userData = getDataFromSessionStorage()
+        headers.append('Authorization', `Bearer ${userData?.user?.token}`)
+      }
       apiData = await simpleFetch(apiURL, {
         // Si la petición tarda demasiado, la abortamos
         signal: AbortSignal.timeout(3000),
@@ -335,6 +340,11 @@ async function getAPIData(apiURL, method, data) {
     }
   
     return apiData
+  }
+
+  function isUserLoggedIn() {
+    const userData = getUserFromSession()
+    return userData?.user?.token
   }
 
 /*=================================PROFILE===============================================*/
@@ -421,7 +431,7 @@ function updateUserProfile(){
         console.log("antes de fetch", newUser)
         const payload = JSON.stringify(newUser)
         console.log("payload",payload)
-        const apiData = await getAPIData(`${NODE_SERVER}update/user/${storedUser._id}`, "PUT", payload);
+        const apiData = await getAPIData(`${location.protocol}//${NODE_SERVER}update/user/${storedUser._id}`, "PUT", payload);
         console.log("Respuesta del servidor:", apiData);
 
         newUser._id = storedUser._id
@@ -451,11 +461,11 @@ async function fillRaceLinesList(){
     const user = getUserFromSession()
     console.log(user)
 
-    const apiData = await getAPIData(`${NODE_SERVER}read/racelines/${user._id}` , 'GET')
+    const apiData = await getAPIData(`${location.protocol}//${NODE_SERVER}read/racelines/${user._id}` , 'GET')
     console.log(apiData)
     apiData.forEach(async function (raceline){
        
-        const lineCircuit = await getAPIData(`${NODE_SERVER}read/circuit/${raceline.circuit_id}`, 'GET')
+        const lineCircuit = await getAPIData(`${location.protocol}//${NODE_SERVER}read/circuit/${raceline.circuit_id}`, 'GET')
         const html = `<li>Linea:${lineCircuit.name} Fecha: XD</li>`
 
         document.getElementById('race-line-list').insertAdjacentHTML('afterbegin', html)
@@ -470,7 +480,7 @@ async function fillMarketList(){
     const user = getUserFromSession()
     console.log(user)
 
-    const apiData = await getAPIData(`${NODE_SERVER}read/articles/${user._id}` , 'GET')
+    const apiData = await getAPIData(`${location.protocol}//${NODE_SERVER}read/articles/${user._id}` , 'GET')
     console.log(apiData)
     apiData.forEach(function (article){
        
@@ -488,7 +498,7 @@ async function fillEventList(){
     const user = getUserFromSession()
     console.log(user)
 
-    const apiData = await getAPIData(`${NODE_SERVER}read/events/${user._id}` , 'GET')
+    const apiData = await getAPIData(`${location.protocol}//${NODE_SERVER}read/events/${user._id}` , 'GET')
     console.log(apiData)
     apiData.forEach(function (event){
        
@@ -543,7 +553,7 @@ function userRegister(){
         console.log("antes de fetch", newUser)
         let payload = JSON.stringify(newUser)
         console.log(payload)
-        let apiData = await getAPIData(`${NODE_SERVER}create/user`,'POST', payload );
+        let apiData = await getAPIData(`${location.protocol}//${NODE_SERVER}create/user`,'POST', payload );
         console.log(apiData)
 
         const userFill = {
@@ -574,7 +584,7 @@ function userRegister(){
         
         payload = JSON.stringify(userFill)
         console.log(payload)
-        apiData = await getAPIData(`${NODE_SERVER}update/user/${apiData._id}`,'PUT', payload );
+        apiData = await getAPIData(`${location.protocol}//${NODE_SERVER}update/user/${apiData._id}`,'PUT', payload );
 
         const userWithoutPassword = { ...userFill }
             delete userWithoutPassword.password
@@ -601,22 +611,51 @@ function userLogin() {
             password: document.getElementById('login-password').value
         }
 
-        const users = await getAPIData(`${NODE_SERVER}read/users`, 'GET')
-        console.log(users)
+        if (loginCredentials.email !== '' && loginCredentials.password !== '') {
+            const payload = JSON.stringify(loginCredentials)
+            const apiData = await getAPIData(`${location.protocol}//${NODE_SERVER}login`, 'POST', payload)
+        
+            if (!apiData) {
+              // Show error
+              alert('El usuario no existe')
+            } else {
+              if ('_id' in apiData
+                && 'name' in apiData
+                && 'email' in apiData
+                && 'token' in apiData
+                && 'role' in apiData) {
+                const userData = /** @type {User} */(apiData)
+                // store.user.login(userData, setSessionStorageFromStore)
+                // setSessionStorageFromStore()
+                updateSessionStorage(userData)
+                alert('Bienvenido')
+                window.location.href = 'profile.html'
+              } else {
+                alert('Usuario no encontrado')
+              }
+            }
+          }
 
-        const userFound = users.find(user => user.email === loginCredentials.email && user.password === loginCredentials.password)
+        // const users = await getAPIData(`${location.protocol}//${NODE_SERVER}read/users`, 'GET')
+        // console.log(users)
 
-        if (userFound) {
-            const userWithoutPassword = { ...userFound }
-            delete userWithoutPassword.password
-            sessionStorage.setItem('user', JSON.stringify(userWithoutPassword))
-            alert('Bienvenido')
-            window.location.href = 'profile.html'
-        } else {
-            alert('Usuario no encontrado')
-        }
+        // const userFound = users.find(user => user.email === loginCredentials.email && user.password === loginCredentials.password)
+
+        // if (userFound) {
+        //     const userWithoutPassword = { ...userFound }
+        //     delete userWithoutPassword.password
+        //     sessionStorage.setItem('user', JSON.stringify(userWithoutPassword))
+        //     alert('Bienvenido')
+        //     window.location.href = 'profile.html'
+        // } else {
+        //     alert('Usuario no encontrado')
+        // }
     })
 }
+
+function updateSessionStorage(value) {
+    sessionStorage.setItem('user', JSON.stringify(value))
+  }
 
 /*=================================CIRCUITS===========================================*/
 
@@ -657,7 +696,7 @@ function userLogin() {
     async function getCircuitData(){
         //Get the info via JSON
         //const API_CIRCUITS = 'api/get.circuits.json'
-        circuitArray = await getAPIData(`${NODE_SERVER}read/circuits` , 'GET')
+        circuitArray = await getAPIData(`${location.protocol}//${NODE_SERVER}read/circuits` , 'GET')
         //Iterate Array, create the Circuit Object and push to store
         // Waits for getUserToCircuitDistance to get the distance to each circuit and stores it on circuit.distance
         await circuitArray.forEach(async function (/** @type {Circuit} */ circuit){
@@ -856,7 +895,7 @@ function circuitModal(circuit){
  * Pushes them to store
  */
 async function getEventData(){
-    const eventArray = await getAPIData(`${NODE_SERVER}read/events` , 'GET')
+    const eventArray = await getAPIData(`${location.protocol}//${NODE_SERVER}read/events` , 'GET')
     console.log(eventArray)
     eventArray.forEach(function (/** @type {EventCard} */ event){
         drawEvent(event)
@@ -864,7 +903,7 @@ async function getEventData(){
 }    
 
 async function drawEvent(event){
-    const eventCreator = await getAPIData(`${NODE_SERVER}read/user/${event.user_id}`, 'GET')
+    const eventCreator = await getAPIData(`${location.protocol}//${NODE_SERVER}read/user/${event.user_id}`, 'GET')
     console.log(eventCreator)
     const eventFrame = document.getElementById('__event-container')
         const html =
@@ -907,7 +946,7 @@ async function deleteEventCard(event) {
 
 
     try {
-        const apiData = await getAPIData(`${NODE_SERVER}delete/event/${eventId}`, 'DELETE');
+        const apiData = await getAPIData(`${location.protocol}//${NODE_SERVER}delete/event/${eventId}`, 'DELETE');
         console.log("Respuesta del servidor:", apiData);
     } catch (error) {
         console.error("Error eliminando el evento:", error);
@@ -945,7 +984,7 @@ function eventModal(event){
  * Pushes them to store
  */
    async function getMarketData(){
-        const marketArray = await getAPIData(`${NODE_SERVER}read/articles` , 'GET')
+        const marketArray = await getAPIData(`${location.protocol}//${NODE_SERVER}read/articles` , 'GET')
         marketArray.forEach(function (/** @type {MarketItem} */ item){
                 drawArticle(item)
 
@@ -958,7 +997,7 @@ function eventModal(event){
  */
     async function drawArticle(item){
         console.log(item)
-        const itemCreator = await getAPIData(`${NODE_SERVER}read/user/${item.user_id}`, 'GET')
+        const itemCreator = await getAPIData(`${location.protocol}//${NODE_SERVER}read/user/${item.user_id}`, 'GET')
         const marketFrame = document.getElementById('__market-container')
         const html = `<div class="bg-purple-100 h-52 mx-4 mb-4 p-7 flex modal-open market-card">
                 <div class="mr-5 min-w-[150px]">
@@ -1007,7 +1046,7 @@ async function deleteMarketCard(event) {
     }
 
     try {
-        const apiData = await getAPIData(`${NODE_SERVER}delete/article/${marketId}`, 'DELETE');
+        const apiData = await getAPIData(`${location.protocol}//${NODE_SERVER}delete/article/${marketId}`, 'DELETE');
         console.log("Respuesta del servidor:", apiData);
     } catch (error) {
         console.error("Error eliminando el evento:", error);
@@ -1050,7 +1089,7 @@ function marketModal(item){
 async function getForumData(){
     //Get the info via JSON
     //const API_FORUM = 'api/get.forum.topics.json'
-    const forumArray = await getAPIData(`${NODE_SERVER}read/forum-topics` , 'GET')
+    const forumArray = await getAPIData(`${location.protocol}//${NODE_SERVER}read/forum-topics` , 'GET')
     //Iterate Array, create the ForumCard Object and push to store
     forumArray.forEach(function (/** @type {ForumCard} */ a){
         const item = new ForumCard(a.user, a.title, a.description)
@@ -1313,7 +1352,7 @@ async function uploadToWeb(){
     const payload = JSON.stringify(raceLine)
     console.log(payload)
 
-    const apiData = await getAPIData(`${NODE_SERVER}create/raceline/`, "POST", payload);
+    const apiData = await getAPIData(`${location.protocol}//${NODE_SERVER}create/raceline/`, "POST", payload);
     console.log("Respuesta del servidor:", apiData);
 
 
@@ -1371,7 +1410,7 @@ function clampViewport(editCanvas) {
 
 async function fillSelectable(){
 
-    circuitArray = await getAPIData(`${NODE_SERVER}read/circuits` , 'GET')
+    circuitArray = await getAPIData(`${location.protocol}//${NODE_SERVER}read/circuits` , 'GET')
 
     const optionsDropdown = document.getElementById('opciones')
 
@@ -1396,7 +1435,7 @@ async function loadCircuitImage(){
 
     if (circuitID == 0) return
 
-    const circuit = await getAPIData(`${NODE_SERVER}read/circuit/${circuitID}`, 'GET') 
+    const circuit = await getAPIData(`${location.protocol}//${NODE_SERVER}read/circuit/${circuitID}`, 'GET') 
     console.log(circuitID)
     console.log(circuit)
 
