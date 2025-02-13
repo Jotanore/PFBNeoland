@@ -10,7 +10,7 @@ import { simpleFetch } from './lib/simpleFetch.js';
  */
 let userCoords = null;
 let map
-let canvas
+let editCanvas
 let userlog = false
 const NODE_SERVER = `http://127.0.0.1:6431/`
 let circuitArray
@@ -1017,22 +1017,22 @@ function showForumCard(item){
 
 /*=================================RACELINE CREATOR===========================================*/
 function activateCanvas() {
-    canvas = new fabric.Canvas('circuitCanvas');
+    editCanvas = new fabric.Canvas('circuitCanvas');
 
     // Cargar la imagen de fondo y bloquearla para evitar que se mueva
     fabric.Image.fromURL('./imgs/kotar.jpg', function(img) {
         img.scaleToWidth(1000);
         img.selectable = false;
         img.evented = false;
-        canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas));
+        editCanvas.setBackgroundImage(img, editCanvas.renderAll.bind(editCanvas));
     });
 
     // Configurar el pincel de dibujo
-    const brush = new fabric.PencilBrush(canvas);
-    canvas.freeDrawingBrush = brush;
+    const brush = new fabric.PencilBrush(editCanvas);
+    editCanvas.freeDrawingBrush = brush;
     brush.color = '#40ff00';
     brush.width = 5;
-    canvas.isDrawingMode = true;
+    editCanvas.isDrawingMode = true;
 
     // Variables para el panning
     let isDragging = false;
@@ -1043,92 +1043,98 @@ function activateCanvas() {
     // Botón para limpiar trazos (se mantiene la imagen de fondo)
     const clearButton = document.getElementById("clear");
     clearButton.addEventListener("click", function() {
-        canvas.getObjects().forEach(function(obj) {
+        editCanvas.getObjects().forEach(function(obj) {
             if (obj.type !== 'image') {
-                canvas.remove(obj);
+                editCanvas.remove(obj);
             }
         });
     });
 
+    const clearBgButton = document.getElementById("clearbg");
+    clearBgButton.addEventListener("click", function() {
+        editCanvas.setBackgroundImage(null, editCanvas.renderAll.bind(editCanvas));
+        
+    });
+
     // Modo pan activado con ALT: si se presiona ALT, se desactiva el dibujo y se permite el pan
-    canvas.on('mouse:down', function(opt) {
+    editCanvas.on('mouse:down', function(opt) {
         const e = opt.e;
         if (e.altKey) {
-            canvas.isDrawingMode = false;
+            editCanvas.isDrawingMode = false;
             isDragging = true;
-            canvas.selection = false;
+            editCanvas.selection = false;
             lastPosX = e.clientX;
             lastPosY = e.clientY;
             
         }
     });
 
-    canvas.on('mouse:move', function(opt) {
+    editCanvas.on('mouse:move', function(opt) {
         const e = opt.e;
         if (isDragging) {
-            const vpt = canvas.viewportTransform;
+            const vpt = editCanvas.viewportTransform;
             vpt[4] += e.clientX - lastPosX;
             vpt[5] += e.clientY - lastPosY;
-            canvas.requestRenderAll();
+            editCanvas.requestRenderAll();
             lastPosX = e.clientX;
             lastPosY = e.clientY;
         }
     });
 
-    canvas.on('mouse:up', function(opt) {
+    editCanvas.on('mouse:up', function(opt) {
         if (isDragging) {
             isDragging = false;
-            canvas.selection = true;
-            clampViewport(canvas);
+            editCanvas.selection = true;
+            clampViewport(editCanvas);
         }
     });
 
     
 
     // Pan con arrastre (solo en modo pan/zoom)
-    canvas.on('mouse:down', function(opt) {
+    editCanvas.on('mouse:down', function(opt) {
         const e = opt.e;
         if (!panMode) return; // Solo en modo pan/zoom
 
         isDragging = true;
-        canvas.selection = false;
+        editCanvas.selection = false;
         lastPosX = e.clientX;
         lastPosY = e.clientY;
     });
 
-    canvas.on('mouse:move', function(opt) {
+    editCanvas.on('mouse:move', function(opt) {
         if (!panMode || !isDragging) return;
         const e = opt.e;
-        const vpt = canvas.viewportTransform;
+        const vpt = editCanvas.viewportTransform;
         vpt[4] += e.clientX - lastPosX;
         vpt[5] += e.clientY - lastPosY;
-        canvas.requestRenderAll();
+        editCanvas.requestRenderAll();
         lastPosX = e.clientX;
         lastPosY = e.clientY;
     });
 
-    canvas.on('mouse:up', function(opt) {
+    editCanvas.on('mouse:up', function(opt) {
         if (!panMode) return;
         isDragging = false;
-        canvas.selection = true;
+        editCanvas.selection = true;
     });
 
     // Zoom con la rueda del mouse (solo cuando no se hace pan)
-    canvas.on('mouse:wheel', function(opt) {
+    editCanvas.on('mouse:wheel', function(opt) {
         opt.e.preventDefault();
         opt.e.stopPropagation();
-        const pointer = canvas.getPointer(opt.e);
-        let zoom = canvas.getZoom();
+        const pointer = editCanvas.getPointer(opt.e);
+        let zoom = editCanvas.getZoom();
 
         // Aumentar o disminuir el zoom según la dirección del scroll
         zoom = opt.e.deltaY < 0 ? zoom * 1.1 : zoom / 1.1;
 
         // Calcular el zoom mínimo permitido basado en el fondo para que, 
         // cuando la imagen completa se vea en su lado más corto, no se pueda hacer más zoom out.
-        if (canvas.backgroundImage) {
-            const bg = canvas.backgroundImage;
-            const minZoomWidth = canvas.getWidth() / (bg.width * bg.scaleX);
-            const minZoomHeight = canvas.getHeight() / (bg.height * bg.scaleY);
+        if (editCanvas.backgroundImage) {
+            const bg = editCanvas.backgroundImage;
+            const minZoomWidth = editCanvas.getWidth() / (bg.width * bg.scaleX);
+            const minZoomHeight = editCanvas.getHeight() / (bg.height * bg.scaleY);
             const minZoom = Math.max(minZoomWidth, minZoomHeight);
             if (zoom < minZoom) {
                 zoom = minZoom;
@@ -1137,8 +1143,8 @@ function activateCanvas() {
         
         if (zoom > 20) zoom = 20;  // Zoom máximo arbitrario
 
-        canvas.zoomToPoint(new fabric.Point(pointer.x, pointer.y), zoom);
-        clampViewport(canvas);
+        editCanvas.zoomToPoint(new fabric.Point(pointer.x, pointer.y), zoom);
+        clampViewport(editCanvas);
     });
 
     // Cambiar el color del pincel
@@ -1158,9 +1164,9 @@ function activateCanvas() {
      const selectModeBtn = document.getElementById('toggle-select-mode');
      selectModeBtn.addEventListener('click', () => {
          // Desactivar el modo de dibujo para poder seleccionar y mover objetos
-         canvas.isDrawingMode = false;
+         editCanvas.isDrawingMode = false;
          panMode = false
-         canvas.selection = true;
+         editCanvas.selection = true;
  
          // Opcional: Cambiar el texto del botón para indicar el modo actual
          selectModeBtn.style.backgroundColor ='rgb(37 99 235)'
@@ -1176,8 +1182,8 @@ function activateCanvas() {
      drawModeBtn.addEventListener('click', () => {
          // Desactivar el modo de dibujo para poder seleccionar y mover objetos
         panMode = false
-        canvas.selection = false;
-        canvas.isDrawingMode = true;
+        editCanvas.selection = false;
+        editCanvas.isDrawingMode = true;
  
          // Opcional: Cambiar el texto del botón para indicar el modo actual
         drawModeBtn.style.backgroundColor ='rgb(37 99 235)'
@@ -1189,8 +1195,8 @@ function activateCanvas() {
 
      const togglePanButton = document.getElementById('toggle-pan-mode');
     togglePanButton.addEventListener('click', () => {
-        canvas.isDrawingMode = false;
-        canvas.selection = false;
+        editCanvas.isDrawingMode = false;
+        editCanvas.selection = false;
         panMode = true 
 
         togglePanButton.style.backgroundColor ='rgb(37 99 235)'
@@ -1203,7 +1209,7 @@ function activateCanvas() {
     const saveBtn = document.getElementById('save-btn');
     saveBtn.addEventListener('click', function() {
         // Obtener la imagen en formato DataURL (PNG por defecto)
-        const dataURL = canvas.toDataURL({
+        const dataURL = editCanvas.toDataURL({
             format: 'png',
             quality: 1  // Calidad máxima
         });
@@ -1223,10 +1229,16 @@ function activateCanvas() {
 
 async function uploadToWeb(){
 
-    const imgURL = canvas.toDataURL({
-        format: 'jpeg', 
-        quality: 0.8     
+    const bg = editCanvas.backgroundImage;
+    editCanvas.setBackgroundImage(null, editCanvas.renderAll.bind(editCanvas));
+
+    const imgURL = editCanvas.toDataURL({
+        format: 'png', 
+        quality: 1     
     })
+
+    editCanvas.setBackgroundImage(bg, editCanvas.renderAll.bind(editCanvas));
+
     const raceLine = {
         user_id: 'user',
         circuit_id: 'kotar',
@@ -1244,19 +1256,19 @@ async function uploadToWeb(){
 }
 
 
-function clampViewport(canvas) {
-    const bg = canvas.backgroundImage;
+function clampViewport(editCanvas) {
+    const bg = editCanvas.backgroundImage;
     if (!bg) return;
     
-    const canvasWidth = canvas.getWidth();
-    const canvasHeight = canvas.getHeight();
-    const zoom = canvas.getZoom();
+    const canvasWidth = editCanvas.getWidth();
+    const canvasHeight = editCanvas.getHeight();
+    const zoom = editCanvas.getZoom();
     
     // Dimensiones efectivas del fondo (imagen) con el zoom actual
     const bgWidth = bg.width * bg.scaleX * zoom;
     const bgHeight = bg.height * bg.scaleY * zoom;
     
-    const vt = canvas.viewportTransform; // [a, b, c, d, tx, ty]
+    const vt = editCanvas.viewportTransform; // [a, b, c, d, tx, ty]
     
     // Limitar la traslación horizontal (vt[4])
     if (vt[4] > 0) {
@@ -1272,14 +1284,14 @@ function clampViewport(canvas) {
         vt[5] = canvasHeight - bgHeight;
     }
     
-    canvas.setViewportTransform(vt);
+    editCanvas.setViewportTransform(vt);
 }
 
 async function showRaceLine(){
     const apiData = await getAPIData(`${NODE_SERVER}read/racelines` , 'GET')
     console.log(apiData)
 
-    const imageURI = apiData[0].img
+    const imageURI = apiData[1].img
 
     const imageContainer = document.getElementById('imageDisplay')
     imageContainer.src = imageURI
