@@ -40,6 +40,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (userlog) {
                     fillUserProfile()
                     fillUserForm()
+                    fillEventList()
+                    fillRaceLinesList()
+                    fillMarketList()
                     updateUserProfile()
                 }
                 break
@@ -217,8 +220,8 @@ function formManager(e){
                     apiData = ''
 
                     const marketItem = {
-                        title: eventTitle,
-                        date: eventDate,
+                        article: itemName,
+                        price: itemPrice,
                         user_id: user,
                         location: itemLocation,
                         description: description,
@@ -443,6 +446,61 @@ function updateUserProfile(){
     })
 }
 
+async function fillRaceLinesList(){
+
+    const user = getUserFromSession()
+    console.log(user)
+
+    const apiData = await getAPIData(`${NODE_SERVER}read/racelines/${user._id}` , 'GET')
+    console.log(apiData)
+    apiData.forEach(async function (raceline){
+       
+        const lineCircuit = await getAPIData(`${NODE_SERVER}read/circuit/${raceline.circuit_id}`, 'GET')
+        const html = `<li>Linea:${lineCircuit.name} Fecha: XD</li>`
+
+        document.getElementById('race-line-list').insertAdjacentHTML('afterbegin', html)
+    })
+
+    
+    
+}
+
+async function fillMarketList(){
+
+    const user = getUserFromSession()
+    console.log(user)
+
+    const apiData = await getAPIData(`${NODE_SERVER}read/articles/${user._id}` , 'GET')
+    console.log(apiData)
+    apiData.forEach(function (article){
+       
+        const html = `<li>Articulo:${article.article} Fecha: ${article.price}</li>`
+
+        document.getElementById('article-list').insertAdjacentHTML('afterbegin', html)
+    })
+
+    
+    
+}
+
+async function fillEventList(){
+
+    const user = getUserFromSession()
+    console.log(user)
+
+    const apiData = await getAPIData(`${NODE_SERVER}read/events/${user._id}` , 'GET')
+    console.log(apiData)
+    apiData.forEach(function (event){
+       
+        const html = `<li>Evento:${event.title} Fecha: ${event.date}</li>`
+
+        document.getElementById('event-list').insertAdjacentHTML('afterbegin', html)
+    })
+
+    
+    
+}
+
 /*=================================INDEX===========================================*/
 
 function assignIndexListeners(){
@@ -647,10 +705,12 @@ function userLogin() {
     function drawCircuitCard(circuit){
         const circuitFrame = document.getElementById('card-container')
         const html = `<article class="mb-5 circuit-card zoom-to-marker" data-lat="${circuit.location.latitude}" data-lng="${circuit.location.longitude}">
-                            <div class="bg-purple-200 min-h-12 max-h-24 w-full flex items-center ">
-                                <span class="mr-4 pl-2">${circuit.name}</span>
-                                <span class="mr-4 pl-2 ">${circuit.distance}Km</span>
-                                <button class="mr-4 pl-2 modal-open border-black bg-gray-400">Ver más</button>
+                            <div class="bg-amber-200 min-h-[3rem] max-h-[6rem] w-full flex items-center p-3 rounded shadow-md hover:bg-amber-300">
+                                <span class="mr-4 pl-2 font-bold text-gray-800">${circuit.name}</span>
+                                <span class="mr-4 pl-2 text-gray-600">${circuit.distance} Km</span>
+                                <button class="mr-4 pl-2 modal-open border border-black bg-gray-400 hover:bg-gray-500 text-white rounded px-3 py-1">
+                                Ver más
+                                </button>
                             </div>
                         </article>`
         circuitFrame?.insertAdjacentHTML('beforeend', html)
@@ -896,16 +956,18 @@ function eventModal(event){
  * Draws a market item card
  * @param {MarketItem} item
  */
-    function drawArticle(item){
-    const marketFrame = document.getElementById('__market-container')
-    const html = `<div class="bg-purple-100 h-52 mx-4 mb-4 p-7 flex modal-open market-card">
+    async function drawArticle(item){
+        console.log(item)
+        const itemCreator = await getAPIData(`${NODE_SERVER}read/user/${item.user_id}`, 'GET')
+        const marketFrame = document.getElementById('__market-container')
+        const html = `<div class="bg-purple-100 h-52 mx-4 mb-4 p-7 flex modal-open market-card">
                 <div class="mr-5 min-w-[150px]">
                     <img src="${item.img}" alt="${item.img}">
                 </div>
                 <article class="bg-white px-4 ml-5 h-full">
                     <div class="h-[35%]">                    
                         <span class="text-2xl font-bold mr-4 ">${item.article}</span>
-                        <span class="mr-4 pl-2">${item.user_id}</span>
+                        <span class="mr-4 pl-2">${itemCreator.username}</span>
                         <span class="mr-4 pl-2">${item.location}</span>
                         <button data-id="${item._id}" class="border-2 border-black bg-gray-400 delete-item">Delete</button>
                         </div>
@@ -1242,7 +1304,7 @@ async function uploadToWeb(){
 
 
     const raceLine = {
-        user_id: userlog ? user_id : "0",
+        user_id: userlog ? user._id : "0",
         circuit_id: circuitId,
         img: imgURL
     }
