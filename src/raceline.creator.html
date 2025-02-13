@@ -25,16 +25,29 @@
                 <li class="bg-neutral-200 p-2 px-4 mx-3 rounded-full hover:bg-amber-200"><a href="./circuits.html">Circuitos</a></li>
                 <li class="bg-neutral-200 p-2 px-4 mx-3 rounded-full hover:bg-amber-200"><a href="./events.html">Eventos</a></li>
                 <li class="bg-neutral-200 p-2 px-4 mx-3 rounded-full hover:bg-amber-200"><a href="./market.html">Mercado</a></li>
-                <li class="bg-neutral-200 p-2 px-4 mx-3 rounded-full hover:bg-amber-200"><a href="./forum.html">Foro</a></li>
+                <!--<li class="bg-neutral-200 p-2 px-4 mx-3 rounded-full hover:bg-amber-200"><a href="./forum.html">Foro</a></li>-->
                 <li class="bg-neutral-200 p-2 px-4 mx-3 rounded-full hover:bg-amber-200"><a href="./raceline.creator.html">Creador de trazadas</a></li>
             </ul>
         </nav>
     </header>
 
     <main class="bg-gray-100 px-6 pt-10 min-h-screen flex flex-col items-center">
-
-        <div class="flex flex-col md:flex-row gap-6">
-            <canvas id="circuitCanvas" width="1000" height="700"></canvas>
+        <section id="raceline-landing" class="bg-white shadow-lg rounded-lg p-8 w-full max-w-lg mb-6 ">
+            <h2 class="text-3xl font-bold text-gray-800 text-center mb-6">Raceline Creator</h2>
+            <form id="dropdown-circuits" action="#" enctype="multipart/form-data" class="space-y-4">
+                <div class="flex flex-col">
+                    <label for="opciones" class="text-gray-700 font-semibold">Selecciona circuito</label>
+                    <select id="opciones" name="opciones" class="p-2 border border-gray-300 rounded-lg shadow-sm " required>
+                        <option value="0">Selecciona circuito</option>
+                      </select>
+                      <button id="map-selection-confirm" type="button"
+                      class="w-full bg-amber-400 text-white font-bold py-2 rounded-lg hover:bg-amber-500 transition duration-300 mt-4">
+                      Send it
+                  </button>
+                </div>
+        </section>
+        <div id="edit-canvas-container" class="flex flex-col md:flex-row gap-6 __hidden">
+            <canvas data-id="" id="circuitCanvas" width="1000" height="700"></canvas>
             <div id="toolbar" class="bg-orange-300">
                 <ul>
                     <li><button id="toggle-pan-mode" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded ">
@@ -50,18 +63,18 @@
                     <li><button id="yellow-brush" class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400">Pincel amarillo</button></li>
                     <li><button id="green-brush" class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400">Pincel verde</button></li>
                     <li><button id="clear" class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400">Limpiar</button></li>
-                    <li><button id="save-btn" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-full shadow-md">
+                    <li><button id="clearbg" class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400">Limpiar Fondo</button></li>
+                    <li><button id="save-btn" type="button" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-full shadow-md">
                         Guardar Imagen
                       </button></li>
-                      <li><button id="upload" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-full shadow-md">
+                      <li><button id="upload" type="button" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-full shadow-md">
                         Subir al perfil
                       </button></li>
                 </ul>
             </div>
         </div>
-
-        <img id="imageDisplay" alt="Imagen en Base64">
     </main>
+    
     
 
 </body>
