@@ -79,10 +79,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                 showForumCard()
                 break
             case 'raceline':
-            console.log(`Estoy en ${page[0].id}`)
-            credentialsBtnManager()
-            activateCanvas()
-            showRaceLine()
+                console.log(`Estoy en ${page[0].id}`)
+                credentialsBtnManager()
+                raceLineButtonsAssign()
+                fillSelectable()
+                activateCanvas()
             break
     }
 
@@ -1042,13 +1043,9 @@ function activateCanvas() {
 
     // Botón para limpiar trazos (se mantiene la imagen de fondo)
     const clearButton = document.getElementById("clear");
-    clearButton.addEventListener("click", function() {
-        editCanvas.getObjects().forEach(function(obj) {
-            if (obj.type !== 'image') {
-                editCanvas.remove(obj);
-            }
-        });
-    });
+    clearButton.addEventListener("click", clearTraces);
+
+    
 
     const clearBgButton = document.getElementById("clearbg");
     clearBgButton.addEventListener("click", function() {
@@ -1239,9 +1236,14 @@ async function uploadToWeb(){
 
     editCanvas.setBackgroundImage(bg, editCanvas.renderAll.bind(editCanvas));
 
+    let user = getUserFromSession()
+
+    const circuitId = document.getElementById('circuitCanvas').getAttribute('data-id')
+
+
     const raceLine = {
-        user_id: 'user',
-        circuit_id: 'kotar',
+        user_id: userlog ? user_id : "0",
+        circuit_id: circuitId,
         img: imgURL
     }
     console.log(raceLine)
@@ -1253,6 +1255,14 @@ async function uploadToWeb(){
     console.log("Respuesta del servidor:", apiData);
 
 
+}
+
+function clearTraces(){
+    editCanvas.getObjects().forEach(function(obj) {
+        if (obj.type !== 'image') {
+            editCanvas.remove(obj);
+        }
+    });
 }
 
 
@@ -1287,16 +1297,62 @@ function clampViewport(editCanvas) {
     editCanvas.setViewportTransform(vt);
 }
 
-async function showRaceLine(){
-    const apiData = await getAPIData(`${NODE_SERVER}read/racelines` , 'GET')
-    console.log(apiData)
+// async function showRaceLine(){
+//     const apiData = await getAPIData(`${NODE_SERVER}read/racelines` , 'GET')
+//     console.log(apiData)
 
-    const imageURI = apiData[1].img
+//     const imageURI = apiData[1].img
 
-    const imageContainer = document.getElementById('imageDisplay')
-    imageContainer.src = imageURI
+//     const imageContainer = document.getElementById('imageDisplay')
+//     imageContainer.src = imageURI
+// }
+
+async function fillSelectable(){
+
+    circuitArray = await getAPIData(`${NODE_SERVER}read/circuits` , 'GET')
+
+    const optionsDropdown = document.getElementById('opciones')
+
+    circuitArray.forEach(function (circuit){
+
+        const html = `<option value="${circuit._id}">${circuit.name}</option>`
+
+        optionsDropdown.insertAdjacentHTML('beforeend', html)
+    })
+
 }
 
+function raceLineButtonsAssign(){
+    document.getElementById('map-selection-confirm').addEventListener('click', loadCircuitImage)
+}
+
+async function loadCircuitImage(){
+
+    const canvasContainer = document.getElementById('edit-canvas-container')
+    const canvas = document.getElementById('circuitCanvas')
+    const circuitID = document.getElementById('opciones').value
+
+    if (circuitID == 0) return
+
+    const circuit = await getAPIData(`${NODE_SERVER}read/circuit/${circuitID}`, 'GET') 
+    console.log(circuitID)
+    console.log(circuit)
+
+    fabric.Image.fromURL(circuit.map, function(img) {
+        // Ajusta la imagen al ancho del canvas (puedes ajustar según necesites)
+        img.scaleToWidth(editCanvas.getWidth());
+        // Asigna la imagen como fondo y vuelve a renderizar el canvas
+        editCanvas.setBackgroundImage(img, editCanvas.renderAll.bind(editCanvas));
+    });
+
+    canvasContainer.classList.remove('__hidden')
+    canvas.setAttribute('data-id', circuit._id)
+
+    console.log(canvas)
+    clearTraces()
+
+
+}
 
   
 
