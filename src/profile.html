@@ -66,14 +66,45 @@
             <div id="sidebar" class="w-full md:w-[40%] flex flex-col gap-6">
                 <div id="racelines-container"class="bg-white p-6 rounded-lg shadow-lg min-w-full max-w-3xl mx-auto">
                     <h2 class="text-2xl font-semibold text-gray-800 mb-4 text-center">Racelines</h2>
-            
+                    <ul id="race-line-list">
+                    </ul>
+                </div>
+                <div id="market-container" class="bg-white p-6 rounded-lg shadow-lg max-w-3xl mx-auto mt-5 min-w-full">
+                    <h2 class="text-2xl font-semibold text-gray-800 mb-4 text-center">Articulos</h2>
+                    <ul id="article-list">
+                    </ul>
                 </div>
             
                 <div id="event-container" class="bg-white p-6 rounded-lg shadow-lg max-w-3xl mx-auto mt-5 min-w-full">
                     <h2 class="text-2xl font-semibold text-gray-800 mb-4 text-center">Eventos</h2>
-            
+                        <ul id="event-list">
+                        </ul>
                 </div>
-             </div>    
+
+                <div id="fastlaps-container" class="bg-white p-6 rounded-lg shadow-lg max-w-3xl mx-auto mt-5 min-w-full">
+                    <h2 class="text-2xl font-semibold text-gray-800 mb-4 text-center">Vueltas Rapidas</h2>
+                    <table class="w-full border-collapse border border-gray-300">
+                        <thead class="bg-gray-100">
+                            <tr>
+                                <td class="border border-gray-300 px-4 py-2">Circuito</td>
+                                <td class="border border-gray-300 px-4 py-2">Tiempo</td>
+                                <td class="border border-gray-300 px-4 py-2">Kart</td>
+                                <td class="border border-gray-300 px-4 py-2">Condiciones</td>
+                            </tr>
+                            
+                        </thead>
+                        <tbody>
+                            <tr class="hover:bg-gray-50">
+                                <td class="border border-gray-300 px-4 py-2">Castroponce</td>
+                                <td class="border border-gray-300 px-4 py-2">0.55,233</td>
+                                <td class="border border-gray-300 px-4 py-2">Rental 4</td>
+                                <td class="border border-gray-300 px-4 py-2">Seco</td>
+                            </tr>
+                           
+                        </tbody>
+                    </table>
+                </div>
+             </div>   
                 
             </div>
             
