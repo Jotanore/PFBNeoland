@@ -30,24 +30,47 @@
     </header>
 
     <main class="bg-white pt-5 px-[5%] h-screen">
-        <section class="p-5 mb-2 bg-neutral-100">
-            <form id="form" action="#" enctype="multipart/form-data">
+
+        <div class="flex justify-end space-y-2">
+            <button id="new-event-form-btn" type="button" class="px-5 py-2 bg-amber-400 text-white rounded-lg hover:bg-amber-500 transition max-w-2xl mb-4">Nuevo evento</button>
+        </div>
+
+        <section id="new-event-form"class="p-6 bg-white shadow-md rounded-xl max-w-2xl mx-auto mb-4 __hidden relative">
+            <span id="new-event-close" class="absolute top-3 right-3 text-gray-500 hover:text-gray-700 text-3xl font-bold"><a href="#">&times;</a></span>
+            <form id="form" action="#" enctype="multipart/form-data" class="space-y-6">
                 <fieldset>
-                    <legend class="pb-5">Nuevo Evento</legend>
-                    <label for="name">Titulo</label>
-                    <input id="eventName" type="text" name="usuario"/>
-                    <label for="eventDate">Fecha</label>
-                    <input  id="eventDate" type="date" name="usuario"/>
-                    <label for="description">Descripción</label>
-                    <textarea id="description" ></textarea>
-                    <label for="terms">Acepto las normas</label>
-                    <input  id="terms" type="checkbox">
-                    <button type="reset">Restablecer</button>
-                    <button class="bg-amber-400 p-2 px-4 mx-3 rounded-full" type="submit">Enviar</button>
+                    
+                    <legend class="text-2xl font-semibold text-gray-700 border-b pb-3 mb-5">Nuevo Evento</legend>
+        
+                    <div class="flex flex-col space-y-2">
+                        <label for="eventName" class="text-gray-600 font-medium">Título</label>
+                        <input id="eventName" type="text" name="usuario" class="p-3 border rounded-lg focus:ring-2 focus:ring-amber-400 focus:outline-none">
+                    </div>
+        
+                    <div class="flex flex-col space-y-2">
+                        <label for="eventDate" class="text-gray-600 font-medium">Fecha</label>
+                        <input id="eventDate" type="date" name="usuario" class="p-3 border rounded-lg focus:ring-2 focus:ring-amber-400 focus:outline-none">
+                    </div>
+        
+                    <div class="flex flex-col space-y-2">
+                        <label for="description" class="text-gray-600 font-medium">Descripción</label>
+                        <textarea id="description" rows="4" class="p-3 border rounded-lg focus:ring-2 focus:ring-amber-400 focus:outline-none resize-none"></textarea>
+                    </div>
+        
+                    <div class="flex items-center space-x-2">
+                        <input id="terms" type="checkbox" class="w-5 h-5 text-amber-400 border-gray-300 rounded focus:ring-2 focus:ring-amber-400">
+                        <label for="terms" class="text-gray-600">Acepto las normas</label>
+                    </div>
+        
+                    <div class="flex justify-end space-x-3 pt-4">
+                        <button type="reset" class="px-5 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition">Restablecer</button>
+                        <button type="submit" class="px-5 py-2 bg-amber-400 text-white rounded-lg hover:bg-amber-500 transition">Enviar</button>
+                    </div>
                 </fieldset>
-              </form>
+            </form>
         </section>
-        <section id="__event-container" class=" pt-5 pb-5 bg-neutral-100 h-full">
+        
+        <section id="__event-container" class="pt-5 pb-5 px-5 bg-neutral-100 min-h-screen flex flex-col items-center">
         </section>
         <div id="modal" class="fixed inset-0 flex justify-center items-center bg-black/50 backdrop-blur-md z-[999] __hidden">
             <div class="bg-white w-[75%] max-w-4xl h-[85%] rounded-xl shadow-lg overflow-hidden relative animate-fade-in">
