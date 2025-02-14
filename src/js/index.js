@@ -12,7 +12,7 @@ let userCoords = null;
 let map
 let editCanvas
 let userlog = false
-const NODE_SERVER = `127.0.0.1:6431/`
+const API_PORT = location.port ? `:${location.port}` : ''
 let circuitArray
 
 /*
@@ -231,13 +231,13 @@ function formManager(e){
                     console.log("antes de fetch", marketItem)
                     payload = JSON.stringify(marketItem)
                     console.log(payload)
-                    apiData = await getAPIData(`${location.protocol}//${NODE_SERVER}create/article`,'POST', payload);
+                    apiData = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/create/article`,'POST', payload);
 
                     const item = new MarketItem(apiData._id, apiData.user_id, apiData.article, apiData.price, apiData.location, apiData.description, apiData.img)
                     // const item = new MarketItem('',user, itemName, itemPrice, itemLocation, description, itemImg)
                     //searchParams = new URLSearchParams(item).toString()
                     console.log(apiData)
-                    //fetch(`${NODE_SERVER}create/article?${searchParams}`)
+                    //fetch(`${API_PORT}create/article?${searchParams}`)
 
 
                     drawArticle(item)
@@ -257,12 +257,14 @@ function formManager(e){
                     console.log("antes de fetch", eventObject)
                     payload = JSON.stringify(eventObject)
                     console.log(payload)
-                    apiData = await getAPIData(`${location.protocol}//${NODE_SERVER}create/event`,'POST', payload);
+                    apiData = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/create/event`,'POST', payload);
 
-                    const event = new EventCard(apiData._id, apiData.title, apiData.date, apiData.user_id, apiData.description, apiData.location)
+                    console.log(apiData)
+
+                    const event = new EventCard(apiData.user_id, apiData.title, apiData.date, apiData.user_id, apiData.description, apiData.location)
                     //searchParams = new URLSearchParams(event).toString()
                     console.log(event)
-                    //fetch(`${NODE_SERVER}create/event?${searchParams}`)
+                    //fetch(`${API_PORT}create/event?${searchParams}`)
 
 
 
@@ -315,8 +317,8 @@ async function getAPIData(apiURL, method, data) {
       }
 
       if (isUserLoggedIn()) {
-        const userData = getDataFromSessionStorage()
-        headers.append('Authorization', `Bearer ${userData?.user?.token}`)
+        const userData = getUserFromSession()
+        headers.append('Authorization', `Bearer ${userData?.token}`)
       }
       apiData = await simpleFetch(apiURL, {
         // Si la petición tarda demasiado, la abortamos
@@ -344,7 +346,7 @@ async function getAPIData(apiURL, method, data) {
 
   function isUserLoggedIn() {
     const userData = getUserFromSession()
-    return userData?.user?.token
+    return userData?.token
   }
 
 /*=================================PROFILE===============================================*/
@@ -425,13 +427,13 @@ function updateUserProfile(){
         //     return 
         // }
         console.log(newUser)
-        // await fetch(`${NODE_SERVER}update/user/${storedUser.id}/PUT/${newUser}`)
+        // await fetch(`${API_PORT}update/user/${storedUser.id}/PUT/${newUser}`)
 
         
         console.log("antes de fetch", newUser)
         const payload = JSON.stringify(newUser)
         console.log("payload",payload)
-        const apiData = await getAPIData(`${location.protocol}//${NODE_SERVER}update/user/${storedUser._id}`, "PUT", payload);
+        const apiData = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/update/user/${storedUser._id}`, "PUT", payload);
         console.log("Respuesta del servidor:", apiData);
 
         newUser._id = storedUser._id
@@ -450,7 +452,7 @@ function updateUserProfile(){
 
         // const searchParams = new URLSearchParams(user).toString()
         // console.log(searchParams)
-        // fetch(`${NODE_SERVER}update/user?${searchParams}`)
+        // fetch(`${API_PORT}update/user?${searchParams}`)
 
         e.target.reset();
     })
@@ -461,11 +463,11 @@ async function fillRaceLinesList(){
     const user = getUserFromSession()
     console.log(user)
 
-    const apiData = await getAPIData(`${location.protocol}//${NODE_SERVER}read/racelines/${user._id}` , 'GET')
+    const apiData = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/read/racelines/${user._id}` , 'GET')
     console.log(apiData)
     apiData.forEach(async function (raceline){
        
-        const lineCircuit = await getAPIData(`${location.protocol}//${NODE_SERVER}read/circuit/${raceline.circuit_id}`, 'GET')
+        const lineCircuit = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/read/circuit/${raceline.circuit_id}`, 'GET')
         const html = `<li>Linea:${lineCircuit.name} Fecha: XD</li>`
 
         document.getElementById('race-line-list').insertAdjacentHTML('afterbegin', html)
@@ -480,7 +482,7 @@ async function fillMarketList(){
     const user = getUserFromSession()
     console.log(user)
 
-    const apiData = await getAPIData(`${location.protocol}//${NODE_SERVER}read/articles/${user._id}` , 'GET')
+    const apiData = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/read/articles/${user._id}` , 'GET')
     console.log(apiData)
     apiData.forEach(function (article){
        
@@ -498,7 +500,7 @@ async function fillEventList(){
     const user = getUserFromSession()
     console.log(user)
 
-    const apiData = await getAPIData(`${location.protocol}//${NODE_SERVER}read/events/${user._id}` , 'GET')
+    const apiData = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/read/events/${user._id}` , 'GET')
     console.log(apiData)
     apiData.forEach(function (event){
        
@@ -553,7 +555,7 @@ function userRegister(){
         console.log("antes de fetch", newUser)
         let payload = JSON.stringify(newUser)
         console.log(payload)
-        let apiData = await getAPIData(`${location.protocol}//${NODE_SERVER}create/user`,'POST', payload );
+        let apiData = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/create/user`,'POST', payload );
         console.log(apiData)
 
         const userFill = {
@@ -576,15 +578,14 @@ function userRegister(){
 
         // const searchParams = new URLSearchParams(user).toString()
         // console.log(searchParams)
-        // fetch(`${NODE_SERVER}create/user?${searchParams}`)
+        // fetch(`${API_PORT}create/user?${searchParams}`)
 
 
 
-        //TODO SIMPLEFETCH FUNCTION
         
         payload = JSON.stringify(userFill)
         console.log(payload)
-        apiData = await getAPIData(`${location.protocol}//${NODE_SERVER}update/user/${apiData._id}`,'PUT', payload );
+        apiData = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/update/user/${apiData._id}`,'PUT', payload );
 
         const userWithoutPassword = { ...userFill }
             delete userWithoutPassword.password
@@ -613,7 +614,7 @@ function userLogin() {
 
         if (loginCredentials.email !== '' && loginCredentials.password !== '') {
             const payload = JSON.stringify(loginCredentials)
-            const apiData = await getAPIData(`${location.protocol}//${NODE_SERVER}login`, 'POST', payload)
+            const apiData = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/login`, 'POST', payload)
         
             if (!apiData) {
               // Show error
@@ -636,7 +637,7 @@ function userLogin() {
             }
           }
 
-        // const users = await getAPIData(`${location.protocol}//${NODE_SERVER}read/users`, 'GET')
+        // const users = await getAPIData(`${location.protocol}//${API_PORT}read/users`, 'GET')
         // console.log(users)
 
         // const userFound = users.find(user => user.email === loginCredentials.email && user.password === loginCredentials.password)
@@ -696,7 +697,7 @@ function updateSessionStorage(value) {
     async function getCircuitData(){
         //Get the info via JSON
         //const API_CIRCUITS = 'api/get.circuits.json'
-        circuitArray = await getAPIData(`${location.protocol}//${NODE_SERVER}read/circuits` , 'GET')
+        circuitArray = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/read/circuits` , 'GET')
         //Iterate Array, create the Circuit Object and push to store
         // Waits for getUserToCircuitDistance to get the distance to each circuit and stores it on circuit.distance
         await circuitArray.forEach(async function (/** @type {Circuit} */ circuit){
@@ -895,7 +896,7 @@ function circuitModal(circuit){
  * Pushes them to store
  */
 async function getEventData(){
-    const eventArray = await getAPIData(`${location.protocol}//${NODE_SERVER}read/events` , 'GET')
+    const eventArray = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/read/events` , 'GET')
     console.log(eventArray)
     eventArray.forEach(function (/** @type {EventCard} */ event){
         drawEvent(event)
@@ -903,7 +904,7 @@ async function getEventData(){
 }    
 
 async function drawEvent(event){
-    const eventCreator = await getAPIData(`${location.protocol}//${NODE_SERVER}read/user/${event.user_id}`, 'GET')
+    const eventCreator = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/read/user/${event.user_id}`, 'GET')
     console.log(eventCreator)
     const eventFrame = document.getElementById('__event-container')
         const html =
@@ -929,7 +930,7 @@ async function drawEvent(event){
 }
 
 async function deleteEventCard(event) {
-    // Encuentra el contenedor de la tarjeta (por ejemplo, con la clase 'event-card')
+    
     event.stopPropagation()
 
     const eventId = event.target.getAttribute('data-id');
@@ -946,7 +947,7 @@ async function deleteEventCard(event) {
 
 
     try {
-        const apiData = await getAPIData(`${location.protocol}//${NODE_SERVER}delete/event/${eventId}`, 'DELETE');
+        const apiData = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/delete/event/${eventId}`, 'DELETE');
         console.log("Respuesta del servidor:", apiData);
     } catch (error) {
         console.error("Error eliminando el evento:", error);
@@ -984,7 +985,7 @@ function eventModal(event){
  * Pushes them to store
  */
    async function getMarketData(){
-        const marketArray = await getAPIData(`${location.protocol}//${NODE_SERVER}read/articles` , 'GET')
+        const marketArray = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/read/articles` , 'GET')
         marketArray.forEach(function (/** @type {MarketItem} */ item){
                 drawArticle(item)
 
@@ -997,7 +998,7 @@ function eventModal(event){
  */
     async function drawArticle(item){
         console.log(item)
-        const itemCreator = await getAPIData(`${location.protocol}//${NODE_SERVER}read/user/${item.user_id}`, 'GET')
+        const itemCreator = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/read/user/${item.user_id}`, 'GET')
         const marketFrame = document.getElementById('__market-container')
         const html = `<div class="bg-purple-100 h-52 mx-4 mb-4 p-7 flex modal-open market-card">
                 <div class="mr-5 min-w-[150px]">
@@ -1035,7 +1036,6 @@ function eventModal(event){
  * @param {Event} event 
  */
 async function deleteMarketCard(event) {
-    // Encuentra el contenedor de la tarjeta (por ejemplo, con la clase 'market-card')
     const marketId = event.target.getAttribute('data-id');
     console.log(marketId)
 
@@ -1046,7 +1046,7 @@ async function deleteMarketCard(event) {
     }
 
     try {
-        const apiData = await getAPIData(`${location.protocol}//${NODE_SERVER}delete/article/${marketId}`, 'DELETE');
+        const apiData = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/delete/article/${marketId}`, 'DELETE');
         console.log("Respuesta del servidor:", apiData);
     } catch (error) {
         console.error("Error eliminando el evento:", error);
@@ -1089,7 +1089,7 @@ function marketModal(item){
 async function getForumData(){
     //Get the info via JSON
     //const API_FORUM = 'api/get.forum.topics.json'
-    const forumArray = await getAPIData(`${location.protocol}//${NODE_SERVER}read/forum-topics` , 'GET')
+    const forumArray = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/read/forum-topics` , 'GET')
     //Iterate Array, create the ForumCard Object and push to store
     forumArray.forEach(function (/** @type {ForumCard} */ a){
         const item = new ForumCard(a.user, a.title, a.description)
@@ -1121,7 +1121,7 @@ function showForumCard(item){
 function activateCanvas() {
     editCanvas = new fabric.Canvas('circuitCanvas');
 
-    // Cargar la imagen de fondo y bloquearla para evitar que se mueva
+    // Cargar la imagen de fondo y bloquearla
     fabric.Image.fromURL('./imgs/kotar.jpg', function(img) {
         img.scaleToWidth(1000);
         img.selectable = false;
@@ -1129,7 +1129,7 @@ function activateCanvas() {
         editCanvas.setBackgroundImage(img, editCanvas.renderAll.bind(editCanvas));
     });
 
-    // Configurar el pincel de dibujo
+    //Pincel
     const brush = new fabric.PencilBrush(editCanvas);
     editCanvas.freeDrawingBrush = brush;
     brush.color = '#40ff00';
@@ -1142,7 +1142,7 @@ function activateCanvas() {
     let lastPosY = 0;
     let panMode = false;
 
-    // Botón para limpiar trazos (se mantiene la imagen de fondo)
+    // Botón limpiar solo trazos
     const clearButton = document.getElementById("clear");
     clearButton.addEventListener("click", clearTraces);
 
@@ -1154,7 +1154,7 @@ function activateCanvas() {
         
     });
 
-    // Modo pan activado con ALT: si se presiona ALT, se desactiva el dibujo y se permite el pan
+
     editCanvas.on('mouse:down', function(opt) {
         const e = opt.e;
         if (e.altKey) {
@@ -1189,7 +1189,7 @@ function activateCanvas() {
 
     
 
-    // Pan con arrastre (solo en modo pan/zoom)
+    // Pan con arrastre 
     editCanvas.on('mouse:down', function(opt) {
         const e = opt.e;
         if (!panMode) return; // Solo en modo pan/zoom
@@ -1217,7 +1217,7 @@ function activateCanvas() {
         editCanvas.selection = true;
     });
 
-    // Zoom con la rueda del mouse (solo cuando no se hace pan)
+    // Zoom con la rueda del mouse 
     editCanvas.on('mouse:wheel', function(opt) {
         opt.e.preventDefault();
         opt.e.stopPropagation();
@@ -1245,7 +1245,7 @@ function activateCanvas() {
         clampViewport(editCanvas);
     });
 
-    // Cambiar el color del pincel
+    // Cambiarcolor del pincel
     document.getElementById('red-brush').addEventListener('click', () => {
         brush.color = 'red';
     });
@@ -1258,7 +1258,7 @@ function activateCanvas() {
         brush.color = '#40ff00';
     });
 
-     // Botón para cambiar al modo de selección (salir del modo de dibujo)
+     // Botones para cambiar modo de selección
      const selectModeBtn = document.getElementById('toggle-select-mode');
      selectModeBtn.addEventListener('click', () => {
          // Desactivar el modo de dibujo para poder seleccionar y mover objetos
@@ -1352,7 +1352,7 @@ async function uploadToWeb(){
     const payload = JSON.stringify(raceLine)
     console.log(payload)
 
-    const apiData = await getAPIData(`${location.protocol}//${NODE_SERVER}create/raceline/`, "POST", payload);
+    const apiData = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/create/raceline/`, "POST", payload);
     console.log("Respuesta del servidor:", apiData);
 
 
@@ -1399,7 +1399,7 @@ function clampViewport(editCanvas) {
 }
 
 // async function showRaceLine(){
-//     const apiData = await getAPIData(`${NODE_SERVER}read/racelines` , 'GET')
+//     const apiData = await getAPIData(`${API_PORT}read/racelines` , 'GET')
 //     console.log(apiData)
 
 //     const imageURI = apiData[1].img
@@ -1410,7 +1410,7 @@ function clampViewport(editCanvas) {
 
 async function fillSelectable(){
 
-    circuitArray = await getAPIData(`${location.protocol}//${NODE_SERVER}read/circuits` , 'GET')
+    circuitArray = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/read/circuits` , 'GET')
 
     const optionsDropdown = document.getElementById('opciones')
 
@@ -1435,7 +1435,7 @@ async function loadCircuitImage(){
 
     if (circuitID == 0) return
 
-    const circuit = await getAPIData(`${location.protocol}//${NODE_SERVER}read/circuit/${circuitID}`, 'GET') 
+    const circuit = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/read/circuit/${circuitID}`, 'GET') 
     console.log(circuitID)
     console.log(circuit)
 
