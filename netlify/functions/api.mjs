@@ -156,10 +156,6 @@ router.get('/read/forum-topics', (req, res) => {
 
 
 
-router.listen(port, () => {
-    console.log(`Example app listening on port ${port}`);
-})
-
 //RACELINES=============================
 
 router.post('/create/raceline', async (req, res) => {
