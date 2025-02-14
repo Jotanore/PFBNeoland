@@ -14,43 +14,43 @@ const router = Router()
 // const EVENTS_URL = './server/BBDD/events.json'
 // const FORUM_TOPICS_URL = './server/BBDD/forum.topics.json'
 
-router.use(express.static('../PFBNeoland/src'));
+// router.use(express.static('../PFBNeoland/src'));
 
-router.use(bodyParser.json({limit: '50mb'}));
-router.use(bodyParser.urlencoded({ extended: true,limit: '50mb' }));
+// router.use(bodyParser.json({limit: '50mb'}));
+// router.use(bodyParser.urlencoded({ extended: true,limit: '50mb' }));
 
 
 
  //USERS============
-router.post('/api/create/user', async (req, res) => {
+router.post('/create/user', async (req, res) => {
     res.json(await db.users.create(req.body))
     // crud.create(USERS_URL, req.body, (data) => {
     //     res.json(data)
     //   });
 })
 
-router.get('/api/read/users', async (req, res) => {
+router.get('/read/users', async (req, res) => {
     res.json(await db.users.get())
     // crud.read(USERS_URL, (data) => {
     //     res.json(data)
     //   });
 });
 
-router.get('/api/read/user/:id', async (req, res) => {
+router.get('/read/user/:id', async (req, res) => {
     res.json((await db.users.get({_id: new ObjectId(req.params.id)}))[0])
     // crud.read(USERS_URL, (data) => {
     //     res.json(data)
     //   });
 });
 
-router.put('/api/update/user/:id', async (req, res) => {
+router.put('/update/user/:id', async (req, res) => {
     res.json(await db.users.update(req.params.id, req.body))
     // crud.update(USERS_URL, req.params.id, req.body, (data) => {
     //     res.json(data)
     //   });
 });
 
-router.post('/api/login', async (req, res) => {
+router.post('/login', async (req, res) => {
     const user = await db.users.logIn(req.body)
     if (user) {
       // TODO: use OAuth2
@@ -69,14 +69,14 @@ router.post('/api/login', async (req, res) => {
 
 
 //CIRCUITS=================
-router.get('/api/read/circuits', async (req, res) => {
+router.get('/read/circuits', async (req, res) => {
     res.json(await db.circuits.get())
     // crud.read(CIRCUITS_URL, (data) => {
     //     res.json(data)
     //   });
 });
 
-router.get('/api/read/circuit/:id', async (req, res) => {
+router.get('/read/circuit/:id', async (req, res) => {
     res.json((await db.circuits.get({_id: new ObjectId(req.params.id)}))[0])
     // crud.read(USERS_URL, (data) => {
     //     res.json(data)
@@ -85,7 +85,7 @@ router.get('/api/read/circuit/:id', async (req, res) => {
 
 
 //EVENTS=================
-router.post('/api/create/event', requireAuth, async (req, res) => {
+router.post('/create/event', requireAuth, async (req, res) => {
     res.json(await db.events.create(req.body))
     // crud.create(EVENTS_URL, req.body, (data) => {
     //     res.json(data)
@@ -93,14 +93,14 @@ router.post('/api/create/event', requireAuth, async (req, res) => {
 })
 
 
-router.get('/api/read/events', async (req, res) => {
+router.get('/read/events', async (req, res) => {
     res.json(await db.events.get())
     // crud.read(EVENTS_URL, (data) => {
     //     res.json(data)
     //   });
 }); 
 
-router.get('/api/read/events/:userid', async (req, res) => {
+router.get('/read/events/:userid', async (req, res) => {
     const userId = req.params.userid
     res.json(await db.events.get({user_id: userId}))
     // crud.read(EVENTS_URL, (data) => {
@@ -108,7 +108,7 @@ router.get('/api/read/events/:userid', async (req, res) => {
     //   });
 }); 
 
-router.delete('/api/delete/event/:id', async (req, res) => {
+router.delete('/delete/event/:id', async (req, res) => {
     res.json(await db.events.delete(req.params.id))
 //     crud.delete(EVENTS_URL, req.params.id, (data) => {
 //      res.json(data)
@@ -116,7 +116,7 @@ router.delete('/api/delete/event/:id', async (req, res) => {
  })
 
 //MARKET=================
-router.post('/api/create/article', async (req, res) => {
+router.post('/create/article', async (req, res) => {
     res.json(await db.market.create(req.body))
     // crud.create(ARTICLES_URL, req.body, (data) => {
     //     res.json(data)
@@ -124,14 +124,14 @@ router.post('/api/create/article', async (req, res) => {
 })
 
 
-router.get('/api/read/articles', async (req, res) => {
+router.get('/read/articles', async (req, res) => {
     res.json(await db.market.get())
     // crud.read(ARTICLES_URL, (data) => {
     //     res.json(data)
     //   });
 });
 
-router.get('/api/read/articles/:userid', async (req, res) => {
+router.get('/read/articles/:userid', async (req, res) => {
     const userId = req.params.userid
     res.json(await db.market.get({user_id: userId}))
     // crud.read(ARTICLES_URL, (data) => {
@@ -139,7 +139,7 @@ router.get('/api/read/articles/:userid', async (req, res) => {
     //   });
 });
 
-router.delete('/api/delete/article/:id', async (req, res) => {
+router.delete('/delete/article/:id', async (req, res) => {
     res.json(await db.market.delete(req.params.id))
     //  crud.delete(ARTICLES_URL, req.params.id, (data) => {
     //   res.json(data)
@@ -148,7 +148,7 @@ router.delete('/api/delete/article/:id', async (req, res) => {
 
 
 //FORUM TODO===(or not, hehe)================
-router.get('/api/read/forum-topics', (req, res) => {
+router.get('/read/forum-topics', (req, res) => {
     crud.read(FORUM_TOPICS_URL, (data) => {
         res.json(data)
       });
@@ -162,21 +162,21 @@ router.listen(port, () => {
 
 //RACELINES=============================
 
-router.post('/api/create/raceline', async (req, res) => {
+router.post('/create/raceline', async (req, res) => {
     res.json(await db.raceLines.create(req.body))
     // crud.create(ARTICLES_URL, req.body, (data) => {
     //     res.json(data)
     // });
 })
 
-router.get('/api/read/racelines', async (req, res) => {
+router.get('/read/racelines', async (req, res) => {
     res.json(await db.raceLines.get())
     // crud.read(ARTICLES_URL, (data) => {
     //     res.json(data)
     //   });
 });
 
-router.get('/api/read/racelines/:userid', async (req, res) => {
+router.get('/read/racelines/:userid', async (req, res) => {
     const userId = req.params.userid
     res.json(await db.raceLines.get({user_id: userId}))
     // crud.read(ARTICLES_URL, (data) => {
