@@ -58,6 +58,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 console.log(`Estoy en ${page[0].id}`)
                 credentialsBtnManager()
                 await getCircuitData()
+                assignCircuitListeners()
                 createMap()
                 modalManager()
                 break
@@ -66,6 +67,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 credentialsBtnManager()
                 await getEventData()
                 formManager()
+                assignEventButtons()
                 modalManager()
                 break
             case 'market':
@@ -73,6 +75,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 credentialsBtnManager()
                 await getMarketData()
                 formManager()
+                assignMarketButtons()
                 modalManager()
                 break
             case 'forum':
@@ -887,6 +890,15 @@ function circuitModal(circuit){
     }
 }
 
+function assignCircuitListeners(){
+    const rangeInput = document.getElementById('distance-range');
+    const valueDisplay = document.getElementById('value');
+
+    rangeInput.addEventListener('input', function() {
+        valueDisplay.textContent = rangeInput.value; // Muestra el valor actual del control deslizante
+    });
+}
+
    
 /*=================================EVENTS===========================================*/
 
@@ -908,12 +920,15 @@ async function drawEvent(event){
     console.log(eventCreator)
     const eventFrame = document.getElementById('__event-container')
         const html =
-                `<div class="bg-purple-100 h-24 mx-4 mb-4 flex items-center justify-center modal-open event-card">
-                    <span class="mr-4 pl-2">${event.title}</span>
-                    <span class="mr-4 pl-2">${event.date}</span>
-                    <span class="mr-4 pl-2">${eventCreator.username}</span>
-                    <span class="mr-4 pl-2">${event.description}</span>
-                    <button data-id="${event._id}" class="border-2 border-black bg-gray-400 delete-event">Delete</button>
+                `<div class="bg-white shadow-md rounded-lg overflow-hidden flex items-center p-5 mb-4 border border-gray-200 w-full cursor-pointer event-card">
+                <div class="flex flex-col flex-1">
+                <h3 class="text-xl font-bold text-gray-800 truncate">${event.title}</h3>
+                <p class="text-sm text-gray-600">${event.date} - ${eventCreator.username}</p>
+                <p class="text-gray-700 text-sm my-2 line-clamp-2">${event.description}</p>
+                </div>
+                <button data-id="${event._id}" class="border-2 border-black bg-gray-400 hover:bg-red-500 text-white font-bold py-1 px-3 rounded delete-event">
+                    Delete
+                </button>
                 </div>`
         eventFrame?.insertAdjacentHTML('afterbegin', html)
         
@@ -977,6 +992,21 @@ function eventModal(event){
     }
 }
 
+function openNewEventForm(){
+    document.getElementById('new-event-form').classList.remove('__hidden')
+}
+
+function closeNewEventForm(){
+    document.getElementById('form').reset()
+    document.getElementById('new-event-form').classList.add('__hidden')
+}
+
+
+function assignEventButtons(){
+    document.getElementById('new-event-form-btn').addEventListener('click', openNewEventForm)
+    document.getElementById('new-event-close').addEventListener('click', closeNewEventForm)
+}
+
 /*=================================MARKET===========================================*/
 
 /**
@@ -1000,24 +1030,32 @@ function eventModal(event){
         console.log(item)
         const itemCreator = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/read/user/${item.user_id}`, 'GET')
         const marketFrame = document.getElementById('__market-container')
-        const html = `<div class="bg-purple-100 h-52 mx-4 mb-4 p-7 flex modal-open market-card">
-                <div class="mr-5 min-w-[150px]">
-                    <img src="${item.img}" alt="${item.img}">
-                </div>
-                <article class="bg-white px-4 ml-5 h-full">
-                    <div class="h-[35%]">                    
-                        <span class="text-2xl font-bold mr-4 ">${item.article}</span>
-                        <span class="mr-4 pl-2">${itemCreator.username}</span>
-                        <span class="mr-4 pl-2">${item.location}</span>
-                        <button data-id="${item._id}" class="border-2 border-black bg-gray-400 delete-item">Delete</button>
-                        </div>
+        const html = `<div class="bg-white shadow-md rounded-lg overflow-hidden flex items-center p-5 mx-4 mb-4 cursor-pointer border border-gray-200">
+    <!-- Imagen del artículo -->
+    <div class="w-36 h-36 flex-shrink-0 rounded-lg overflow-hidden border">
+        <img src="${item.img}" alt="${item.article}" class="w-full h-full object-cover">
+    </div>
 
-                    <div class="h-[40%]">
-                        <span class="">${item.description}</span>
-                    </div>
-                </article>
-                <span class="bg-slate-500 text-3xl font-bold mr-4">${item.price}€</span>
-            </div>`
+    <!-- Contenido de la tarjeta -->
+    <article class="flex flex-col justify-between flex-1 ml-5">
+        <!-- Información principal -->
+        <div>
+            <h3 class="text-xl font-bold text-gray-800 truncate">${item.article}</h3>
+            <p class="text-sm text-gray-600">${itemCreator.username} - ${item.location}</p>
+        </div>
+
+        <!-- Descripción -->
+        <p class="text-gray-700 text-sm my-2 line-clamp-2">${item.description}</p>
+
+        <!-- Precio y botones -->
+        <div class="flex justify-between items-center mt-3">
+            <span class="text-lg font-bold text-amber-500">${item.price}€</span>
+            <button data-id="${item._id}" class="px-4 py-2 text-sm font-medium text-white bg-red-500 rounded-lg hover:bg-red-600 transition delete-item">
+                Eliminar
+            </button>
+        </div>
+    </article>
+</div>`
     marketFrame?.insertAdjacentHTML('afterbegin', html)
 
     const lastCard = marketFrame.firstElementChild;
@@ -1063,20 +1101,39 @@ async function deleteMarketCard(event) {
  * @param {string} item.description
  * @param {string} item.img
  */
-function marketModal(item){
+async function marketModal(item){
+    const itemCreator = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/read/user/${item.user_id}`, 'GET')
     modalOpener()
     const modalContent = document.getElementById('modal-content')
 
     if (modalContent){
-    modalContent.innerHTML = `<ul>
-                                <li>${item.article}</li>
-                                <li>${item.user}</li>
-                                <li><a href="${item.location}">Ubicación</a></li>
-                                <li class="w-[200px] h-auto"><img src="${item.img}"></li>
-                                <li>${item.description}</li>
-                                <li>Precio: ${item.price}</li>
-                            </ul>`
+    modalContent.innerHTML = `<ul class="space-y-4 text-gray-800">
+                                    <li class="text-2xl font-bold text-gray-900">${item.article}</li>
+                                    <li class="text-gray-600"><span class="font-semibold">Vendedor:</span> ${itemCreator.username}</li>
+                                    <li class="text-gray-600">
+                                        <span class="font-semibold">Ubicación:</span>
+                                        <a href="${item.location}" class="text-blue-500 hover:underline">${item.location}</a>
+                                    </li>
+                                    <li class="flex justify-center">
+                                        <img src="${item.img}" alt="Imagen de ${item.article}" class="w-[250px] h-auto rounded-lg shadow-md border border-gray-300">
+                                    </li>
+                                    <li class="text-gray-700"><span class="font-semibold">Descripción:</span> ${item.description}</li>
+                                    <li class="text-lg font-semibold text-green-600">Precio: ${item.price}€</li>
+                                </ul>`
     }
+}
+
+function openNewMarketForm(){
+    document.getElementById('new-item-form').classList.remove('__hidden')
+}
+
+function closeNewMarketForm(){
+    document.getElementById('form').reset()
+    document.getElementById('new-item-form').classList.add('__hidden')
+}
+function assignMarketButtons(){
+    document.getElementById('new-item-form-btn').addEventListener('click', openNewMarketForm)
+    document.getElementById('new-item-close').addEventListener('click', closeNewMarketForm)
 }
     
 /*=================================FORUM===========================================*/
@@ -1148,11 +1205,11 @@ function activateCanvas() {
 
     
 
-    const clearBgButton = document.getElementById("clearbg");
-    clearBgButton.addEventListener("click", function() {
-        editCanvas.setBackgroundImage(null, editCanvas.renderAll.bind(editCanvas));
+    // const clearBgButton = document.getElementById("clearbg");
+    // clearBgButton.addEventListener("click", function() {
+    //     editCanvas.setBackgroundImage(null, editCanvas.renderAll.bind(editCanvas));
         
-    });
+    // });
 
 
     editCanvas.on('mouse:down', function(opt) {
@@ -1245,44 +1302,98 @@ function activateCanvas() {
         clampViewport(editCanvas);
     });
 
-    // Cambiarcolor del pincel
-    document.getElementById('red-brush').addEventListener('click', () => {
+    // Cambiar color del pincel
+    const redBrushBtn = document.getElementById('red-brush')
+    redBrushBtn.addEventListener('click', () => {
         brush.color = 'red';
+
+        panMode = false
+        editCanvas.selection = false;
+        editCanvas.isDrawingMode = true;
+ 
+        drawModeBtn.style.backgroundColor ='rgb(37 99 235)'
+        redBrushBtn.style.backgroundColor = 'rgb(37 99 235)'
+
+        yellowBrushBtn.style.backgroundColor = 'rgb(59 130 246)'
+        greenBrushBtn.style.backgroundColor = 'rgb(59 130 246)'
+        selectModeBtn.style.backgroundColor = 'rgb(59 130 246)'
+        togglePanButton.style.backgroundColor ='rgb(59 130 246)'
     });
 
-    document.getElementById('yellow-brush').addEventListener('click', () => {
+    const yellowBrushBtn = document.getElementById('yellow-brush')
+    yellowBrushBtn.addEventListener('click', () => {
         brush.color = 'yellow';
+
+        panMode = false
+        editCanvas.selection = false;
+        editCanvas.isDrawingMode = true;
+ 
+        drawModeBtn.style.backgroundColor ='rgb(37 99 235)'
+        yellowBrushBtn.style.backgroundColor = 'rgb(37 99 235)'
+
+        redBrushBtn.style.backgroundColor = 'rgb(59 130 246)'
+        greenBrushBtn.style.backgroundColor = 'rgb(59 130 246)'
+        selectModeBtn.style.backgroundColor = 'rgb(59 130 246)'
+        togglePanButton.style.backgroundColor ='rgb(59 130 246)'
     });
 
-    document.getElementById('green-brush').addEventListener('click', () => {
+    const greenBrushBtn = document.getElementById('green-brush')
+    greenBrushBtn.style.backgroundColor ='rgb(37 99 235)'
+    greenBrushBtn.addEventListener('click', () => {
         brush.color = '#40ff00';
+        panMode = false
+        editCanvas.selection = false;
+        editCanvas.isDrawingMode = true;
+ 
+
+        drawModeBtn.style.backgroundColor ='rgb(37 99 235)'
+        greenBrushBtn.style.backgroundColor = 'rgb(37 99 235)'
+
+        redBrushBtn.style.backgroundColor = 'rgb(59 130 246)'
+        yellowBrushBtn.style.backgroundColor = 'rgb(59 130 246)'
+        selectModeBtn.style.backgroundColor = 'rgb(59 130 246)'
+        togglePanButton.style.backgroundColor ='rgb(59 130 246)'
     });
 
-     // Botones para cambiar modo de selección
      const selectModeBtn = document.getElementById('toggle-select-mode');
      selectModeBtn.addEventListener('click', () => {
          // Desactivar el modo de dibujo para poder seleccionar y mover objetos
-         editCanvas.isDrawingMode = false;
-         panMode = false
-         editCanvas.selection = true;
- 
-         // Opcional: Cambiar el texto del botón para indicar el modo actual
-         selectModeBtn.style.backgroundColor ='rgb(37 99 235)'
+        editCanvas.isDrawingMode = false;
+        panMode = false
+        editCanvas.selection = true;
 
-         drawModeBtn.style.backgroundColor ='rgb(59 130 246)'
-         togglePanButton.style.backgroundColor ='rgb(59 130 246)'
+        // Opcional: Cambiar el texto del botón para indicar el modo actual
+        selectModeBtn.style.backgroundColor ='rgb(37 99 235)'
+
+        drawModeBtn.style.backgroundColor ='rgb(59 130 246)'
+        togglePanButton.style.backgroundColor ='rgb(59 130 246)'
+        redBrushBtn.style.backgroundColor = 'rgb(59 130 246)'
+        yellowBrushBtn.style.backgroundColor = 'rgb(59 130 246)'
+        greenBrushBtn.style.backgroundColor = 'rgb(59 130 246)'
  
          // También puedes, si lo deseas, habilitar la selección de objetos (esto ya está activado por defecto)
          
      });
 
      const drawModeBtn = document.getElementById('toggle-draw-mode');
+     drawModeBtn.style.backgroundColor ='rgb(37 99 235)'
      drawModeBtn.addEventListener('click', () => {
          // Desactivar el modo de dibujo para poder seleccionar y mover objetos
         panMode = false
         editCanvas.selection = false;
         editCanvas.isDrawingMode = true;
  
+        switch (brush.color) {
+            case 'red':
+                redBrushBtn.style.backgroundColor = 'rgb(37 99 235)'
+                break;
+            case 'yellow':
+                yellowBrushBtn.style.backgroundColor = 'rgb(37 99 235)'
+                break;
+            case '#40ff00':
+                greenBrushBtn.style.backgroundColor = 'rgb(37 99 235)'
+                break;
+        }
          // Opcional: Cambiar el texto del botón para indicar el modo actual
         drawModeBtn.style.backgroundColor ='rgb(37 99 235)'
 
@@ -1301,6 +1412,9 @@ function activateCanvas() {
 
         drawModeBtn.style.backgroundColor ='rgb(59 130 246)'
         selectModeBtn.style.backgroundColor = 'rgb(59 130 246)'
+        redBrushBtn.style.backgroundColor = 'rgb(59 130 246)'
+        yellowBrushBtn.style.backgroundColor = 'rgb(59 130 246)'
+        greenBrushBtn.style.backgroundColor = 'rgb(59 130 246)'
 
     });
 
@@ -1323,6 +1437,20 @@ function activateCanvas() {
 
     const uploadToWebBtn = document.getElementById('upload')
     uploadToWebBtn.addEventListener('click', uploadToWeb)
+
+    document.addEventListener('keydown', function(event) {
+        if (event.key === "Delete") {
+          if (editCanvas.getActiveObject()) {
+            editCanvas.remove(editCanvas.getActiveObject());
+          } else if (editCanvas.getActiveObjects()) {
+            const selectedObjects = editCanvas.getActiveObjects();
+            selectedObjects.forEach(obj => {
+              editCanvas.remove(obj);
+            });
+          }
+          editCanvas.renderAll();
+        }
+      });
 }
 
 async function uploadToWeb(){
