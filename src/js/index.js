@@ -1190,7 +1190,7 @@ function activateCanvas() {
     const brush = new fabric.PencilBrush(editCanvas);
     editCanvas.freeDrawingBrush = brush;
     brush.color = '#40ff00';
-    brush.width = 5;
+    brush.width = 3;
     editCanvas.isDrawingMode = true;
 
     // Variables para el panning
@@ -1198,6 +1198,9 @@ function activateCanvas() {
     let lastPosX = 0;
     let lastPosY = 0;
     let panMode = false;
+    let straightLineMode = false
+    let isDrawing = false; // Variable para controlar si estamos dibujando
+    let line; // Variable para almacenar la línea
 
     // Botón limpiar solo trazos
     const clearButton = document.getElementById("clear");
@@ -1211,7 +1214,7 @@ function activateCanvas() {
         
     // });
 
-
+/*
     editCanvas.on('mouse:down', function(opt) {
         const e = opt.e;
         if (e.altKey) {
@@ -1244,34 +1247,87 @@ function activateCanvas() {
         }
     });
 
-    
+    */
 
-    // Pan con arrastre 
+
+    // ON MOUSEDOWN
     editCanvas.on('mouse:down', function(opt) {
         const e = opt.e;
-        if (!panMode) return; // Solo en modo pan/zoom
+
+        //panmode
+        if (panMode) {
 
         isDragging = true;
         editCanvas.selection = false;
         lastPosX = e.clientX;
         lastPosY = e.clientY;
+        }
+        
+        //straightlinemode
+        if (straightLineMode){
+            isDragging = true;
+            isDrawing = true;
+            editCanvas.isDrawingMode = false
+    
+            const pointer = editCanvas.getPointer(e); // Obtener coordenadas del mouse
+            const points = [pointer.x, pointer.y, pointer.x, pointer.y]; // Coordenadas iniciales de la línea
+    
+            line = new fabric.Line(points, {
+                stroke: '#40ff00',    // Color de la línea
+                strokeWidth: 3,     // Grosor de la línea
+                selectable: false,  // No seleccionable mientras se dibuja
+                evented: false      // No reaccionar a eventos mientras se dibuja
+            });
+    
+            editCanvas.add(line); // Agregar la línea al canvas
+        }
+        
     });
 
+    //ON MOUSEMOVE
     editCanvas.on('mouse:move', function(opt) {
-        if (!panMode || !isDragging) return;
-        const e = opt.e;
-        const vpt = editCanvas.viewportTransform;
-        vpt[4] += e.clientX - lastPosX;
-        vpt[5] += e.clientY - lastPosY;
-        editCanvas.requestRenderAll();
-        lastPosX = e.clientX;
-        lastPosY = e.clientY;
-    });
 
+        const e = opt.e;
+        //panmode
+        if (panMode && isDragging){
+            
+            const vpt = editCanvas.viewportTransform;
+            vpt[4] += e.clientX - lastPosX;
+            vpt[5] += e.clientY - lastPosY;
+            editCanvas.requestRenderAll();
+            lastPosX = e.clientX;
+            lastPosY = e.clientY;
+        }
+
+
+        //straightlinemode
+        if (straightLineMode && isDragging) {
+            console.log('2222')
+            const pointer = editCanvas.getPointer(e); 
+            console.log(pointer) 
+            line.set({ x2: pointer.x, y2: pointer.y });
+            console.log(line)
+            editCanvas.renderAll();
+        }
+        
+    });
+        
+
+    // ON MOUSEUP
     editCanvas.on('mouse:up', function(opt) {
-        if (!panMode) return;
-        isDragging = false;
-        editCanvas.selection = true;
+        if (panMode){
+            isDragging = false;
+            clampViewport(editCanvas);
+        }
+
+        if(straightLineMode){
+
+            isDragging = false; 
+            line.set({ selectable: true, evented: true }); 
+
+        }
+
+
     });
 
     // Zoom con la rueda del mouse 
@@ -1417,6 +1473,17 @@ function activateCanvas() {
         greenBrushBtn.style.backgroundColor = 'rgb(59 130 246)'
 
     });
+    
+
+    const straightLineBtn = document.getElementById('straight-line');
+    straightLineBtn.addEventListener('click', () => {
+        straightLineMode = true
+    })
+
+
+    
+
+
 
     const saveBtn = document.getElementById('save-btn');
     saveBtn.addEventListener('click', function() {
