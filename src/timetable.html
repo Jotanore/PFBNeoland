@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="./css/reset.css" rel="stylesheet"/>
+    <link href="./css/output.css" rel="stylesheet"/>
+    <script defer type="module" src="./js/index.js"></script>
+    <title>KartHub - Eventos</title>
+</head>
+<body id="laptimes" class="box-border bg-white">
+    <div class="flex p-4 bg-neutral-500 items-center">
+        <h1 class="font-bold text-4xl ">KartHub</h1>
+        <div class="flex justify-end w-full">
+            <h2 id="credentials-btn" class="p-2 px-4 bg-neutral-200 rounded-full"><a>SignUp/Login</a></h2>
+            <h2 id="profile-btn" class="p-2 px-4 bg-neutral-200 rounded-full __hidden"><a href="./profile.html">Profile</a></h2>
+        </div>
+    </div>
+    <header class="sticky top-0 bg-neutral-400/75 backdrop-blur-sm shadow-sm">
+        <nav class="z-40">
+            <ul class="flex justify-end py-3">
+                <li class="bg-neutral-200 p-2 px-4 mx-3 rounded-full  hover:bg-amber-200"><a href="./index.html">Inicio</a></li>
+                <li class="bg-neutral-200 p-2 px-4 mx-3 rounded-full hover:bg-amber-200"><a href="./circuits.html">Circuitos</a></li>
+                <li class="bg-neutral-200 p-2 px-4 mx-3 rounded-full"><a href="./events.html">Eventos</a></li>
+                <li class="bg-neutral-200 p-2 px-4 mx-3 rounded-full hover:bg-amber-200"><a href="./market.html">Mercado</a></li>
+                <!--<li class="bg-neutral-200 p-2 px-4 mx-3 rounded-full hover:bg-amber-200"><a href="./forum.html">Foro</a></li>-->
+                <li class="bg-neutral-200 p-2 px-4 mx-3 rounded-full hover:bg-amber-200"><a href="./raceline.creator.html">Creador de trazadas</a></li>
+                <li class="bg-amber-400 p-2 px-4 mx-3 rounded-full hover:bg-amber-200"><a href="./timetable.html">Tabla de tiempos</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="bg-white pt-5 px-[5%] h-screen">
+
+        <div class="flex justify-end space-y-2">
+            <button id="new-laptime-form-btn" type="button" class="px-5 py-2 bg-amber-400 text-white rounded-lg hover:bg-amber-500 transition max-w-2xl mb-4">Nuevo registro</button>
+        </div>
+
+        <section id="new-laptime-form"class="p-6 bg-white shadow-md rounded-xl max-w-2xl mx-auto mb-4 relative __hidden">
+            <span id="new-laptime-close" class="absolute top-3 right-3 text-gray-500 hover:text-gray-700 text-3xl font-bold"><a href="#">&times;</a></span>
+            <form id="laptime-form" action="#" enctype="multipart/form-data" class="space-y-6">
+                <fieldset>
+                    
+                    <legend class="text-2xl font-semibold text-gray-700 border-b pb-3 mb-5">Nuevo registro de vuelta</legend>
+        
+                    <div class="flex flex-col space-y-2">
+                        <label for="laptimeCircuitName" class="text-gray-600 font-medium">Circuito</label>
+                        <input id="laptimeCircuitName" type="text" name="usuario" class="p-3 border rounded-lg focus:ring-2 focus:ring-amber-400 focus:outline-none">
+                    </div>
+        
+                    <div class="flex flex-col space-y-2">
+                        <label for="laptimeDate" class="text-gray-600 font-medium">Fecha</label>
+                        <input id="laptimeDate" type="date" name="usuario" class="p-3 border rounded-lg focus:ring-2 focus:ring-amber-400 focus:outline-none">
+                    </div>
+
+                    <div class="flex flex-col space-y-2 ">
+                        <label for="laptimeKart " class="text-gray-600 font-medium">Kart</label>
+                        <select id="laptimeKartSelect" name="opciones"  class="p-2 border border-gray-300 rounded-lg shadow-sm " required>
+                            <option value="Select">Selecciona una opción</option>
+                            <option value="Rental">Rental</option>
+                            <option value="Particular">Particular</option>
+                          </select>
+                        <input id="laptimeKart" type="text" name="usuario" class="p-3 border rounded-lg focus:ring-2 focus:ring-amber-400 focus:outline-none">
+                    </div>
+
+                    <div class="flex flex-col space-y-2">
+                        <label for="laptimeConditions" class="text-gray-600 font-medium">Condición de pista</label>
+                        <select id="laptimeConditions" name="opciones" class="p-2 border border-gray-300 rounded-lg shadow-sm " required>
+                            <option value="Seco">Seco</option>
+                            <option value="Mojado">Mojado</option>
+                            <option value="Mixto">Mixto</option>
+                          </select>
+                    </div>
+
+                    <div class="flex flex-col space-y-2">
+                        <label for="laptimesheet" class="text-gray-600 font-medium">Hoja de tiempos</label>
+                        <input id="laptimesheet" type="file" name="usuario" placeholder="Link de youtube de la replay" class="py-2">
+                    </div>
+
+                    <div class="flex flex-col space-y-2">
+                        <label for="laptimelink" class="text-gray-600 font-medium">POV de Vuelta</label>
+                        <input id="laptimelink" type="text" name="usuario" placeholder="Link de youtube de la replay" class="p-3 border rounded-lg focus:ring-2 focus:ring-amber-400 focus:outline-none">
+                    </div>
+        
+        
+                    <div class="flex items-center space-x-2">
+                        <input id="terms" type="checkbox" class="w-5 h-5 text-amber-400 border-gray-300 rounded focus:ring-2 focus:ring-amber-400">
+                        <label for="terms" class="text-gray-600">Acepto las normas</label>
+                    </div>
+        
+                    <div class="flex justify-end space-x-3 pt-4">
+                        <button type="reset" class="px-5 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition">Restablecer</button>
+                        <button type="submit" class="px-5 py-2 bg-amber-400 text-white rounded-lg hover:bg-amber-500 transition">Enviar</button>
+                    </div>
+                </fieldset>
+            </form>
+        </section>
+        
+        <section id="laptime-container" class="pt-5 pb-5 px-5 bg-neutral-100 min-h-screen flex flex-col items-center">
+            <table class="w-full border-collapse border border-gray-300">
+                <thead class="bg-gray-100">
+                    <tr>
+                        <td class="border border-gray-300 px-4 py-2">Circuito</td>
+                        <td class="border border-gray-300 px-4 py-2">Tiempo</td>
+                        <td class="border border-gray-300 px-4 py-2">Condiciones</td>
+                        <td class="border border-gray-300 px-4 py-2">Categoría</td>
+                        <td class="border border-gray-300 px-4 py-2">Kart</td>
+                        <td class="border border-gray-300 px-4 py-2">Fecha</td>
+                    </tr>
+                </thead>
+                <tbody id="laptime-table-body">
+                    
+                </tbody>
+            </table>
+        </section>
+        <!-- <div id="modal" class="fixed inset-0 flex justify-center items-center bg-black/50 backdrop-blur-md z-[999] __hidden">
+            <div class="bg-white w-[75%] max-w-4xl h-[85%] rounded-xl shadow-lg overflow-hidden relative animate-fade-in">
+                <span id="modal-close" class="absolute top-3 right-3 text-gray-500 hover:text-gray-700 text-3xl font-bold"><a href="#">&times;</a></span>
+                <div id="modal-content" class="w-full h-full bg-gray-100 p-6 rounded-b-xl overflow-auto">
+                </div>
+            </div>
+        </div> -->
+    </main>
+
+</body>
+</html>
