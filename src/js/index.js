@@ -12,7 +12,7 @@ let userCoords = null;
 let map
 let editCanvas
 let userlog = false
-const API_PORT = location.port ? `:${location.port}` : ''
+export const API_PORT = location.port ? `:${location.port}` : ''
 let circuitArray
 
 /*
@@ -42,16 +42,18 @@ document.addEventListener('DOMContentLoaded', async () => {
                     fillUserForm()
                     fillEventList()
                     fillRaceLinesList()
+                    updateRaceLineList([])
                     fillMarketList()
                     updateUserProfile()
                 }
                 break
             case 'index':
+                window.addEventListener('login-form-submit', onLoginComponentSubmit)
                 assignIndexListeners()
                 credentialsBtnManager()
                 checkSignRedirectionFlag()
                 userRegister()
-                userLogin()
+               // userLogin()
                 console.log(`Estoy en ${page[0].id}`)
                 break
             case 'circuits':
@@ -67,6 +69,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                 credentialsBtnManager()
                 await getEventData()
                 formManager()
+                fillSelectable('opciones-filtro')
+                fillSelectable('opciones')
                 assignEventButtons()
                 modalManager()
                 break
@@ -88,8 +92,30 @@ document.addEventListener('DOMContentLoaded', async () => {
                 console.log(`Estoy en ${page[0].id}`)
                 credentialsBtnManager()
                 raceLineButtonsAssign()
-                fillSelectable()
+                fillSelectable('opciones')
                 activateCanvas()
+            break
+            case 'laptimes':
+            document.getElementById("laptimeKartSelect").addEventListener("change", function() {
+                const input = document.getElementById("laptimeKart");
+                const selectedValue = this.value;
+            
+                // Cambia el placeholder según la opción seleccionada
+                switch (selectedValue) {
+                    case "Rental":
+                        input.placeholder = "Número de kart";
+                        break;
+                    case "Particular":
+                        input.placeholder = "Modelo de tu kart";
+                        break;
+                    default:
+                        input.placeholder = "Selecciona una opción";
+                }
+            });
+            credentialsBtnManager()
+            createNewlaptime()
+            getLapTimes()
+            assignLapTimeButtons()
             break
     }
 
@@ -185,19 +211,32 @@ function modalManager(){
     })
 }
 
-function formManager(e){
+async function formManager(e){
     const page = document.getElementsByTagName('body')
     document.getElementById('form').addEventListener('submit', async function (e){
         e.preventDefault()
 
 
+
         const description = document.getElementById('description').value
         const sessionUser = getUserFromSession()
-        const user = sessionUser._id
 
         const eventTitle = document.getElementById('eventName')?.value
         const eventDate = document.getElementById('eventDate')?.value
-        const eventLocation = 'location'//document.getElementById('eventLocation')?.value
+        const eventLocation = document.getElementById('opciones')?.value
+        const eventMaxParticipants = document.getElementById('eventMaxParticipants')?.value
+
+        if (eventLocation == "0") {
+            alert("Selecciona un circuito.");
+            return;
+        }
+
+        // if (eventDate < Date.now) {
+        //     alert("Selecciona una fecha válsida.");
+        //     return;
+        // }
+
+        const circuit = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/read/circuit/${eventLocation}`, 'GET') 
         
         const itemName = document.getElementById('itemName')?.value
         const itemPrice = document.getElementById('itemPrice')?.value
@@ -205,6 +244,10 @@ function formManager(e){
         const itemImg = "imgs/Rotax1.jpeg"
         const terms = document.getElementById("terms")?.checked;
 
+        if (eventLocation == "0") {
+            alert("Selecciona un circuito.");
+            return;
+        }
 
         if (!terms) {
             alert("Debes aceptar las normas para publicar.");
@@ -225,10 +268,10 @@ function formManager(e){
                     const marketItem = {
                         article: itemName,
                         price: itemPrice,
-                        user_id: user,
+                        user_id: sessionUser._id,
                         location: itemLocation,
                         description: description,
-                        img: itemImg
+                        img: itemImg,
                     }
                     
                     console.log("antes de fetch", marketItem)
@@ -250,11 +293,15 @@ function formManager(e){
                     apiData = ''
 
                     const eventObject = {
-                        user_id: user,
+                        user_id: sessionUser._id,
+                        user_username: sessionUser.username,
                         title: eventTitle,
-                        date: eventDate,
-                        location: eventLocation,
+                        date: new Date(eventDate),
+                        location_id: circuit._id,
+                        location: circuit.name,
                         description: description,
+                        participants: [],
+                        maxParticipants: eventMaxParticipants
                     }
 
                     console.log("antes de fetch", eventObject)
@@ -264,14 +311,10 @@ function formManager(e){
 
                     console.log(apiData)
 
-                    const event = new EventCard(apiData.user_id, apiData.title, apiData.date, apiData.user_id, apiData.description, apiData.location)
+                    const event = new EventCard(apiData._id, apiData.title, apiData.date, apiData.user_id, apiData.description, apiData.location, apiData.participants, apiData.maxParticipants, apiData.location_id, apiData.user_username)
                     //searchParams = new URLSearchParams(event).toString()
                     console.log(event)
                     //fetch(`${API_PORT}create/event?${searchParams}`)
-
-
-
-
                     drawEvent(event)
                 break    
             
@@ -308,15 +351,18 @@ function getUserFromSession(){
     return JSON.parse(sessionStorage.getItem('user'))
 }
 
-async function getAPIData(apiURL, method, data) {
+export async function getAPIData(apiURL, method, data, filters) {
     let apiData
-  
     try {
       let headers = new Headers()
       headers.append('Content-Type', 'application/json')
       headers.append('Access-Control-Allow-Origin', '*')
       if (data) {
         headers.append('Content-Length', String(JSON.stringify(data).length))
+      }
+
+      if (filters) {
+        headers.append('Filters', filters)
       }
 
       if (isUserLoggedIn()) {
@@ -343,7 +389,7 @@ async function getAPIData(apiURL, method, data) {
         }
       }
     }
-  
+
     return apiData
   }
 
@@ -351,6 +397,21 @@ async function getAPIData(apiURL, method, data) {
     const userData = getUserFromSession()
     return userData?.token
   }
+
+  async function fillSelectable(dropdown){
+
+    circuitArray = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/read/circuits` , 'GET')
+
+    let selectDropdown = document.getElementById(`${dropdown}`)
+
+    circuitArray.forEach(function (circuit){
+
+        const html = `<option value="${circuit._id}">${circuit.name}</option>`
+
+        selectDropdown.insertAdjacentHTML('beforeend', html)
+    })
+
+}
 
 /*=================================PROFILE===============================================*/
 function fillUserForm(){
@@ -461,32 +522,30 @@ function updateUserProfile(){
     })
 }
 
-async function fillRaceLinesList(){
+// async function fillRaceLinesList(){
 
-    const user = getUserFromSession()
-    console.log(user)
+//     const user = getUserFromSession()
+//     console.log(user)
 
-    const apiData = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/read/racelines/${user._id}` , 'GET')
-    console.log(apiData)
-    apiData.forEach(async function (raceline){
+//     const apiData = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/read/racelines/${user._id}` , 'GET')
+//     console.log(apiData)
+//     apiData.forEach(async function (raceline){
        
-        const lineCircuit = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/read/circuit/${raceline.circuit_id}`, 'GET')
-        const html = `<li>Linea:${lineCircuit.name} Fecha: XD</li>`
+//         const lineCircuit = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/read/circuit/${raceline.circuit_id}`, 'GET')
+//         const html = `<li>Linea:${lineCircuit.name} Fecha: XD</li>`
 
-        document.getElementById('race-line-list').insertAdjacentHTML('afterbegin', html)
-    })
+//         document.getElementById('race-line-list').insertAdjacentHTML('afterbegin', html)
+//     })
 
     
     
-}
+// }
 
 async function fillMarketList(){
 
     const user = getUserFromSession()
-    console.log(user)
 
     const apiData = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/read/articles/${user._id}` , 'GET')
-    console.log(apiData)
     apiData.forEach(function (article){
        
         const html = `<li>Articulo:${article.article} Fecha: ${article.price}</li>`
@@ -501,20 +560,55 @@ async function fillMarketList(){
 async function fillEventList(){
 
     const user = getUserFromSession()
-    console.log(user)
 
     const apiData = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/read/events/${user._id}` , 'GET')
-    console.log(apiData)
     apiData.forEach(function (event){
        
         const html = `<li>Evento:${event.title} Fecha: ${event.date}</li>`
 
         document.getElementById('event-list').insertAdjacentHTML('afterbegin', html)
     })
-
-    
     
 }
+
+async function fillRaceLinesList(){
+
+
+
+    const user = getUserFromSession()
+
+    const apiData = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/read/racelines/${user._id}` , 'GET')
+    let racelines = []
+    // apiData.forEach(async function (raceline){
+       
+    //     const lineCircuit = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/read/circuit/${raceline.circuit_id}`, 'GET')
+    //     // const html = `<li>Linea:${lineCircuit.name} Fecha: XD</li>`
+    //     raceline.circuitName = lineCircuit.name
+    //     raceline.img = ''
+    //     racelines.push(raceline)
+    //     // document.getElementById('race-line-list').insertAdjacentHTML('afterbegin', html)
+    // })
+    // updateRaceLineList(racelines)
+
+
+    await Promise.all(apiData.map(async function (raceline) {
+        const lineCircuit = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/read/circuit/${raceline.circuit_id}`, 'GET')
+        // const html = `<li>Linea:${lineCircuit.name} Fecha: XD</li>`
+        raceline.circuitName = lineCircuit.name
+        raceline.img = ''
+        racelines.push(raceline)
+        return lineCircuit
+        // document.getElementById('race-line-list').insertAdjacentHTML('afterbegin', html)
+    }))
+    updateRaceLineList(racelines)
+    
+}
+
+function updateRaceLineList(racelines) {
+    // Propagate article list to article-list component
+    console.log(racelines[0],Array.isArray(racelines) ,JSON.stringify(racelines[0]))
+    document.getElementById('racelines-list')?.setAttribute('racelines', JSON.stringify(racelines))
+  }
 
 /*=================================INDEX===========================================*/
 
@@ -606,39 +700,43 @@ function checkSignRedirectionFlag(){
     }
 }
 
-function userLogin() {
-    document.getElementById('login-form').addEventListener('submit', async function (event) {
-        event.preventDefault()
+// function userLogin() {
+//     document.getElementById('login-form').addEventListener('submit', async function (event) {
+//         event.preventDefault()
 
-        const loginCredentials = {
-            email: document.getElementById('login-email').value,
-            password: document.getElementById('login-password').value
-        }
+//         const loginCredentials = {
+//             email: document.getElementById('login-email').value,
+//             password: document.getElementById('login-password').value
+//         }
 
-        if (loginCredentials.email !== '' && loginCredentials.password !== '') {
-            const payload = JSON.stringify(loginCredentials)
-            const apiData = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/login`, 'POST', payload)
+//         if (loginCredentials.email !== '' && loginCredentials.password !== '') {
+//             const payload = JSON.stringify(loginCredentials)
+//             const apiData = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/login`, 'POST', payload)
         
-            if (!apiData) {
-              // Show error
-              alert('El usuario no existe')
-            } else {
-              if ('_id' in apiData
-                && 'name' in apiData
-                && 'email' in apiData
-                && 'token' in apiData
-                && 'role' in apiData) {
-                const userData = /** @type {User} */(apiData)
-                // store.user.login(userData, setSessionStorageFromStore)
-                // setSessionStorageFromStore()
-                updateSessionStorage(userData)
-                alert('Bienvenido')
-                window.location.href = 'profile.html'
-              } else {
-                alert('Usuario no encontrado')
-              }
-            }
-          }
+//             if (!apiData) {
+//               // Show error
+//               alert('El usuario no existe')
+//             } else {
+//               if ('_id' in apiData
+//                 && 'name' in apiData
+//                 && 'email' in apiData
+//                 && 'token' in apiData
+//                 && 'role' in apiData) {
+//                 const userData = /** @type {User} */(apiData)
+//                 // store.user.login(userData, setSessionStorageFromStore)
+//                 // setSessionStorageFromStore()
+//                 updateSessionStorage(userData)
+//                 alert('Bienvenido')
+//                 window.location.href = 'profile.html'
+//               } else {
+//                 alert('Usuario no encontrado')
+//               }
+//             }
+//           }
+
+// })
+// }
+
 
         // const users = await getAPIData(`${location.protocol}//${API_PORT}read/users`, 'GET')
         // console.log(users)
@@ -654,8 +752,37 @@ function userLogin() {
         // } else {
         //     alert('Usuario no encontrado')
         // }
-    })
-}
+
+
+/**
+ * Handles a successful login from the login component
+ * @param {CustomEvent} customEvent - The user data returned from the API
+ * @returns void
+ */
+function onLoginComponentSubmit(customEvent) {
+    const apiData = customEvent.detail
+    console.log(`DESDE FUERA DEL COMPONENTE:`, apiData);
+
+    if (!apiData) {
+        // Show error
+        alert('El usuario no existe')
+        return
+      } 
+    if ('_id' in apiData
+        && 'name' in apiData
+        && 'email' in apiData
+        && 'token' in apiData
+        && 'role' in apiData) {
+        const userData = /** @type {User} */(apiData)
+        // store.user.login(userData, setSessionStorageFromStore)
+        // setSessionStorageFromStore()
+        updateSessionStorage(userData)
+        alert('Bienvenido')
+        window.location.href = 'profile.html'
+      } else {
+        alert('Estructura inválida')
+      }
+  }
 
 function updateSessionStorage(value) {
     sessionStorage.setItem('user', JSON.stringify(value))
@@ -812,6 +939,7 @@ function updateSessionStorage(value) {
                     .bindPopup(`
                                 <div>
                                     <h3>${circuit.name}</h3>
+                                    <p>${circuit.description}</p>
                                     <button 
                                         onclick='window.openCircuitModal(${JSON.stringify(circuit)})'
                                         class="bg-blue-500 text-white p-2 rounded">
@@ -907,8 +1035,9 @@ function assignCircuitListeners(){
  * Creates a new EventCard Object with the info
  * Pushes them to store
  */
-async function getEventData(){
-    const eventArray = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/read/events` , 'GET')
+async function getEventData(filters){
+    document.getElementById('__event-container').innerHTML = ''
+    const eventArray = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/read/events` , 'GET',undefined ,filters)
     console.log(eventArray)
     eventArray.forEach(function (/** @type {EventCard} */ event){
         drawEvent(event)
@@ -916,16 +1045,22 @@ async function getEventData(){
 }    
 
 async function drawEvent(event){
-    const eventCreator = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/read/user/${event.user_id}`, 'GET')
-    console.log(eventCreator)
+    const date = new Date(event.date)
     const eventFrame = document.getElementById('__event-container')
         const html =
                 `<div class="bg-white shadow-md rounded-lg overflow-hidden flex items-center p-5 mb-4 border border-gray-200 w-full cursor-pointer event-card">
                 <div class="flex flex-col flex-1">
                 <h3 class="text-xl font-bold text-gray-800 truncate">${event.title}</h3>
-                <p class="text-sm text-gray-600">${event.date} - ${eventCreator.username}</p>
+                <p data-id="${event.location}" class="text-sm text-gray-600">${date.toLocaleDateString("es-ES")} - ${event.location} - ${event.user_username}</p>
                 <p class="text-gray-700 text-sm my-2 line-clamp-2">${event.description}</p>
                 </div>
+                <p class="px-4"><span class="participant-count">${event.participants.length}</span>/${event.maxParticipants} inscritos</p>
+                <button data-id="${event._id}" class="border-2 border-black bg-green-200 hover:bg-green-500 text-white font-bold py-1 px-3 m-4 rounded join-event">
+                    Me apunto
+                </button>
+                <button data-id="${event._id}" class="border-2 border-black bg-yellow-200 hover:bg-yellow-500 text-white font-bold py-1 px-3 m-4 rounded forfeit-event">
+                    Desapuntarse
+                </button>
                 <button data-id="${event._id}" class="border-2 border-black bg-gray-400 hover:bg-red-500 text-white font-bold py-1 px-3 rounded delete-event">
                     Delete
                 </button>
@@ -934,14 +1069,93 @@ async function drawEvent(event){
         
     const lastCard = eventFrame.firstElementChild;
     const deleteBtn = lastCard.querySelector('.delete-event');
+    const joinBtn = lastCard.querySelector('.join-event');
+    const forfeitBtn = lastCard.querySelector('.forfeit-event');
 
+    joinBtn.addEventListener('click', joinEvent)
+    forfeitBtn.addEventListener('click', forfeitEvent)
     deleteBtn.addEventListener('click', deleteEventCard);
 
-    lastCard.addEventListener('click', function(e){
-        // If click on delete button return
-        if (e.target.classList.contains('delete-event')) return;
-        eventModal(event); // O bien, openMarketModal(item)
+    if (event.participants.includes(getUserFromSession()._id)){
+        joinBtn.classList.add('hidden')
+        forfeitBtn.classList.remove('hidden')
+    }else{
+        joinBtn.classList.remove('hidden')
+        forfeitBtn.classList.add('hidden')
+    }
+
+    lastCard.addEventListener('click', async function(e){
+        if (e.target.classList.contains('delete-event' || 'join-event')) return;
+        const eventUpdated = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/read/event/${event._id}`, 'GET');
+        console.log(eventUpdated)
+        eventModal(eventUpdated);
     });
+}
+
+async function joinEvent(event){
+    event.stopPropagation()
+
+    const eventId = event.target.getAttribute('data-id');
+    const userId = getUserFromSession()._id
+
+    const card = event.target.closest('.event-card');
+
+    const joinBtn = card.querySelector('.join-event');
+    const forfeitBtn = card.querySelector('.forfeit-event');
+
+    console.log(joinBtn, forfeitBtn)
+
+    const payload = JSON.stringify({
+        user_id: userId
+    })
+
+    console.log(payload)
+
+    try {
+        const apiData = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/join/event/${eventId}`, 'POST', payload);
+        console.log("Respuesta del servidor:", apiData);
+    } catch (error) {
+        console.error("Error eliminando el evento:", error);
+    }
+
+    updateParticipantCount(eventId, 1)
+
+    
+    joinBtn.classList.add('hidden')
+    forfeitBtn.classList.remove('hidden')
+
+}
+
+async function forfeitEvent(event){
+
+    event.stopPropagation()
+
+    const card = event.target.closest('.event-card');
+
+    const joinBtn = card.querySelector('.join-event');
+    const forfeitBtn = card.querySelector('.forfeit-event');
+
+
+    const eventId = event.target.getAttribute('data-id');
+    const userId = getUserFromSession()._id
+
+    const payload = JSON.stringify({
+        user_id: userId
+    })
+
+    console.log(payload)
+
+    try {
+        const apiData = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/forfeit/event/${eventId}`, 'POST', payload);
+        console.log("Respuesta del servidor:", apiData);
+    } catch (error) {
+        console.error("Error eliminando el evento:", error);
+    }
+
+    updateParticipantCount(eventId, -1)
+
+    joinBtn.classList.remove('hidden')
+    forfeitBtn.classList.add('hidden')
 }
 
 async function deleteEventCard(event) {
@@ -969,6 +1183,18 @@ async function deleteEventCard(event) {
     }
 }
 
+function updateParticipantCount(eventId, count) {
+    const eventCard = document.querySelector(`.event-card button[data-id="${eventId}"]`)?.closest('.event-card');
+    console.log(eventCard)
+    if (eventCard) {
+        let participantCountElement = Number(eventCard.querySelector('.participant-count').textContent);
+        console.log(participantCountElement);
+        participantCountElement += count;
+        eventCard.querySelector('.participant-count').textContent = participantCountElement;
+    }
+}
+
+
 /**
  * 
  * @param {Object} event
@@ -977,23 +1203,42 @@ async function deleteEventCard(event) {
  * @param {string} event.title
  * @param {string} event.description
  */
-function eventModal(event){
+async function eventModal(event){
     modalOpener()
+    const users = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/read/users/`, 'GET')
+
+    const eventCreator = users.find(user => user._id === event.user_id)
+
+    const participantsArray = users
+    .filter(user => event.participants.includes(user._id))
+    .map(user => ( user.username));
+
+    console.log(participantsArray)
+
     const modalContent = document.getElementById('modal-content')
     console.log(modalContent)
-
+    console.log(event)
     if (modalContent){
-    modalContent.innerHTML = `<ul>
-                                <li>${event.title}</li>
-                                <li>${event.user}</li>
-                                <li><a href="${event.date}">Ubicación</a></li>
-                                <li>${event.description}</li>
+    modalContent.innerHTML = `<ul class="space-y-3 text-gray-800 font-medium">
+                                <li class="text-xl font-semibold">${event.title}</li>
+                                <li class="text-gray-600">Creado por: <span class="font-semibold">${eventCreator.username}</span></li>
+                                <li class="text-gray-600">Fecha: <span class="font-semibold">${event.date}</span></li>
+                                <li class="text-gray-600">Descripción: <span class="font-semibold">${event.description}</span></li>
+                                <li class="text-gray-600">Ubicación: <span class="font-semibold">${event.location}</span></li>
+                                <li class="text-gray-600">Participantes: 
+                                    <span class="font-semibold">${participantsArray.join(', ')}</span>
+                                </li>
+                                <li class="text-gray-600">Máximo de Participantes: <span class="font-semibold">${event.maxParticipants}</span></li>
                             </ul>`
     }
 }
 
 function openNewEventForm(){
+    if (!userlog){
+        alert("Debes iniciar sesión para publicar.");
+    }else{
     document.getElementById('new-event-form').classList.remove('__hidden')
+    }
 }
 
 function closeNewEventForm(){
@@ -1001,10 +1246,35 @@ function closeNewEventForm(){
     document.getElementById('new-event-form').classList.add('__hidden')
 }
 
+async function filterEvents(e){
+
+    e.preventDefault()
+
+    const circuit = document.getElementById('opciones-filtro').value
+    const minDate = document.getElementById('filterEventDate1').value
+    const maxDate = document.getElementById('filterEventDate2').value
+
+    if (minDate > maxDate){
+        alert("La fecha final debe ser posterior a la inicial.");
+    }
+
+    const filters = {
+        circuit: circuit,
+        minDate: minDate,
+        maxDate: maxDate
+    }
+    const payload = JSON.stringify(filters)
+    console.log("he llegado a filterEvents: ", payload)
+    await getEventData(payload)
+
+}
+
+
 
 function assignEventButtons(){
     document.getElementById('new-event-form-btn').addEventListener('click', openNewEventForm)
     document.getElementById('new-event-close').addEventListener('click', closeNewEventForm)
+    document.getElementById('filter-btn').addEventListener('click', filterEvents)
 }
 
 /*=================================MARKET===========================================*/
@@ -1124,7 +1394,11 @@ async function marketModal(item){
 }
 
 function openNewMarketForm(){
+    if (!userlog){
+        alert("Debes iniciar sesión para publicar.");
+    }else{
     document.getElementById('new-item-form').classList.remove('__hidden')
+    }
 }
 
 function closeNewMarketForm(){
@@ -1206,48 +1480,53 @@ function activateCanvas() {
     const clearButton = document.getElementById("clear");
     clearButton.addEventListener("click", clearTraces);
 
+    // Crear una flecha en el canvas
     
 
-    // const clearBgButton = document.getElementById("clearbg");
-    // clearBgButton.addEventListener("click", function() {
-    //     editCanvas.setBackgroundImage(null, editCanvas.renderAll.bind(editCanvas));
-        
-    // });
+    const apexButton = document.getElementById("apex");
+    apexButton.addEventListener("click", function() {
+        const triangle = new fabric.Triangle({
+            left: 40,
+            top: 50,
+            width: 40,
+            height: 40,
+            fill: 'white',
+            stroke: 'blue', 
+            strokeWidth: 5,
+        });
+        editCanvas.add(triangle);
 
-/*
-    editCanvas.on('mouse:down', function(opt) {
-        const e = opt.e;
-        if (e.altKey) {
-            editCanvas.isDrawingMode = false;
-            isDragging = true;
-            editCanvas.selection = false;
-            lastPosX = e.clientX;
-            lastPosY = e.clientY;
-            
-        }
+        //TODO, FUNCION SELECT
+        editCanvas.isDrawingMode = false;
+        panMode = false
+        editCanvas.selection = true;
+
+        selectModeBtn.style.backgroundColor ='rgb(37 99 235)'
+
+        drawModeBtn.style.backgroundColor ='rgb(59 130 246)'
+        togglePanButton.style.backgroundColor ='rgb(59 130 246)'
+        redBrushBtn.style.backgroundColor = 'rgb(59 130 246)'
+        yellowBrushBtn.style.backgroundColor = 'rgb(59 130 246)'
+        greenBrushBtn.style.backgroundColor = 'rgb(59 130 246)'
+ 
     });
 
-    editCanvas.on('mouse:move', function(opt) {
-        const e = opt.e;
-        if (isDragging) {
-            const vpt = editCanvas.viewportTransform;
-            vpt[4] += e.clientX - lastPosX;
-            vpt[5] += e.clientY - lastPosY;
-            editCanvas.requestRenderAll();
-            lastPosX = e.clientX;
-            lastPosY = e.clientY;
-        }
+    document.getElementById('text').addEventListener('click', function () {
+        const text = new fabric.IText('Nuevo Texto', {
+            left: 100,
+            top: 100,
+            fontSize: 36,
+            fill: 'white',
+            stroke: 'black',
+            strokeWidth: 1,
+            fontFamily: 'Arial',
+            editable: true
+        });
+    
+        editCanvas.add(text);
+        editCanvas.setActiveObject(text);
+        text.enterEditing();
     });
-
-    editCanvas.on('mouse:up', function(opt) {
-        if (isDragging) {
-            isDragging = false;
-            editCanvas.selection = true;
-            clampViewport(editCanvas);
-        }
-    });
-
-    */
 
 
     // ON MOUSEDOWN
@@ -1302,11 +1581,9 @@ function activateCanvas() {
 
         //straightlinemode
         if (straightLineMode && isDragging) {
-            console.log('2222')
             const pointer = editCanvas.getPointer(e); 
             console.log(pointer) 
             line.set({ x2: pointer.x, y2: pointer.y });
-            console.log(line)
             editCanvas.renderAll();
         }
         
@@ -1478,10 +1755,10 @@ function activateCanvas() {
     const straightLineBtn = document.getElementById('straight-line');
     straightLineBtn.addEventListener('click', () => {
         straightLineMode = true
+        editCanvas.selection = false;
     })
 
 
-    
 
 
 
@@ -1522,33 +1799,37 @@ function activateCanvas() {
 
 async function uploadToWeb(){
 
-    const bg = editCanvas.backgroundImage;
-    editCanvas.setBackgroundImage(null, editCanvas.renderAll.bind(editCanvas));
+    if (!userlog){
+        alert("Debes iniciar sesión para guardar tu trazada en perfil.");
+    }else{
+        const bg = editCanvas.backgroundImage;
+        editCanvas.setBackgroundImage(null, editCanvas.renderAll.bind(editCanvas));
 
-    const imgURL = editCanvas.toDataURL({
-        format: 'png', 
-        quality: 1     
-    })
+        const imgURL = editCanvas.toDataURL({
+            format: 'png', 
+            quality: 1     
+        })
 
-    editCanvas.setBackgroundImage(bg, editCanvas.renderAll.bind(editCanvas));
+        editCanvas.setBackgroundImage(bg, editCanvas.renderAll.bind(editCanvas));
 
-    let user = getUserFromSession()
+        let user = getUserFromSession()
 
-    const circuitId = document.getElementById('circuitCanvas').getAttribute('data-id')
+        const circuitId = document.getElementById('circuitCanvas').getAttribute('data-id')
 
 
-    const raceLine = {
-        user_id: userlog ? user._id : "0",
-        circuit_id: circuitId,
-        img: imgURL
+        const raceLine = {
+            user_id: userlog ? user._id : "0",
+            circuit_id: circuitId,
+            img: imgURL
+        }
+        console.log(raceLine)
+
+        const payload = JSON.stringify(raceLine)
+        console.log(payload)
+
+        const apiData = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/create/raceline/`, "POST", payload);
+        console.log("Respuesta del servidor:", apiData);
     }
-    console.log(raceLine)
-
-    const payload = JSON.stringify(raceLine)
-    console.log(payload)
-
-    const apiData = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/create/raceline/`, "POST", payload);
-    console.log("Respuesta del servidor:", apiData);
 
 
 }
@@ -1603,20 +1884,6 @@ function clampViewport(editCanvas) {
 //     imageContainer.src = imageURI
 // }
 
-async function fillSelectable(){
-
-    circuitArray = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/read/circuits` , 'GET')
-
-    const optionsDropdown = document.getElementById('opciones')
-
-    circuitArray.forEach(function (circuit){
-
-        const html = `<option value="${circuit._id}">${circuit.name}</option>`
-
-        optionsDropdown.insertAdjacentHTML('beforeend', html)
-    })
-
-}
 
 function raceLineButtonsAssign(){
     document.getElementById('map-selection-confirm').addEventListener('click', loadCircuitImage)
@@ -1650,6 +1917,107 @@ async function loadCircuitImage(){
 
 }
 
+/*===============================LAPTIMES=====================*/
+
+async function getLapTimes(){
+    const lapTimeArray = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/read/laptimes` , 'GET')
+    lapTimeArray.forEach(function (/** @type {LapTime} */ laptime){
+            drawLapTimes(laptime)
+
+    })
+} 
+
+
+async function drawLapTimes(laptime){
+    console.log(laptime)
+    // const lapTimeCreator = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/read/user/${item.user_id}`, 'GET')
+    const lapTimeFrame = document.getElementById('laptime-table-body')
+                const html = `
+                <tr class="hover:bg-gray-50">
+                        <td class="border border-gray-300 px-4 py-2">${laptime.circuit}</td>
+                        <td class="border border-gray-300 px-4 py-2">0.55,233</td>
+                        <td class="border border-gray-300 px-4 py-2">${laptime.lapCondition}</td>
+                        <td class="border border-gray-300 px-4 py-2">${laptime.kartType}</td>
+                        <td class="border border-gray-300 px-4 py-2">${laptime.kartInfo}</td>
+                        <td class="border border-gray-300 px-4 py-2">${laptime.lapTimeDate}</td>
+                    </tr>`
+lapTimeFrame?.insertAdjacentHTML('afterbegin', html)
+
+const lastCard = lapTimeFrame.firstElementChild;
+// const deleteBtn = lastCard.querySelector('.delete-item');
+// deleteBtn.addEventListener('click', deleteMarketCard);
+
+// lastCard.addEventListener('click', function(e){
+//     // If click on delete button return
+//     if (e.target.classList.contains('delete-item')) return;
+//     marketModal(item); // O bien, openMarketModal(item)
+// });
+}
+
+
+function createNewlaptime(){
+    document.getElementById('laptime-form').addEventListener('submit', async function (e){
+        e.preventDefault()
+
+        const sessionUser = getUserFromSession()
+        const user = sessionUser._id
+
+        const circuit = document.getElementById('laptimeCircuitName')?.value
+        const laptimeDate = document.getElementById('laptimeDate')?.value
+        const kartType = document.getElementById('laptimeKartSelect')?.value
+        const kartInfo = document.getElementById('laptimeKart')?.value
+        const lapCondition = document.getElementById('laptimeConditions')?.value
+
+        const timeSheet = 'img'
+        const lapLink = document.getElementById('laptimelink')?.value
+
+        const terms = document.getElementById("terms")?.checked;
+
+
+        if (!terms) {
+            alert("Debes aceptar las normas para publicar.");
+            return;
+        }
+
+        const lapTime = {
+            user_id: user,
+            circuit: circuit,
+            lapTimeDate: laptimeDate,
+            kartType: kartType,
+            kartInfo: kartInfo,
+            lapCondition: lapCondition,
+            timeSheet: timeSheet,
+            lapLink: lapLink
+        }
+
+        console.log("antes de fetch", lapTime)
+        const payload = JSON.stringify(lapTime)
+        console.log(payload)
+        const apiData = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/create/laptime`,'POST', payload);
+
+
+})
+
+}
+
+function openNewLapTimeForm(){
+    if (!userlog){
+        alert("Debes iniciar sesión para publicar.");
+    }else{
+    document.getElementById('new-laptime-form').classList.remove('__hidden')
+    }
+}
+
+function closeNewLapTimeForm(){
+    document.getElementById('laptime-form').reset()
+    document.getElementById('new-laptime-form').classList.add('__hidden')
+}
+
+
+function assignLapTimeButtons(){
+    document.getElementById('new-laptime-form-btn').addEventListener('click', openNewLapTimeForm)
+    document.getElementById('new-laptime-close').addEventListener('click', closeNewLapTimeForm)
+}
   
 
 
