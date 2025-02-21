@@ -102,6 +102,9 @@ export class EventCard{
     user_id
     description
     location
+    participants
+    maxParticipants
+    location_id
 /**
  * @param {string} _id
  * @param {string} title 
@@ -109,14 +112,22 @@ export class EventCard{
  * @param {string} user_id 
  * @param {string} description
  * @param {string} location 
+ * @param {Array<string>} participants
+ * @param {string} maxParticipants
+ * @param {string} location_id
+ * @param {string} user_username
  */
-    constructor(_id, title, date, user_id, description, location){
+    constructor(_id, title, date, user_id, description, location, participants, maxParticipants, location_id, user_username){
         this._id = _id       
         this.title = title
         this.date = date
         this.user_id = user_id
         this.description = description
         this.location = location
+        this.participants = participants
+        this.maxParticipants = maxParticipants
+        this.location_id = location_id
+        this.user_username = user_username
     }
 }
 
