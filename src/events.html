@@ -16,8 +16,8 @@
             <h2 id="profile-btn" class="p-2 px-4 bg-neutral-200 rounded-full __hidden"><a href="./profile.html">Profile</a></h2>
         </div>
     </div>
-    <header class="sticky top-0 bg-neutral-400/75 backdrop-blur-sm shadow-sm">
-        <nav class="z-40">
+    <header class="sticky top-0 bg-neutral-400/75 backdrop-blur-sm shadow-sm z-50">
+        <nav>
             <ul class="flex justify-end py-3">
                 <li class="bg-neutral-200 p-2 px-4 mx-3 rounded-full  hover:bg-amber-200"><a href="./index.html">Inicio</a></li>
                 <li class="bg-neutral-200 p-2 px-4 mx-3 rounded-full hover:bg-amber-200"><a href="./circuits.html">Circuitos</a></li>
@@ -25,17 +25,35 @@
                 <li class="bg-neutral-200 p-2 px-4 mx-3 rounded-full hover:bg-amber-200"><a href="./market.html">Mercado</a></li>
                 <!--<li class="bg-neutral-200 p-2 px-4 mx-3 rounded-full hover:bg-amber-200"><a href="./forum.html">Foro</a></li>-->
                 <li class="bg-neutral-200 p-2 px-4 mx-3 rounded-full hover:bg-amber-200"><a href="./raceline.creator.html">Creador de trazadas</a></li>
+                <li class="bg-neutral-200 p-2 px-4 mx-3 rounded-full hover:bg-amber-200"><a href="./timetable.html">Tabla de tiempos</a></li>
             </ul>
         </nav>
     </header>
 
-    <main class="bg-white pt-5 px-[5%] h-screen">
+    <main class="bg-white pt-5 px-[5%] min-h-screen">
 
-        <div class="flex justify-end space-y-2">
-            <button id="new-event-form-btn" type="button" class="px-5 py-2 bg-amber-400 text-white rounded-lg hover:bg-amber-500 transition max-w-2xl mb-4">Nuevo evento</button>
+        <div class="flex justify-end space-y-2 mb-4">
+            <form id="filter-form" action="#" enctype="multipart/form-data" class="flex justify-center space-y-2 mr-4">
+                <label class="flex text-gray-600 font-medium items-center mx-2 mt-2">Circuito</label>
+
+                <select id="opciones-filtro" name="opciones" class="p-2 border border-gray-300 rounded-lg shadow-sm mr-4 " required>dasd
+                    <option value="all">Selecciona circuito</option>
+                  </select>
+
+                <label class="flex text-gray-600 font-medium items-center mx-2 mt-2">Fecha entre</label>
+
+                <input id="filterEventDate1" type="date" name="usuario" class="p-3 border rounded-lg focus:ring-2 focus:ring-amber-400 focus:outline-none">
+
+                <label for="eventDate" class="flex text-gray-600 font-medium items-center mx-2">y</label>
+
+                <input id="filterEventDate2" type="date" name="usuario" class="p-3 border rounded-lg focus:ring-2 focus:ring-amber-400 focus:outline-none">
+
+                <button id="filter-btn" type="submit" class="px-5 py-2 bg-amber-400 text-white rounded-lg hover:bg-amber-500 transition max-w-2xl ml-2">Filtrar</button>
+            </form>
+                <button id="new-event-form-btn" type="button" class="px-5 py-2 bg-amber-400 text-white rounded-lg hover:bg-amber-500 transition max-w-2xl mb-4">Nuevo evento</button>
         </div>
 
-        <section id="new-event-form"class="p-6 bg-white shadow-md rounded-xl max-w-2xl mx-auto mb-4 __hidden relative">
+        <section id="new-event-form" class="p-6 bg-white shadow-md rounded-xl max-w-3xl mx-auto mb-4 relative z-[5] __hidden ">
             <span id="new-event-close" class="absolute top-3 right-3 text-gray-500 hover:text-gray-700 text-3xl font-bold"><a href="#">&times;</a></span>
             <form id="form" action="#" enctype="multipart/form-data" class="space-y-6">
                 <fieldset>
@@ -44,7 +62,19 @@
         
                     <div class="flex flex-col space-y-2">
                         <label for="eventName" class="text-gray-600 font-medium">Título</label>
-                        <input id="eventName" type="text" name="usuario" class="p-3 border rounded-lg focus:ring-2 focus:ring-amber-400 focus:outline-none">
+                        <input id="eventName" type="text" name="usuario" class="p-3 border rounded-lg focus:ring-2 focus:ring-amber-400 focus:outline-none" required>
+                    </div>
+
+                    <div class="flex flex-col space-y-2">
+                        <label for="opciones" class="text-gray-700 font-semibold">Circuito</label>
+                        <select id="opciones" name="opciones" class="p-2 border border-gray-300 rounded-lg shadow-sm " required>dasd
+                        <option value="0" disabled selected>Selecciona circuito</option>
+                      </select>
+                    </div>
+
+                    <div class="flex flex-col space-y-2">
+                        <label for="eventMaxParticipants" class="text-gray-600 font-medium">Máximo de participantes</label>
+                        <input id="eventMaxParticipants" type="number" name="participants" min="1" max="64" class="p-3 border rounded-lg focus:ring-2 focus:ring-amber-400 focus:outline-none" required>
                     </div>
         
                     <div class="flex flex-col space-y-2">
