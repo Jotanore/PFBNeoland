@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="./css/reset.css" rel="stylesheet"/>
+    <link href="./css/output.css" rel="stylesheet"/>
+    <script defer type="module" src="./js/components/bundle.js"></script>
+    <script defer type="module" src="./js/index.js"></script>
+    <title>KartHub - Inicio</title>
+</head>
+<body id="messages" class="box-border bg-white">
+    <div class="flex p-4 bg-neutral-500 items-center">
+        <h1 class="font-bold text-4xl ">KartHub</h1>
+        <div class="flex justify-end w-full">
+            <a href="messages.html" class="p-2 px-4 bg-neutral-200 rounded-full mr-4"><span id="message-btn" >Mensajes</span></a>
+            <h2 id="credentials-btn" class="p-2 px-4 bg-neutral-200 rounded-full"><a>SignUp/Login</a></h2>
+            <h2 id="profile-btn" class="p-2 px-4 bg-neutral-200 rounded-full __hidden"><a href="./profile.html">Profile</a></h2>
+        </div>
+    </div>
+    <header class="sticky top-0 bg-neutral-400/75 backdrop-blur-sm shadow-sm">
+            <ul class=" flex justify-end py-3">
+                <!--TODO: NAV HITBOX-->
+                <li class="bg-amber-400 mx-3 pt-2 rounded-full"><a class="bg-amber-400 p-2 px-4 rounded-full" href="./index.html">Inicio</a></li>
+                <li class="bg-neutral-200 p-2 px-4 mx-3 rounded-full hover:bg-amber-200"><a href="./circuits.html">Circuitos</a></li>
+                <li class="bg-neutral-200 p-2 px-4 mx-3 rounded-full hover:bg-amber-200"><a href="./events.html">Eventos</a></li>
+                <li class="bg-neutral-200 p-2 px-4 mx-3 rounded-full hover:bg-amber-200"><a href="./market.html">Mercado</a></li>
+                <!--<li class="bg-neutral-200 p-2 px-4 mx-3 rounded-full hover:bg-amber-200"><a href="./forum.html">Foro</a></li>-->
+                <li class="bg-neutral-200 p-2 px-4 mx-3 rounded-full hover:bg-amber-200"><a href="./raceline.creator.html">Creador de trazadas</a></li>
+                <li class="bg-neutral-200 p-2 px-4 mx-3 rounded-full hover:bg-amber-200"><a href="./timetable.html">Tabla de tiempos</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main id="messages-container" class="bg-white px-[15%] py-5 flex flex-col min-h-[calc(100vh-136px)]">
+        <section class="bg-neutral-100 py-10 px-14 mb-6 rounded-lg shadow-lg flex-grow flex flex-col ">
+            <div class="grid grid-cols-3 grid-rows-10 gap-4 w-full flex-grow">
+                <div class="row-span-1 col-span-1 flex items-center justify-center gap-4">
+                    <button id="received-btn" class="bg-amber-600 hover:bg-amber-600 text-white font-bold py-2 px-6 rounded-full shadow-md">
+                    Recibidos
+                    </button>
+
+                    <button id="sent-btn" class="bg-amber-400 hover:bg-amber-500 text-white font-bold py-2 px-6 rounded-full shadow-md">
+                    Enviados
+                    </button>
+                </div>
+                <div id="deployed-message-screensaver" 
+                    class="row-span-10 col-span-2 bg-blue-500 overflow-hidden p-6 flex flex-col items-center justify-center text-white text-lg font-semibold text-center rounded-lg shadow-md">
+                    Haz click en un mensaje para ver detalles
+                </div>
+                <div id="deployed-message-container" class="row-span-10 col-span-2 bg-blue-500 overflow-hidden flex flex-col gap-3 __hidden">
+                    <div id="message-container" class="flex flex-col bg-slate-200 flex-grow overflow-auto p-4 rounded-lg shadow-md">
+                        <div id="message-sender" class="text-gray-700 font-semibold"></div>
+                        <div class="border-b border-gray-300 pb-4 mb-4">
+                            <h2 id="message-title"class="text-2xl font-bold text-gray-900 mb-2"></h2>
+                            <p id="message-content" class="text-gray-700 leading-relaxed break-words overflow-auto">
+                                
+                            </p>
+                        </div>
+                    </div>
+                
+                    <div id="message-form-container" class="bg-slate-200 p-4 rounded-lg shadow-md flex-shrink-0">
+                        <form id="message-form" class="w-full">
+                            <div class="mb-4 flex flex-col">
+                                <label for="message" class="text-gray-700 font-bold mb-2">Responder:</label>
+                                <textarea id="answer-message" name="answer-message" rows="4" 
+                                    class="w-full border border-gray-300 rounded-md p-2 resize-none focus:ring-2 focus:ring-amber-400 focus:outline-none"></textarea>
+                            </div>
+                            <div class="flex justify-end">
+                                <button id="send-reply-btn" type="button" 
+                                    class="bg-amber-400 hover:bg-amber-500 text-white font-bold py-2 px-6 rounded-full shadow-md">
+                                    Enviar
+                                </button>
+                            </div>
+                        </form>
+                    </div> 
+                </div>
+                
+                <div id="message-list-container"
+                    class="row-span-9 col-span-1 bg-blue-400 flex flex-col overflow-y-auto max-h-[calc(100vh-180px)] ">
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    
+</body>
+</html>
