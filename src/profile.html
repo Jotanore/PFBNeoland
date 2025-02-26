@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="./css/reset.css" rel="stylesheet"/>
     <link href="./css/output.css" rel="stylesheet"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js"></script>
     <script defer type="module" src="./js/components/bundle.js"></script>
     <script defer type="module" src="./js/index.js"></script>
     <title>KartHub - Inicio</title>
@@ -27,8 +28,8 @@
         </nav>
     </header>
 
-    <main class="bg-white px-[5%] pt-5 h-screen ">
-        <section class="bg-neutral-100 py-10 h-screen px-20 mb-4">
+    <main class="bg-white px-[5%] pt-5 flex flex-col, flex-1 ">
+        <section class="bg-neutral-100 py-10 w-screen px-20 mb-4">
             <div class="flex flex-col md:flex-row gap-6">
                 <div id="profile-container"class="bg-white p-6 rounded-lg shadow-lg w-full md:w-[60%]">
                     <h2 class="text-2xl font-semibold text-gray-800 mb-4 text-center">Perfil de Usuario</h2>
@@ -203,7 +204,12 @@
                     </button>
                 </div>
             </form>
-
+            <div id="racelineCanvas-container" class="flex flex-row md:flex-col gap-6 __hidden mb-10">
+                <button id="profile-return-btn" class="bg-amber-400 hover:bg-amber-500 text-white font-bold py-2 px-6 rounded-full shadow-md">
+                    Volver
+                </button>
+                <canvas data-id="" id="racelineCanvas" width="1000" height="700"></canvas>
+            </div>
         </section>
     </main>
 
