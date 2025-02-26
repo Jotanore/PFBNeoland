@@ -76,11 +76,30 @@ export class RaceLinesList extends HTMLElement {
 1
     _addNewLi(newRaceLine){
         console.log(newRaceLine)
+        const lineList = this.shadowRoot.getElementById('racelines-container')
         const raceLineList = this.shadowRoot.getElementById('race-line-list')
-        const html = `<li>Linea:${newRaceLine.circuitName} Fecha: XDs</li>`
+        const html = `<li>Linea:${newRaceLine.circuitName} | Fecha: ${newRaceLine.date} <button class="bg-amber-400 hover:bg-amber-500 text-white font-bold py-2 px-6 rounded-full shadow-md show-line">
+                            Ver
+                        </button></li>`
         raceLineList.insertAdjacentHTML('afterbegin', html)
-    }
 
+        console.log(lineList)
+        const lastLine = lineList.querySelector('li');
+        console.log(lastLine)
+        const showBtn = lastLine.querySelector('.show-line');
+        console.log(showBtn)
+        showBtn.addEventListener('click', this._openRaceline.bind(this, newRaceLine))
+
+  }
+
+  _openRaceline(id){
+    let newEvent = new CustomEvent(
+      "open-raceline-event", {
+        bubbles: true,
+        detail: id
+      })
+      this.dispatchEvent(newEvent)
+    }
   }
   
   customElements.define("race-lines-list", RaceLinesList);
