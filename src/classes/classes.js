@@ -147,6 +147,8 @@ export class User{
     instagram
     role
     token
+    sentMessages
+    receivedMessages
 
 /**
  * 
@@ -165,8 +167,10 @@ export class User{
  * @param {string} instagram
  * @param {string} role
  * @param {string} token
+ * @param {Array<string>} sentMessages
+ * @param {Array<string>} receivedMessages
  */
-    constructor(_id,username, name, email, password, surnames, location, bio, img, prefCircuit, kart, youtube, instagram, role, token){
+    constructor(_id,username, name, email, password, surnames, location, bio, img, prefCircuit, kart, youtube, instagram, role, token, sentMessages, receivedMessages){
         this._id = _id
         this.username = username
         this.name = name
@@ -182,6 +186,8 @@ export class User{
         this.instagram = instagram
         this.role = role
         this.token = token
+        this.sentMessages = sentMessages
+        this.receivedMessages = receivedMessages
     }
 }
 
@@ -217,6 +223,7 @@ export class RaceLines{
     user_id
     circuit_id 
     img
+    date
 
 /** 
  * 
@@ -224,11 +231,48 @@ export class RaceLines{
  * @param {string} user_id
  * @param {string} circuit_id
  * @param {string} img
+ * @param {string} date
  */
-    constructor(_id, user_id, circuit_id, img){
+    constructor(_id, user_id, circuit_id, img, date){
         this._id = _id  
         this.user_id = user_id
         this.circuit_id = circuit_id
         this.img = img
+        this.date = date
     }
+}
+
+export class Message{
+
+    _id
+    sender_id
+    receiver_id
+    title
+    message
+    date
+    isNew
+
+
+/**
+ * 
+ * @param {string} _id
+ * @param {string} sender_id
+ * @param {string} receiver_id
+ * @param {string} title
+ * @param {string} message
+ * @param {string} date
+ * @param {boolean} isNew
+ */
+
+    constructor(_id, sender_id, receiver_id, title, message, date, isNew){
+        this._id = _id
+        this.sender_id = sender_id
+        this.receiver_id = receiver_id
+        this.title = title
+        this.message = message
+        this.date = date
+        this.isNew = isNew
+
+    }
+
 }
