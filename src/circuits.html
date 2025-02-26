@@ -10,7 +10,7 @@
     <script defer type="module" src="./js/index.js"></script>
     <title>KartHub - Circuitos</title>
 </head>
-<body id="circuits" class="box-border bg-white">
+<body id="circuits" class="box-border bg-white overflow-hidden">
     <div class="flex p-4 bg-neutral-500 items-center">
         <h1 class="font-bold text-4xl ">KartHub</h1>
         <div class="flex justify-end w-full">
@@ -34,23 +34,23 @@
 
     <main class="bg-white px-[5%] py-10 ">
         <div class="flex flex-col md:flex-row gap-5">
-          <section id="map" class="flex basis-3/4 h-[44.5rem] bg-red-100 items-center justify-center z-20">
+          <section id="map" class="flex basis-3/4 h-[44.5rem] bg-neutral-100 items-center justify-center z-20">
           </section>
           <section class="flex flex-col overflow-auto max-h-[44.5rem] basis-2/5 ">
 
-            <div id="filter-container" class="flex flex-col overflow-auto max-h-[44.5rem] basis-2/5 p-5 bg-neutral-100 mb-4">
+            <div id="filter-container" class="flex flex-col max-h-[20%] basis-2/5 p-5 bg-neutral-100 mb-4 overflow-hidden">
               <form id="filter-form">
                 <label for="filter">Distancia:</label>
                 <input type="range" id="distance-range" min="0" max="1000" value="500" step="1">
                 <p><span id="value">500</span>Km</p>
 
                 <div class="flex justify-end space-y-2">
-                    <button id="new-event-form-btn" type="button" class="px-5 py-2 bg-amber-400 text-white rounded-lg hover:bg-amber-500 transition max-w-2xl mb-4">Aplicar filtros</button>
+                    <button id="circuit-filter" type="button" class="px-5 py-2 bg-amber-400 text-white rounded-lg hover:bg-amber-500 transition max-w-2xl mb-4">Aplicar filtros</button>
                 </div>
               </form>
             </div>
             
-            <div id="card-container" class="bg-neutral-100 p-5">
+            <div id="card-container" class="bg-neutral-100 p-5 flex flex-col flex-1 overflow-auto">
             </div>
 
           </section>

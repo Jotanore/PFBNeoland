@@ -8,7 +8,7 @@
     <script defer type="module" src="./js/index.js"></script>
     <title>KartHub - Eventos</title>
 </head>
-<body id="events" class="box-border bg-white">
+<body id="events" class="box-border bg-white min-h-screen flex flex-col overflow-auto">
     <div class="flex p-4 bg-neutral-500 items-center">
         <h1 class="font-bold text-4xl ">KartHub</h1>
         <div class="flex justify-end w-full">
@@ -30,7 +30,7 @@
         </nav>
     </header>
 
-    <main class="bg-white pt-5 px-[5%] min-h-screen">
+    <main class="bg-white pt-5 pb-8 px-[5%] flex-1 flex flex-col overflow-hidden">
 
         <div class="flex justify-end space-y-2 mb-4">
             <form id="filter-form" action="#" enctype="multipart/form-data" class="flex justify-center space-y-2 mr-4">
@@ -100,7 +100,7 @@
             </form>
         </section>
         
-        <section id="__event-container" class="pt-5 pb-5 px-5 bg-neutral-100 min-h-screen flex flex-col items-center">
+        <section id="__event-container" class="pt-5 pb-5 px-5 bg-neutral-100 flex flex-col items-center flex-1 overflow-y-auto">
         </section>
         <div id="modal" class="fixed inset-0 flex justify-center items-center bg-black/50 backdrop-blur-md z-[999] __hidden">
             <div class="bg-white w-[75%] max-w-4xl h-[85%] rounded-xl shadow-lg overflow-hidden relative animate-fade-in">
