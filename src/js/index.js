@@ -1,6 +1,8 @@
-// @ts-noheck
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-nocheck
+
 'use strict'
-import {Circuit, EventCard, ForumCard, User } from '../classes/classes.js'
+import { EventCard, ForumCard, Message} from '../classes/classes.js'
 import { HttpError } from '../classes/HttpError.js';
 import {MarketItem} from '../classes/classes.js'
 import { store } from './store/redux.js';
@@ -10,10 +12,12 @@ import { simpleFetch } from './lib/simpleFetch.js';
  */
 let userCoords = null;
 let map
+let canvas
 let editCanvas
 let userlog = false
 export const API_PORT = location.port ? `:${location.port}` : ''
 let circuitArray
+
 
 /*
 const NODE_SERVER_GET_CIRCUITS =`http://127.0.0.1:6431/get.circuits.json`
@@ -25,6 +29,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const page = document.getElementsByTagName('body')
 
+    window.addEventListener('open-raceline-event', (event) => {
+        console.log('open-raceline-event', /** @type {CustomEvent} */(event).detail)
+        openRaceLine(/** @type {CustomEvent} */(event).detail)
+      })
     
     console.log("user: ", getUserFromSession())
     if (getUserFromSession() != null) {
@@ -38,15 +46,30 @@ document.addEventListener('DOMContentLoaded', async () => {
             case 'profile':
                 console.log(`Estoy en ${page[0].id}`)
                 if (userlog) {
+                    const user = getUserFromSession()
                     fillUserProfile()
                     fillUserForm()
-                    fillEventList()
-                    fillRaceLinesList()
+                    fillEventList(user._id)
+                    fillRaceLinesLit(user._id)
                     updateRaceLineList([])
-                    fillMarketList()
+                    fillMarketList(user._id)
                     updateUserProfile()
                 }
                 break
+            case 'messages':{
+                getMessages()
+                assignMessageListeners()
+            }
+                break
+            case 'foreign-profile':
+                const user = getForeignUserFromSession()
+                loadForeignProfile()
+                fillEventList(user)
+                fillRaceLinesList(user)
+                fillMarketList(user)
+                assignForeignProfileListeners()
+                modalManager()
+            break
             case 'index':
                 window.addEventListener('login-form-submit', onLoginComponentSubmit)
                 assignIndexListeners()
@@ -112,6 +135,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         input.placeholder = "Selecciona una opción";
                 }
             });
+            fillSelectable('opciones')
             credentialsBtnManager()
             createNewlaptime()
             getLapTimes()
@@ -179,6 +203,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 //         j--
 //     } 
 // }
+function getNowDate(){
+
+    const now = new Date()
+    const day = String(now.getDate()).padStart(2, '0')
+    const month = String(now.getMonth() + 1).padStart(2, '0')
+    const year = now.getFullYear();
+
+    return `${day}/${month}/${year}`
+}
 
 window.openCircuitModal = function (circuit){
     modalOpener()
@@ -351,6 +384,10 @@ function getUserFromSession(){
     return JSON.parse(sessionStorage.getItem('user'))
 }
 
+function getForeignUserFromSession(){
+    return sessionStorage.getItem('foreignId')
+}
+
 export async function getAPIData(apiURL, method, data, filters) {
     let apiData
     try {
@@ -448,6 +485,7 @@ function fillUserProfile(){
     document.getElementById("edit-profile-btn").addEventListener('click', showProfileform)
     document.getElementById("logout-btn").addEventListener('click', userLogOut)
     document.getElementById("profile-update-btn").addEventListener('click', showProfile)
+    document.getElementById('profile-return-btn').addEventListener('click', showProfile)
     document.getElementById("discard-btn").addEventListener('click',function(e) {
         e.preventDefault();
     
@@ -459,12 +497,22 @@ function fillUserProfile(){
 
 function showProfileform(){
     document.getElementById("profile-update-form").classList.remove("__hidden")
+    document.getElementById('event-container').classList.add("__hidden")
+    document.getElementById('fastlaps-container').classList.add("__hidden")
+    document.getElementById('market-container').classList.add("__hidden")
+    document.getElementById('racelines-list').classList.add("__hidden")
     document.getElementById("profile-container").classList.add("__hidden")
+    document.getElementById('racelineCanvas-container').classList.add("__hidden")
 }
 
 function showProfile(){
     document.getElementById("profile-container").classList.remove("__hidden")
     document.getElementById("profile-update-form").classList.add("__hidden")
+
+    document.getElementById('event-container').classList.remove("__hidden")
+    document.getElementById('fastlaps-container').classList.remove("__hidden")
+    document.getElementById('market-container').classList.remove("__hidden")
+    document.getElementById('racelines-list').classList.remove("__hidden")
 }
 
 function updateUserProfile(){
@@ -541,11 +589,11 @@ function updateUserProfile(){
     
 // }
 
-async function fillMarketList(){
+async function fillMarketList(userId){
 
-    const user = getUserFromSession()
+    const user = userId
 
-    const apiData = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/read/articles/${user._id}` , 'GET')
+    const apiData = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/read/articles/${user}` , 'GET')
     apiData.forEach(function (article){
        
         const html = `<li>Articulo:${article.article} Fecha: ${article.price}</li>`
@@ -557,11 +605,11 @@ async function fillMarketList(){
     
 }
 
-async function fillEventList(){
+async function fillEventList(userId){
 
-    const user = getUserFromSession()
+    const user = userId
 
-    const apiData = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/read/events/${user._id}` , 'GET')
+    const apiData = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/read/events/${user}` , 'GET')
     apiData.forEach(function (event){
        
         const html = `<li>Evento:${event.title} Fecha: ${event.date}</li>`
@@ -571,13 +619,11 @@ async function fillEventList(){
     
 }
 
-async function fillRaceLinesList(){
+async function fillRaceLinesLit(userId){
 
+    const user = userId
 
-
-    const user = getUserFromSession()
-
-    const apiData = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/read/racelines/${user._id}` , 'GET')
+    const apiData = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/read/racelines/${user}` , 'GET')
     let racelines = []
     // apiData.forEach(async function (raceline){
        
@@ -593,9 +639,9 @@ async function fillRaceLinesList(){
 
     await Promise.all(apiData.map(async function (raceline) {
         const lineCircuit = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/read/circuit/${raceline.circuit_id}`, 'GET')
+        console.log(lineCircuit)
         // const html = `<li>Linea:${lineCircuit.name} Fecha: XD</li>`
         raceline.circuitName = lineCircuit.name
-        raceline.img = ''
         racelines.push(raceline)
         return lineCircuit
         // document.getElementById('race-line-list').insertAdjacentHTML('afterbegin', html)
@@ -604,11 +650,266 @@ async function fillRaceLinesList(){
     
 }
 
+async function fillRaceLinesList(userId){
+
+    const user = userId
+
+    const apiData = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/read/racelines/${user}` , 'GET')
+    let racelines = []
+    apiData.forEach(async function (raceline){
+       
+        const lineCircuit = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/read/circuit/${raceline.circuit_id}`, 'GET')
+        const html = `<li>Linea:${lineCircuit.name} Fecha: XD</li>`
+        raceline.circuitName = lineCircuit.name
+        raceline.img = ''
+        racelines.push(raceline)
+        document.getElementById('race-line-list').insertAdjacentHTML('afterbegin', html)
+    })    
+}
+
 function updateRaceLineList(racelines) {
     // Propagate article list to article-list component
-    console.log(racelines[0],Array.isArray(racelines) ,JSON.stringify(racelines[0]))
     document.getElementById('racelines-list')?.setAttribute('racelines', JSON.stringify(racelines))
   }
+
+function openRaceLine(raceLine){
+
+    document.getElementById('event-container').classList.add("__hidden")
+    document.getElementById('fastlaps-container').classList.add("__hidden")
+    document.getElementById('market-container').classList.add("__hidden")
+    document.getElementById('racelines-list').classList.add("__hidden")
+    document.getElementById("profile-container").classList.add("__hidden")
+
+    activateRaceLineCanvas()
+    loadCircuitLineImage(raceLine.circuit_id)
+    loadRaceLine(raceLine._id)
+    document.getElementById('racelineCanvas-container').classList.remove('__hidden')
+}
+
+function activateRaceLineCanvas() {
+    // eslint-disable-next-line no-undef
+    canvas = new fabric.Canvas('racelineCanvas');
+
+    // Cargar la imagen de fondo y bloquearla
+    // eslint-disable-next-line no-undef
+    fabric.Image.fromURL('./imgs/kotar.jpg', function(img) {
+        img.scaleToWidth(1000);
+        img.selectable = false;
+        img.evented = false;
+        canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas));
+    });
+
+
+    // Variables para el panning
+    let isDragging = false;
+    let lastPosX = 0;
+    let lastPosY = 0;
+    let panMode = true
+    canvas.isDrawingMode = false;
+    canvas.selection = false;
+    
+
+    // ON MOUSEDOWN
+    canvas.on('mouse:down', function(opt) {
+        const e = opt.e;
+
+        //panmode
+        if (panMode) {
+
+        isDragging = true;
+        canvas.selection = false;
+        lastPosX = e.clientX;
+        lastPosY = e.clientY;
+        }
+        
+        
+    });
+
+    //ON MOUSEMOVE
+    canvas.on('mouse:move', function(opt) {
+
+        const e = opt.e;
+        //panmode
+        if (panMode && isDragging){
+            
+            const vpt = canvas.viewportTransform;
+            vpt[4] += e.clientX - lastPosX;
+            vpt[5] += e.clientY - lastPosY;
+            canvas.requestRenderAll();
+            lastPosX = e.clientX;
+            lastPosY = e.clientY;
+        }
+
+    });
+        
+
+    // ON MOUSEUP
+    canvas.on('mouse:up', function() {
+        if (panMode){
+            isDragging = false;
+            clampRacelineViewport(canvas);
+        }
+
+
+    });
+
+    // Zoom con la rueda del mouse 
+    canvas.on('mouse:wheel', function(opt) {
+        opt.e.preventDefault();
+        opt.e.stopPropagation();
+        const pointer = canvas.getPointer(opt.e);
+        let zoom = canvas.getZoom();
+
+        // Aumentar o disminuir el zoom según la dirección del scroll
+        zoom = opt.e.deltaY < 0 ? zoom * 1.1 : zoom / 1.1;
+
+        // Calcular el zoom mínimo permitido basado en el fondo para que, 
+        // cuando la imagen completa se vea en su lado más corto, no se pueda hacer más zoom out.
+        if (canvas.backgroundImage) {
+            const bg = canvas.backgroundImage;
+            const minZoomWidth = canvas.getWidth() / (bg.width * bg.scaleX);
+            const minZoomHeight = canvas.getHeight() / (bg.height * bg.scaleY);
+            const minZoom = Math.max(minZoomWidth, minZoomHeight);
+            if (zoom < minZoom) {
+                zoom = minZoom;
+            }
+        }
+        
+        if (zoom > 20) zoom = 20;  // Zoom máximo arbitrario
+        // eslint-disable-next-line no-undef
+        canvas.zoomToPoint(new fabric.Point(pointer.x, pointer.y), zoom);
+        clampRacelineViewport(canvas);
+    });
+
+
+}
+
+function clampRacelineViewport(canvas) {
+    const bg = canvas.backgroundImage;
+    if (!bg) return;
+    
+    const canvasWidth = canvas.getWidth();
+    const canvasHeight = canvas.getHeight();
+    const zoom = canvas.getZoom();
+    
+    // Dimensiones efectivas del fondo (imagen) con el zoom actual
+    const bgWidth = bg.width * bg.scaleX * zoom;
+    const bgHeight = bg.height * bg.scaleY * zoom;
+    
+    const vt = canvas.viewportTransform; // [a, b, c, d, tx, ty]
+    
+    // Limitar la traslación horizontal (vt[4])
+    if (vt[4] > 0) {
+        vt[4] = 0;
+    } else if (vt[4] < canvasWidth - bgWidth) {
+        vt[4] = canvasWidth - bgWidth;
+    }
+    
+    // Limitar la traslación vertical (vt[5])
+    if (vt[5] > 0) {
+        vt[5] = 0;
+    } else if (vt[5] < canvasHeight - bgHeight) {
+        vt[5] = canvasHeight - bgHeight;
+    }
+    
+    canvas.setViewportTransform(vt);
+}
+
+async function loadCircuitLineImage(id){
+
+    console.log(id)
+    const circuitID = id
+
+    if (circuitID == 0) return
+
+    const circuit = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/read/circuit/${circuitID}`, 'GET') 
+    console.log(circuitID)
+    console.log(circuit)
+
+    // eslint-disable-next-line no-undef
+    fabric.Image.fromURL(circuit.map, function(img) {
+        // Ajusta la imagen al ancho del canvas (puedes ajustar según necesites)
+        img.scaleToWidth(canvas.getWidth());
+        // Asigna la imagen como fondo y vuelve a renderizar el canvas
+        canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas));
+    });
+
+}
+
+
+async function loadRaceLine(id){
+
+    const raceline = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/read/raceline/${id}`, 'GET') 
+
+    console.log(raceline)
+    // eslint-disable-next-line no-undef
+    fabric.Image.fromURL(raceline.img, function(img) {
+        // Ajusta la imagen al ancho del canvas (puedes ajustar según necesites)
+        img.scaleToWidth(canvas.getWidth());
+        // Asigna la imagen como fondo y vuelve a renderizar el canvas
+        canvas.add(img)
+        canvas.renderAll();
+    });
+}
+
+/*===============================FOREIGN PROFILE=================================*/
+
+function assignForeignProfileListeners(){
+    document.getElementById('message-btn').addEventListener('click', messageModal)
+
+}
+
+function messageModal(){
+    
+    modalOpener()
+
+    const modal = document.getElementById('modal-content')
+    modal.innerHTML = `<h2 class="text-2xl font-bold text-gray-800 mb-4">Nuevo mensaje</h2>
+                <form id="message-form" class="w-full max-w-md mx-auto">
+                  <div class="mb-4">
+                    <label for="message-title" class="block text-gray-700 font-bold mb-2">Título:</label>
+                    <input id="message-title" name="message-title" class="w-full border border-gray-300 rounded-md p-2" />
+                  </div>
+                  <div class="mb-4">
+                    <label for="message" class="block text-gray-700 font-bold mb-2">Mensaje:</label>
+                    <textarea id="message" name="message" rows="4" class="w-full border border-gray-300 rounded-md p-2"></textarea>
+                  </div>
+                  <div class="flex justify-center">
+                    <button id="message-submit-btn" type="button" class="bg-amber-400 hover:bg-amber-500 text-white font-bold py-2 px-6 rounded-full shadow-md">
+                      Enviar
+                    </button>
+                  </div>
+                </form>`
+
+    document.getElementById('message-submit-btn').addEventListener('click', createMessage)
+
+}
+
+async function createMessage(){
+
+    const title = document.getElementById('message-title').value
+    const message = document.getElementById('message').value
+
+    const user = getUserFromSession()
+    const foreignUser = getForeignUserFromSession()
+
+    console.log(foreignUser)
+
+    const messageData = {
+        title: title,
+        message: message,
+        sender_id: user._id,
+        receiver_id: foreignUser,
+        date: getNowDate(),
+        isNew: true
+    }
+
+
+    const payload = JSON.stringify(messageData)
+
+    const APIData = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/create/message`, 'POST', payload)
+    
+}
 
 /*=================================INDEX===========================================*/
 
@@ -824,10 +1125,12 @@ function updateSessionStorage(value) {
      * Creates a new Circuit Object with the info
      * Pushes them to store
      */
-    async function getCircuitData(){
+    async function getCircuitData(filters){
         //Get the info via JSON
         //const API_CIRCUITS = 'api/get.circuits.json'
-        circuitArray = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/read/circuits` , 'GET')
+        console.log(filters)
+        document.getElementById('card-container').innerHTML = ''
+        circuitArray = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/read/circuits` , 'GET', undefined, filters)
         //Iterate Array, create the Circuit Object and push to store
         // Waits for getUserToCircuitDistance to get the distance to each circuit and stores it on circuit.distance
         await circuitArray.forEach(async function (/** @type {Circuit} */ circuit){
@@ -921,8 +1224,10 @@ function updateSessionStorage(value) {
             //const coords = [40.187,-4.504]
 
             // @ts-expect-error External declaration
+            // eslint-disable-next-line no-undef
             map = L.map('map').setView([40.187,-4.504], 6);
             // @ts-expect-error External declaration
+            // eslint-disable-next-line no-undef
             L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
                 subdomains: ['a', 'b', 'c'],
@@ -930,30 +1235,9 @@ function updateSessionStorage(value) {
             }).addTo(map);
             
 
+                renderMarkers()
             
             
-            for (let circuit of circuitArray){
-                const markerCoords = [circuit.location.latitude, circuit.location.longitude]
-                // @ts-expect-error External declaration
-                L.marker(markerCoords).addTo(map)
-                    .bindPopup(`
-                                <div>
-                                    <h3>${circuit.name}</h3>
-                                    <p>${circuit.description}</p>
-                                    <button 
-                                        onclick='window.openCircuitModal(${JSON.stringify(circuit)})'
-                                        class="bg-blue-500 text-white p-2 rounded">
-                                        Ver más
-                                    </button>
-                                </div>
-                            `)
-                .bindTooltip(`${circuit.name}`, {
-                                    direction: "top",
-                                    permanent: false,
-                                    offset: [-15, -20] })
-                                    
-
-            }
             /* const circuitoVito = circuitList.find(c => c.id === 'circuit_1')
             const markerCoords = [circuitoVito.location.latitude, circuitoVito.location.longitude]
             console.log(markerCoords)
@@ -961,6 +1245,39 @@ function updateSessionStorage(value) {
                 .bindPopup(`${circuitoVito.name}`)
                     .openPopup();*/
 
+    }
+    
+
+    function renderMarkers(){
+        map.eachLayer(layer => {
+        // eslint-disable-next-line no-undef
+            if (layer instanceof L.Marker) {
+                map.removeLayer(layer);
+            }
+        });
+        for (let circuit of circuitArray){
+            const markerCoords = [circuit.location.latitude, circuit.location.longitude]
+            // @ts-expect-error External declaration
+            // eslint-disable-next-line no-undef
+            L.marker(markerCoords).addTo(map)
+                .bindPopup(`
+                            <div>
+                                <h3>${circuit.name}</h3>
+                                <p>${circuit.description}</p>
+                                <button 
+                                    onclick='window.openCircuitModal(${JSON.stringify(circuit)})'
+                                    class="bg-blue-500 text-white p-2 rounded">
+                                    Ver más
+                                </button>
+                            </div>
+                        `)
+            .bindTooltip(`${circuit.name}`, {
+                                direction: "top",
+                                permanent: false,
+                                offset: [-15, -20] })
+                                
+
+        }
     }
 
     /**
@@ -1018,12 +1335,32 @@ function circuitModal(circuit){
     }
 }
 
+async function filterCircuits(e){
+    e.preventDefault()
+
+    const rangeInputValue = document.getElementById('distance-range').value;
+
+    const filters = {
+        distance: rangeInputValue,
+        userCoords: userCoords
+    }
+
+    const payload = JSON.stringify(filters)
+    await getCircuitData(payload)
+    map.flyTo([40.187,-4.504], 6, { animate: true, duration: 2 });
+    renderMarkers()
+
+}
+
 function assignCircuitListeners(){
     const rangeInput = document.getElementById('distance-range');
     const valueDisplay = document.getElementById('value');
+    const filterButton = document.getElementById('circuit-filter')
+
+    filterButton.addEventListener('click', filterCircuits)
 
     rangeInput.addEventListener('input', function() {
-        valueDisplay.textContent = rangeInput.value; // Muestra el valor actual del control deslizante
+        valueDisplay.textContent = rangeInput.value; 
     });
 }
 
@@ -1055,13 +1392,14 @@ async function drawEvent(event){
                 <p class="text-gray-700 text-sm my-2 line-clamp-2">${event.description}</p>
                 </div>
                 <p class="px-4"><span class="participant-count">${event.participants.length}</span>/${event.maxParticipants} inscritos</p>
-                <button data-id="${event._id}" class="border-2 border-black bg-green-200 hover:bg-green-500 text-white font-bold py-1 px-3 m-4 rounded join-event">
+                <p class="font-bold mr-4 log-warn">Debes estar logueado para unirte</p>
+                <button data-id="${event._id}" class="border-2 border-black bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-3 m-4 rounded join-event">
                     Me apunto
                 </button>
-                <button data-id="${event._id}" class="border-2 border-black bg-yellow-200 hover:bg-yellow-500 text-white font-bold py-1 px-3 m-4 rounded forfeit-event">
+                <button data-id="${event._id}" class="border-2 border-black bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-3 m-4 rounded forfeit-event">
                     Desapuntarse
                 </button>
-                <button data-id="${event._id}" class="border-2 border-black bg-gray-400 hover:bg-red-500 text-white font-bold py-1 px-3 rounded delete-event">
+                <button data-id="${event._id}" class="border-2 border-black bg-gray-400 hover:bg-red-500 text-white font-bold py-1 px-3 rounded delete-event hidden">
                     Delete
                 </button>
                 </div>`
@@ -1071,18 +1409,35 @@ async function drawEvent(event){
     const deleteBtn = lastCard.querySelector('.delete-event');
     const joinBtn = lastCard.querySelector('.join-event');
     const forfeitBtn = lastCard.querySelector('.forfeit-event');
+    const logWarn = lastCard.querySelector('.log-warn');
 
     joinBtn.addEventListener('click', joinEvent)
     forfeitBtn.addEventListener('click', forfeitEvent)
     deleteBtn.addEventListener('click', deleteEventCard);
 
-    if (event.participants.includes(getUserFromSession()._id)){
-        joinBtn.classList.add('hidden')
-        forfeitBtn.classList.remove('hidden')
+    if(userlog){
+        logWarn.classList.add('hidden')
+        const user = getUserFromSession()
+
+        if(event.user_id === user._id){
+            deleteBtn.classList.remove('hidden')
+        }
+
+        if (event.participants.includes(getUserFromSession()._id)){
+            joinBtn.classList.add('hidden')
+            forfeitBtn.classList.remove('hidden')
+        }else{
+            joinBtn.classList.remove('hidden')
+            forfeitBtn.classList.add('hidden')
+        }
+
     }else{
-        joinBtn.classList.remove('hidden')
+        deleteBtn.classList.add('hidden')
+        joinBtn.classList.add('hidden')
         forfeitBtn.classList.add('hidden')
     }
+
+    
 
     lastCard.addEventListener('click', async function(e){
         if (e.target.classList.contains('delete-event' || 'join-event')) return;
@@ -1093,6 +1448,9 @@ async function drawEvent(event){
 }
 
 async function joinEvent(event){
+
+    
+
     event.stopPropagation()
 
     const eventId = event.target.getAttribute('data-id');
@@ -1115,7 +1473,7 @@ async function joinEvent(event){
         const apiData = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/join/event/${eventId}`, 'POST', payload);
         console.log("Respuesta del servidor:", apiData);
     } catch (error) {
-        console.error("Error eliminando el evento:", error);
+        console.error("Error al unirse:", error);
     }
 
     updateParticipantCount(eventId, 1)
@@ -1221,7 +1579,7 @@ async function eventModal(event){
     if (modalContent){
     modalContent.innerHTML = `<ul class="space-y-3 text-gray-800 font-medium">
                                 <li class="text-xl font-semibold">${event.title}</li>
-                                <li class="text-gray-600">Creado por: <span class="font-semibold">${eventCreator.username}</span></li>
+                                <li class="text-gray-600">Creado por: <button id="foreign-button" data-id="${event.user_id}" class="font-semibold text-blue-500" type="button"  >${eventCreator.username}</button></li>
                                 <li class="text-gray-600">Fecha: <span class="font-semibold">${event.date}</span></li>
                                 <li class="text-gray-600">Descripción: <span class="font-semibold">${event.description}</span></li>
                                 <li class="text-gray-600">Ubicación: <span class="font-semibold">${event.location}</span></li>
@@ -1231,6 +1589,42 @@ async function eventModal(event){
                                 <li class="text-gray-600">Máximo de Participantes: <span class="font-semibold">${event.maxParticipants}</span></li>
                             </ul>`
     }
+    document.getElementById('foreign-button').addEventListener('click', () => openForeignProfile('foreign-button'))
+}
+
+function openForeignProfile(idname){
+
+    const foreignID = document.getElementById(`${idname}`).getAttribute('data-id')
+    const user = getUserFromSession()
+
+    if(foreignID === user._id){
+        window.location.href = `profile.html`
+    }else{
+        sessionStorage.setItem('foreignId', foreignID);
+        window.location.href = `foreign-profile.html`
+    }
+    
+}
+
+async function loadForeignProfile(){
+    const foreignID = sessionStorage.getItem('foreignId')
+    const apiData = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/read/user/${foreignID}`, 'GET')
+
+    fillForeignProfile(apiData)
+}
+
+function fillForeignProfile(user){
+
+    document.getElementById('foreign-username').innerHTML = user.username
+        document.getElementById('foreign-name').innerHTML = user.name
+        document.getElementById('foreign-surname').innerHTML = user.surnames
+        document.getElementById('foreign-email').innerHTML = user.email
+        document.getElementById('foreign-location').innerHTML = user.location
+        document.getElementById('foreign-prefCircuit').innerHTML = user.prefCircuit
+        document.getElementById('foreign-kart').innerHTML = user.kart
+        document.getElementById('foreign-youtubeURL').innerHTML = user.youtube
+        document.getElementById('foreign-instagramUser').innerHTML = user.instagram
+
 }
 
 function openNewEventForm(){
@@ -1254,9 +1648,9 @@ async function filterEvents(e){
     const minDate = document.getElementById('filterEventDate1').value
     const maxDate = document.getElementById('filterEventDate2').value
 
-    if (minDate > maxDate){
-        alert("La fecha final debe ser posterior a la inicial.");
-    }
+    // if (minDate > maxDate){
+    //     alert("La fecha final debe ser posterior a la inicial.");
+    // }
 
     const filters = {
         circuit: circuit,
@@ -1275,6 +1669,7 @@ function assignEventButtons(){
     document.getElementById('new-event-form-btn').addEventListener('click', openNewEventForm)
     document.getElementById('new-event-close').addEventListener('click', closeNewEventForm)
     document.getElementById('filter-btn').addEventListener('click', filterEvents)
+    
 }
 
 /*=================================MARKET===========================================*/
@@ -1450,9 +1845,11 @@ function showForumCard(item){
 
 /*=================================RACELINE CREATOR===========================================*/
 function activateCanvas() {
+    // eslint-disable-next-line no-undef
     editCanvas = new fabric.Canvas('circuitCanvas');
 
     // Cargar la imagen de fondo y bloquearla
+    // eslint-disable-next-line no-undef
     fabric.Image.fromURL('./imgs/kotar.jpg', function(img) {
         img.scaleToWidth(1000);
         img.selectable = false;
@@ -1461,6 +1858,7 @@ function activateCanvas() {
     });
 
     //Pincel
+    // eslint-disable-next-line no-undef
     const brush = new fabric.PencilBrush(editCanvas);
     editCanvas.freeDrawingBrush = brush;
     brush.color = '#40ff00';
@@ -1473,7 +1871,7 @@ function activateCanvas() {
     let lastPosY = 0;
     let panMode = false;
     let straightLineMode = false
-    let isDrawing = false; // Variable para controlar si estamos dibujando
+    let isDrawing = false // Variable para controlar si estamos dibujando
     let line; // Variable para almacenar la línea
 
     // Botón limpiar solo trazos
@@ -1512,6 +1910,7 @@ function activateCanvas() {
     });
 
     document.getElementById('text').addEventListener('click', function () {
+        // eslint-disable-next-line no-undef
         const text = new fabric.IText('Nuevo Texto', {
             left: 100,
             top: 100,
@@ -1551,6 +1950,7 @@ function activateCanvas() {
             const pointer = editCanvas.getPointer(e); // Obtener coordenadas del mouse
             const points = [pointer.x, pointer.y, pointer.x, pointer.y]; // Coordenadas iniciales de la línea
     
+            // eslint-disable-next-line no-undef
             line = new fabric.Line(points, {
                 stroke: '#40ff00',    // Color de la línea
                 strokeWidth: 3,     // Grosor de la línea
@@ -1591,7 +1991,7 @@ function activateCanvas() {
         
 
     // ON MOUSEUP
-    editCanvas.on('mouse:up', function(opt) {
+    editCanvas.on('mouse:up', function() {
         if (panMode){
             isDragging = false;
             clampViewport(editCanvas);
@@ -1631,6 +2031,7 @@ function activateCanvas() {
         
         if (zoom > 20) zoom = 20;  // Zoom máximo arbitrario
 
+        // eslint-disable-next-line no-undef
         editCanvas.zoomToPoint(new fabric.Point(pointer.x, pointer.y), zoom);
         clampViewport(editCanvas);
     });
@@ -1820,7 +2221,8 @@ async function uploadToWeb(){
         const raceLine = {
             user_id: userlog ? user._id : "0",
             circuit_id: circuitId,
-            img: imgURL
+            img: imgURL,
+            date: Date.now()
         }
         console.log(raceLine)
 
@@ -1901,6 +2303,7 @@ async function loadCircuitImage(){
     console.log(circuitID)
     console.log(circuit)
 
+    // eslint-disable-next-line no-undef
     fabric.Image.fromURL(circuit.map, function(img) {
         // Ajusta la imagen al ancho del canvas (puedes ajustar según necesites)
         img.scaleToWidth(editCanvas.getWidth());
@@ -1960,13 +2363,14 @@ function createNewlaptime(){
         e.preventDefault()
 
         const sessionUser = getUserFromSession()
-        const user = sessionUser._id
 
-        const circuit = document.getElementById('laptimeCircuitName')?.value
+        const circuit_id = document.getElementById('opciones')?.value
         const laptimeDate = document.getElementById('laptimeDate')?.value
         const kartType = document.getElementById('laptimeKartSelect')?.value
         const kartInfo = document.getElementById('laptimeKart')?.value
         const lapCondition = document.getElementById('laptimeConditions')?.value
+
+        const circuit = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/read/circuit/${circuit_id}`, 'GET') 
 
         const timeSheet = 'img'
         const lapLink = document.getElementById('laptimelink')?.value
@@ -1980,8 +2384,10 @@ function createNewlaptime(){
         }
 
         const lapTime = {
-            user_id: user,
-            circuit: circuit,
+            user_id: sessionUser._id,
+            userName: sessionUser.username,
+            circuit: circuit.name,
+            circuit_id: circuit._id,
             lapTimeDate: laptimeDate,
             kartType: kartType,
             kartInfo: kartInfo,
@@ -2018,8 +2424,219 @@ function assignLapTimeButtons(){
     document.getElementById('new-laptime-form-btn').addEventListener('click', openNewLapTimeForm)
     document.getElementById('new-laptime-close').addEventListener('click', closeNewLapTimeForm)
 }
-  
 
+
+/*======================MESSAGES======================*/
+
+async function getMessages() {
+
+    const user = getUserFromSession();
+
+    const messagesArray = await getAPIData(
+        `${location.protocol}//${location.hostname}${API_PORT}/api/read/messages/${user._id}`,
+        'GET'
+    );
+
+
+    const receivedMessagesArray = [];
+    const sentMessagesArray = []
+    
+
+    for (const message of messagesArray) {  
+        if (message.receiver_id === user._id) {
+            message.receiver_username = user.username;
+
+            const foreignUser = await getAPIData(
+                `${location.protocol}//${location.hostname}${API_PORT}/api/read/user/${message.sender_id}`,
+                'GET'
+            );
+
+            message.sender_username = foreignUser.username;
+            receivedMessagesArray.push(message);
+        } else {
+            const foreignUser = await getAPIData(
+                `${location.protocol}//${location.hostname}${API_PORT}/api/read/user/${message.receiver_id}`,
+                'GET'
+            );
+
+            message.sender_username = user.username;
+            message.receiver_username = foreignUser.username;
+            sentMessagesArray.push(message);
+        }
+    }
+
+    window.receivedMessagesArray = receivedMessagesArray;
+    window.sentMessagesArray = sentMessagesArray;
+
+    renderReceivedMessages(receivedMessagesArray);
+}
+
+
+function renderReceivedMessages(receivedMessagesArray){
+
+    const receivedBtn = document.getElementById('received-btn');
+    const sentBtn = document.getElementById('sent-btn');
+
+    receivedBtn.classList.remove('bg-amber-400')
+    receivedBtn.classList.add('bg-amber-600')
+
+    sentBtn.classList.remove('bg-amber-600')
+    sentBtn.classList.add('bg-amber-400')
+
+    const messageContainer = document.getElementById('message-list-container')
+    messageContainer.innerHTML = ''
+
+    receivedMessagesArray.forEach(function (/** @type {Message} */ message){
+
+        let html = ''
+
+        if(message.isNew === true){
+
+            html = `<div class="bg-amber-100 shadow-md rounded-lg overflow-hidden flex items-center p-2 border border-solid border-gray-200 w-full cursor-pointer h-20 message-card">
+                <div class="flex flex-col flex-grow">
+                <p class=" mr-4 w-52 truncate">De: ${message.sender_username}</p>
+                <span class="text-m w-52 font-bold text-gray-800 truncate">${message.title}</span>
+                </div
+                
+                <span  class="text-sm text-gray-600 ml-auto pr-8">${message.date}</span>
+                </div>`
+
+
+        }else{
+
+            html = `<div class="bg-white shadow-md rounded-lg overflow-hidden flex items-center p-2 border border-solid border-gray-200 w-full cursor-pointer h-20 message-card">
+                <div class="flex flex-col flex-grow">
+                <p class=" mr-4 w-52 truncate">De: ${message.sender_username}</p>
+                <span class="text-m w-52 text-gray-800 truncate">${message.title}</span>
+                </div
+                
+                <span  class="text-sm text-gray-600 ml-auto pr-8">${message.date}</span>
+                </div>`
+        }
+
+            messageContainer.insertAdjacentHTML('afterbegin', html);
+
+            const newMessageCard = messageContainer.firstElementChild
+
+            newMessageCard.addEventListener('click', () => seeMessage(message, true));
+        
+    })
+
+}
+
+function renderSentMessages(sentMessagesArray){
+
+    const receivedBtn = document.getElementById('received-btn');
+    const sentBtn = document.getElementById('sent-btn');
+
+    sentBtn.classList.remove('bg-amber-400')
+    sentBtn.classList.add('bg-amber-600')
+
+    receivedBtn.classList.remove('bg-amber-600')
+    receivedBtn.classList.add('bg-amber-400')
+
+    const messageContainer = document.getElementById('message-list-container')
+    messageContainer.innerHTML = ''
+
+    sentMessagesArray.forEach(function (/** @type {Message} */ message){
+
+        
+
+        const html = `<div class="bg-red-50 shadow-md rounded-lg overflow-hidden flex items-center p-2 border border-gray-200 w-full cursor-pointer h-20 message-card">
+                <div class="flex flex-col flex-grow">
+                <p class=" mr-4 w-52 truncate">Para: ${message.receiver_username}</p>
+                <span class="text-m w-52 font-bold text-gray-800 truncate">${message.title}</span>
+                </div
+                
+                <span  class="text-sm text-gray-600 ml-auto pr-8">${message.date}</span>
+                </div>`
+
+            messageContainer.insertAdjacentHTML('afterbegin', html)
+
+            const newMessageCard = messageContainer.firstElementChild
+
+            newMessageCard.addEventListener('click', () => seeMessage(message, false));
+    
+    })
+
+}
+
+async function seeMessage(message, enabledResponse){
+
+    if (message.isNew) {
+        message.isNew = false;
+        await updateMessageStatusToFalse(message._id);
+
+        renderReceivedMessages(window.receivedMessagesArray);
+    }
+
+    const messageForm = document.getElementById('message-form-container') 
+
+    !enabledResponse ? messageForm.classList.add('__hidden') : messageForm.classList.remove('__hidden')
+
+    const messagePlaceholder = document.getElementById('deployed-message-screensaver')
+    const messageContainer = document.getElementById('deployed-message-container')
+    const messageSender = document.getElementById('message-sender')
+    messageSender.setAttribute('data-id', message.sender_id)
+    const messageTitle = document.getElementById('message-title')
+    const messageBody = document.getElementById('message-content')
+
+    messageSender.textContent = message.sender_username
+    messageTitle.textContent = message.title
+    messageBody.textContent = message.message
+
+    messagePlaceholder.classList.add('__hidden')
+    messageContainer.classList.remove('__hidden')
+
+    const sendReplyBtn = document.getElementById('send-reply-btn')
+    sendReplyBtn.onclick = () => answerMessage(message);
+
+    messageSender.addEventListener('click', () => openForeignProfile('message-sender'))
+}
+
+async function updateMessageStatusToFalse(messageId) {
+
+    const payload = JSON.stringify({isNew : false});
+
+    const apiData = await getAPIData(
+      `${location.protocol}//${location.hostname}${API_PORT}/api/update/message/${messageId}`,
+      'PATCH', payload
+    );
+  }
+
+async function answerMessage(message){
+
+
+    const answerTitle = `Re: ${message.title}`
+    const answerContent = document.getElementById('answer-message')?.value
+
+    const date = getNowDate()
+
+
+    const answerMessage = {
+        sender_id: getUserFromSession()._id,
+        receiver_id: message.sender_id,
+        title: answerTitle,
+        message: answerContent,
+        date: date,
+        isNew: true
+    }
+
+    const payload = JSON.stringify(answerMessage)
+    
+    const apiData = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/create/message`,'POST', payload);
+
+    getMessages()
+}
+
+function assignMessageListeners(){
+    document.getElementById('received-btn').addEventListener('click', () => {
+        renderReceivedMessages(window.receivedMessagesArray);
+    });
+    document.getElementById('sent-btn').addEventListener('click', () => {
+        renderSentMessages(window.sentMessagesArray);
+    });
+}
 
 
 
