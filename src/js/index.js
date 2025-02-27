@@ -2,7 +2,7 @@
 // @ts-nocheck
 
 'use strict'
-import { EventCard, ForumCard, Message} from '../classes/classes.js'
+import { EventCard, ForumCard} from '../classes/classes.js'
 import { HttpError } from '../classes/HttpError.js';
 import {MarketItem} from '../classes/classes.js'
 import { store } from './store/redux.js';
@@ -136,9 +136,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
             });
             fillSelectable('opciones')
+            fillSelectable('opciones-filtro')
             credentialsBtnManager()
             createNewlaptime()
             getLapTimes()
+            getBestLapTimes()
             assignLapTimeButtons()
             break
     }
@@ -1374,7 +1376,7 @@ function assignCircuitListeners(){
  */
 async function getEventData(filters){
     document.getElementById('__event-container').innerHTML = ''
-    const eventArray = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/read/events` , 'GET',undefined ,filters)
+    const eventArray = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/read/events` , 'GET', undefined ,filters)
     console.log(eventArray)
     eventArray.forEach(function (/** @type {EventCard} */ event){
         drawEvent(event)
@@ -1828,20 +1830,20 @@ async function getForumData(){
 * Creates the event item cards
 * @param {ForumCard} item
 */
-function showForumCard(item){
-    // Get all forumItems from store
-    const forumArray = store.getAllForumItems()
-    // Creates the forumItem cards
-    forumArray.forEach(function (/** @type {ForumCard} */ item){
-        const forumFrame = document.getElementById('__forum-container')
-        const html = `<div class="bg-purple-100 h-24 mx-4 mb-4 flex items-center justify-center">
-                    <span class="mr-4 pl-2">Titulo</span>
-                    <span class="mr-4 pl-2">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quas voluptates, omnis, voluptatum illo error ipsum dolor ut iusto beatae, quam dolores odit? Dolorem rerum, molestiae veritatis quos placeat quam architecto!</span>
-                </div>`
-    forumFrame?.insertAdjacentHTML('beforeend', html)
-    })
+// function showForumCard(){
+//     // Get all forumItems from store
+//     const forumArray = store.getAllForumItems()
+//     // Creates the forumItem cards
+//     // forumArray.forEach(function (/** @type {ForumCard} */ item){
+//     //     const forumFrame = document.getElementById('__forum-container')
+//     //     const html = `<div class="bg-purple-100 h-24 mx-4 mb-4 flex items-center justify-center">
+//     //                 <span class="mr-4 pl-2">Titulo</span>
+//     //                 <span class="mr-4 pl-2">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quas voluptates, omnis, voluptatum illo error ipsum dolor ut iusto beatae, quam dolores odit? Dolorem rerum, molestiae veritatis quos placeat quam architecto!</span>
+//     //             </div>`
+//     // forumFrame?.insertAdjacentHTML('beforeend', html)
+//     // })
     
-    }
+//     }
 
 /*=================================RACELINE CREATOR===========================================*/
 function activateCanvas() {
@@ -2322,31 +2324,69 @@ async function loadCircuitImage(){
 
 /*===============================LAPTIMES=====================*/
 
-async function getLapTimes(){
-    const lapTimeArray = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/read/laptimes` , 'GET')
+async function getLapTimes(filters){
+    console.log(filters)
+    document.getElementById('laptime-table-body').innerHTML = ''
+    const lapTimeArray = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/read/laptimes` , 'GET', undefined, filters)
     lapTimeArray.forEach(function (/** @type {LapTime} */ laptime){
             drawLapTimes(laptime)
 
     })
 } 
 
+async function getBestLapTimes(){
 
-async function drawLapTimes(laptime){
+    const user = getUserFromSession()
+
+    document.getElementById('personal-table-body').innerHTML = ''
+    const lapTimeArray = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/read/bestlaptimes/${user._id}` , 'GET')
+
+    console.log(lapTimeArray)
+    lapTimeArray.forEach(function (/** @type {LapTime} */ laptime){
+         drawBestLapTimes(laptime)
+
+    })
+} 
+
+function drawBestLapTimes(laptime){
     console.log(laptime)
-    // const lapTimeCreator = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/read/user/${item.user_id}`, 'GET')
+
+    const formattedTime = formatTime(laptime.laptime)
+    const formattedDelta = formatTime(laptime.delta)
+    const lapTimeFrame = document.getElementById('personal-table-body')
+
+    const html = `
+            <tr class="hover:bg-gray-50">
+                <td class="border border-gray-300 px-4 py-2">${laptime.circuit}</td>
+                <td class="border border-gray-300 px-4 py-2">${formattedTime}</td>
+                <td class="border border-gray-300 px-4 py-2 text-${laptime.delta > 0 ? 'red-500' : 'green-500'}">${laptime.delta > 0 ? '+' : ''}${formattedDelta}</td>
+            </tr>`
+lapTimeFrame?.insertAdjacentHTML('afterbegin', html)
+
+}
+
+
+
+
+
+function drawLapTimes(laptime){
+    console.log(laptime)
+
+    const formattedTime = formatTime(laptime.laptime)
     const lapTimeFrame = document.getElementById('laptime-table-body')
                 const html = `
                 <tr class="hover:bg-gray-50">
                         <td class="border border-gray-300 px-4 py-2">${laptime.circuit}</td>
-                        <td class="border border-gray-300 px-4 py-2">0.55,233</td>
+                        <td class="border border-gray-300 px-4 py-2">${laptime.lapTimeDate}</td>
+                        <td class="border border-gray-300 px-4 py-2">${formattedTime}</td>
                         <td class="border border-gray-300 px-4 py-2">${laptime.lapCondition}</td>
                         <td class="border border-gray-300 px-4 py-2">${laptime.kartType}</td>
                         <td class="border border-gray-300 px-4 py-2">${laptime.kartInfo}</td>
-                        <td class="border border-gray-300 px-4 py-2">${laptime.lapTimeDate}</td>
+                        
                     </tr>`
 lapTimeFrame?.insertAdjacentHTML('afterbegin', html)
 
-const lastCard = lapTimeFrame.firstElementChild;
+//const lastCard = lapTimeFrame.firstElementChild;
 // const deleteBtn = lastCard.querySelector('.delete-item');
 // deleteBtn.addEventListener('click', deleteMarketCard);
 
@@ -2370,6 +2410,15 @@ function createNewlaptime(){
         const kartInfo = document.getElementById('laptimeKart')?.value
         const lapCondition = document.getElementById('laptimeConditions')?.value
 
+        const lapMinutes = document.getElementById('laptime-minutes')?.value.padStart(2, '0')
+        const lapSeconds = document.getElementById('laptime-seconds')?.value.padStart(2, '0')
+        const lapMilliseconds = document.getElementById('laptime-milliseconds')?.value.padEnd(3, '0')
+
+    
+        const actualLaptime = Number(lapMinutes * 60000) + Number(lapSeconds * 1000) + Number(lapMilliseconds)
+
+        console.log(lapMinutes, lapSeconds, lapMilliseconds, actualLaptime)
+
         const circuit = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/read/circuit/${circuit_id}`, 'GET') 
 
         const timeSheet = 'img'
@@ -2392,6 +2441,7 @@ function createNewlaptime(){
             kartType: kartType,
             kartInfo: kartInfo,
             lapCondition: lapCondition,
+            laptime: actualLaptime,
             timeSheet: timeSheet,
             lapLink: lapLink
         }
@@ -2423,8 +2473,75 @@ function closeNewLapTimeForm(){
 function assignLapTimeButtons(){
     document.getElementById('new-laptime-form-btn').addEventListener('click', openNewLapTimeForm)
     document.getElementById('new-laptime-close').addEventListener('click', closeNewLapTimeForm)
+    document.getElementById('laptime-filter-btn').addEventListener('click', filterLapTimes)
 }
 
+async function filterLapTimes(){
+
+    const circuit = document.getElementById('opciones-filtro')?.value
+    let conditions = document.querySelector('input[name="condiciones"]:checked').value;
+    let kartType = document.querySelector('input[name="tipoKart"]:checked').value;
+
+    console.log(circuit, conditions, kartType)
+
+    switch(conditions){
+        case 'dry':
+            conditions = 'Seco'
+            break
+        case 'wet':
+            conditions = 'Mojado'
+            break
+        case 'mix':
+            conditions = 'Mixto'
+            break
+        case '0':
+            conditions= ''
+            break
+        default : 
+        conditions = ''
+        break
+    }
+
+    switch(kartType){
+        case 'rental':
+            kartType = 'Rental'
+            break
+        case 'own':
+            kartType = 'Particular'
+            break
+        case '0':
+            kartType = ''
+            break
+        default : 
+        kartType = ''
+        break
+    }
+
+    const filters = {
+        circuit: circuit,
+        conditions: conditions,
+        kartType: kartType
+    }
+
+    const payload = JSON.stringify(filters)
+    console.log("he llegado a filterLaptimes: ", payload)
+    await getLapTimes(payload)
+
+}
+
+
+
+function formatTime(time) {
+    console.log(time)
+    const minutes = Math.floor(time / 60000);
+    const seconds = Math.floor((time % 60000) / 1000);
+    const milliseconds = time % 1000;
+
+    console.log(minutes, seconds, milliseconds)
+  
+    return `${minutes.toString().padStart(2, '0')}.${seconds.toString().padStart(2, '0')},${milliseconds.toString().padStart(3, '0')}`;
+}
+  
 
 /*======================MESSAGES======================*/
 
