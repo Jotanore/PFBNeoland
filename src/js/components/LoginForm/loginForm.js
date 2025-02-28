@@ -1,4 +1,5 @@
-import { getAPIData, API_PORT } from '../../index.js';
+import {  API_PORT } from '../../index.js';
+import { getAPIData } from '../../../utils/utils.js';
 import output from '../../../css/output.css' with {type: 'css'}
 /**
  * Login Form Web Component

@@ -1,11 +1,12 @@
 import { LitElement, html,} from 'https://cdn.jsdelivr.net/gh/lit/dist@3/core/lit-core.min.js';
-import { getAPIData, API_PORT } from '../../index.js'
+import { API_PORT } from '../../index.js'
+import { getAPIData } from '../../../utils/utils.js';
 import output from '../../../css/output.css' with {type: 'css'}
 
-const TEMPLATE = {
-  id: 'loginFormTemplate',
-  url: './js/components/LoginForm/LoginForm.html'
-}
+// const TEMPLATE = {
+//   id: 'loginFormTemplate',
+//   url: './js/components/LoginForm/LoginForm.html'
+// }
 // Wait for template to load
 //await importTemplate(TEMPLATE.url);
 
