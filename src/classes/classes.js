@@ -191,29 +191,50 @@ export class User{
     }
 }
 
-export class Timetable{
+export class LapTime{
 
     _id
     user_id
-    lapTime
+    username
+    circuit
     circuit_id
-    lapRecord 
+    lapTimeDate
+    kartType
+    kartInfo
+    lapCondition
+    laptime
+    timeSheet
+    lapLink
 
 /**
  * 
  * @param {string} _id
  * @param {string} user_id
- * @param {string} lapTime  
+ * @param {string} username
+ * @param {string} circuit
  * @param {string} circuit_id
- * @param {string} lapRecord
+ * @param {string} lapTimeDate
+ * @param {string} kartType
+ * @param {string} kartInfo
+ * @param {string} lapCondition
+ * @param {string} laptime
+ * @param {string} timeSheet
+ * @param {string} lapLink
  */
 
-    constructor(_id, user_id, lapTime, circuit_id, lapRecord){
+    constructor(_id, user_id, username, circuit, circuit_id, lapTimeDate, kartType, kartInfo, lapCondition, laptime, timeSheet, lapLink){
         this._id = _id
         this.user_id = user_id
-        this.lapTime = lapTime
+        this.username = username
+        this.circuit = circuit
         this.circuit_id = circuit_id
-        this.lapRecord = lapRecord
+        this.lapTimeDate = lapTimeDate
+        this.kartType = kartType
+        this.kartInfo = kartInfo
+        this.lapCondition = lapCondition
+        this.laptime = laptime
+        this.timeSheet = timeSheet
+        this.lapLink = lapLink
     }
 }
 
@@ -251,6 +272,8 @@ export class Message{
     message
     date
     isNew
+    receiver_username
+    sender_username
 
 
 /**
@@ -262,9 +285,11 @@ export class Message{
  * @param {string} message
  * @param {string} date
  * @param {boolean} isNew
+ * @param {string} receiver_username
+ * @param {string} sender_username
  */
 
-    constructor(_id, sender_id, receiver_id, title, message, date, isNew){
+    constructor(_id, sender_id, receiver_id, title, message, date, isNew, receiver_username, sender_username){
         this._id = _id
         this.sender_id = sender_id
         this.receiver_id = receiver_id
@@ -272,6 +297,8 @@ export class Message{
         this.message = message
         this.date = date
         this.isNew = isNew
+        this.receiver_username = receiver_username
+        this.sender_username = sender_username
 
     }
 
