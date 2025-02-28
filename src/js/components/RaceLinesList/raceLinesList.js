@@ -39,11 +39,9 @@ export class RaceLinesList extends HTMLElement {
         
     }
 
-    attributeChangedCallback(name, oldValue, newValue) {
-        console.log(`Attribute ${name} has changed.`, oldValue, newValue);
+    attributeChangedCallback(name) {
 
         if (name === 'racelines') {
-            console.log(`attributeChangedCallback: Attribute ${name} has changed.`, oldValue, newValue);
             this._setUpContent();
           }
       }
@@ -53,12 +51,8 @@ export class RaceLinesList extends HTMLElement {
 
       window.removeEventListener('stateChanged', this._handleStateChanged);
     }
-  
-  
-    
 
     //private methods
-
 
     _setUpContent() {
         // Prevent render when disconnected or the template is not loaded
@@ -67,7 +61,6 @@ export class RaceLinesList extends HTMLElement {
           // Replace previous content
           this.shadowRoot.innerHTML = '';
           this.shadowRoot.appendChild(this.template.content.cloneNode(true));
-            console.log('Racelines',racelines)
           racelines.forEach((raceline) => {
             this._addNewLi(raceline)
           });
@@ -75,19 +68,15 @@ export class RaceLinesList extends HTMLElement {
       }
 1
     _addNewLi(newRaceLine){
-        console.log(newRaceLine)
         const lineList = this.shadowRoot.getElementById('racelines-container')
         const raceLineList = this.shadowRoot.getElementById('race-line-list')
-        const html = `<li>Linea:${newRaceLine.circuitName} | Fecha: ${newRaceLine.date} <button class="bg-amber-400 hover:bg-amber-500 text-white font-bold py-2 px-6 rounded-full shadow-md show-line">
+        const html = `<li>${newRaceLine.circuitName} | ${newRaceLine.date} <button class="bg-amber-400 hover:bg-amber-500 text-white font-bold py-2 px-6 rounded-full shadow-md show-line">
                             Ver
                         </button></li>`
         raceLineList.insertAdjacentHTML('afterbegin', html)
 
-        console.log(lineList)
         const lastLine = lineList.querySelector('li');
-        console.log(lastLine)
         const showBtn = lastLine.querySelector('.show-line');
-        console.log(showBtn)
         showBtn.addEventListener('click', this._openRaceline.bind(this, newRaceLine))
 
   }
