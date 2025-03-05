@@ -62,15 +62,18 @@ document.addEventListener('DOMContentLoaded', async () => {
                     updateRaceLineList([])
                     fillMarketList(true)
                     updateUserProfile()
+                    credentialsBtnManager()
                 }
                 break
             case 'messages':{
                 getMessages()
                 assignMessageListeners()
+                credentialsBtnManager()
             }
                 break
             case 'foreign-profile':
                 loadForeignProfile()
+                credentialsBtnManager()
                 fillEventList(false)
                 fillRaceLinesList(false)
                 fillMarketList(false)
@@ -292,13 +295,13 @@ function activateRaceLineCanvas() {
 
     // @ts-expect-error External declaration
     // eslint-disable-next-line no-undef
-    fabric.Image.fromURL('./imgs/kotar.jpg', function(img) {
-        img.scaleToWidth(1000);
-        img.selectable = false;
-        img.evented = false;
-        // @ts-expect-error external declaration
-        canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas));
-    });
+    // fabric.Image.fromURL('./imgs/kotar.jpg', function(img) {
+    //     img.scaleToWidth(1000);
+    //     img.selectable = false;
+    //     img.evented = false;
+    //     // @ts-expect-error external declaration
+    //     canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas));
+    // });
 
 
     // Variables para el panning
@@ -650,8 +653,8 @@ function circuitModal(circuit){
 
     if (modalContent){
     modalContent.innerHTML = `
-            <div class="bg-white p-6 rounded-lg shadow-lg max-w-3xl mx-auto">
-                <h2 class="text-2xl font-bold text-gray-800 text-center mb-4">Información del Circuito</h2>
+            <div class="bg-neutral-100 p-6  w-full h-full mx-auto">
+                <h2 class="text-2xl font-bold text-gray-800 text-center mb-4 pb-4">Información del Circuito</h2>
                 <ul class="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-700">
                     <li>
                         <strong class="text-gray-900">Nombre:</strong>
@@ -659,27 +662,23 @@ function circuitModal(circuit){
                     </li>
                     <li>
                         <strong class="text-gray-900">Ubicación:</strong>
-                        <a href="${circuit.location}" class="text-blue-500 hover:underline" target="_blank">Ver ubicación</a>
-                    </li>
-                    <li class="md:col-span-2">
-                        <strong class="text-gray-900">Mapa:</strong>
-                        <img class="w-full h-auto rounded-md mt-2" src="${circuit.map}" alt="Mapa del circuito">
-                    </li>
-                    <li class="md:col-span-2">
-                        <strong class="text-gray-900">WebLink:</strong>
-                        <a href="${circuit.url}" class="text-blue-500 hover:underline" target="_blank">${circuit.url}</a>
+                        <a href="${circuit.location.googleUrl}" class="text-blue-500 hover:underline" target="_blank">Ver ubicación</a>
                     </li>
                     <li class="md:col-span-2">
                         <strong class="text-gray-900">Descripción:</strong>
                         <span>${circuit.description}</span>
                     </li>
+                                        <li class="">
+                        <strong class="text-gray-900">Web:</strong>
+                        <a href="${circuit.url}" class="text-blue-500 hover:underline" target="_blank">${circuit.url}</a>
+                    </li>
                     <li>
                         <strong class="text-gray-900">Mejor tiempo:</strong>
                         <span>${circuit.bestlap}</span>
                     </li>
-                    <li>
-                        <strong class="text-gray-900">Precio:</strong>
-                        <span>${circuit.prices}</span>
+                    <li class="md:col-span-2 ">
+                        <strong class="text-gray-900">Mapa:</strong>
+                        <img class="w-[450px] rounded-md mt-2" src="${circuit.map}" alt="Mapa del circuito">
                     </li>
                 </ul>
             </div>
@@ -763,15 +762,13 @@ function activateCanvas() {
     // eslint-disable-next-line no-undef
     editCanvas = new fabric.Canvas('circuitCanvas');
 
-    // @ts-expect-error External declaration
-    // eslint-disable-next-line no-undef
-    fabric.Image.fromURL('./imgs/kotar.jpg', function(img) {
-        img.scaleToWidth(1000);
-        img.selectable = false;
-        img.evented = false;
-        // @ts-expect-error external declaration
-        editCanvas.setBackgroundImage(img, editCanvas.renderAll.bind(editCanvas));
-    });
+    // fabric.Image.fromURL('./imgs/kotar.jpg', function(img) {
+    //     img.scaleToWidth(1000);
+    //     img.selectable = false;
+    //     img.evented = false;
+    //     // @ts-expect-error external declaration
+    //     editCanvas.setBackgroundImage(img, editCanvas.renderAll.bind(editCanvas));
+    // });
 
     // @ts-expect-error External declaration
     // eslint-disable-next-line no-undef
