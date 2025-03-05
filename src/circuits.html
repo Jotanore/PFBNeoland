@@ -5,60 +5,86 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="./css/reset.css" rel="stylesheet"/>
     <link href="./css/output.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script defer type="module" src="./js/index.js"></script>
     <title>KartHub - Circuitos</title>
 </head>
 <body id="circuits" class="box-border bg-white overflow-hidden">
-    <div class="flex p-4 bg-neutral-500 items-center">
-        <h1 class="font-bold text-4xl ">KartHub</h1>
-        <div class="flex justify-end w-full">
-            <h2 id="credentials-btn" class="p-2 px-4 bg-neutral-200 rounded-full"><a>SignUp/Login</a></h2>
-            <h2 id="profile-btn" class="p-2 px-4 bg-neutral-200 rounded-full __hidden"><a href="./profile.html">Profile</a></h2>
-        </div>
-    </div>
-    <header class="sticky top-0 bg-neutral-400/75 backdrop-blur-sm shadow-sm z-50">
-        <nav>
-            <ul class="flex justify-end py-3">
-                <li class="bg-neutral-200 p-2 px-4 mx-3 rounded-full hover:bg-amber-200"><a href="./index.html">Inicio</a></li>
-                <li class="bg-amber-400 p-2 px-4 mx-3 rounded-full"><a href="./circuits.html">Circuitos</a></li>
-                <li class="bg-neutral-200 p-2 px-4 mx-3 rounded-full hover:bg-amber-200"><a href="./events.html">Eventos</a></li>
-                <li class="bg-neutral-200 p-2 px-4 mx-3 rounded-full hover:bg-amber-200"><a href="./market.html">Mercado</a></li>
-                <!--<li class="bg-neutral-200 p-2 px-4 mx-3 rounded-full hover:bg-amber-200"><a href="./forum.html">Foro</a></li>-->
-                <li class="bg-neutral-200 p-2 px-4 mx-3 rounded-full hover:bg-amber-200"><a href="./raceline.creator.html">Creador de trazadas</a></li>
-                <li class="bg-neutral-200 p-2 px-4 mx-3 rounded-full hover:bg-amber-200"><a href="./timetable.html">Tabla de tiempos</a></li>
-            </ul>
-        </nav>
-    </header>
+  <header class="flex items-center justify-between px-6 sticky top-0 bg-[#0c0b10] shadow-md text-white h-16">
 
-    <main class="bg-neutral-800 px-[5%] py-10 ">
+    <img src="./imgs/Karthub logo.jpg" class="h-full object-contain" alt="KartHub Logo">
+
+    <nav class="h-full ">
+        <ul class="flex h-full">
+          <li class="h-full relative group">
+            <div class="absolute bottom-0 left-0 w-full h-0 bg-gradient-to-t from-amber-500 to-amber-500/0 transition-all duration-300 group-hover:h-3/4"></div>
+            <a href="./index.html" class="flex items-center justify-center h-full px-4 bg-transparent relative z-10 ">Inicio</a>
+        </li>
+            <li class="h-full relative group">
+                <div class=""></div>
+                <a href="./circuits.html" class="flex items-center justify-center h-full px-4 bg-transparent relative z-10 bg-gradient-to-t from-amber-500 to-amber-500/0">Circuitos</a>
+            </li>
+            <li class="h-full relative group">
+                <div class="absolute bottom-0 left-0 w-full h-0 bg-gradient-to-t from-amber-500 to-amber-500/0 transition-all duration-300 group-hover:h-3/4"></div>
+                <a href="./events.html" class="flex items-center justify-center h-full px-4 bg-transparent relative z-10">Eventos</a>
+            </li>
+            <li class="h-full relative group">
+                <div class="absolute bottom-0 left-0 w-full h-0 bg-gradient-to-t from-amber-500 to-amber-500/0 transition-all duration-300 group-hover:h-3/4"></div>
+                <a href="./market.html" class="flex items-center justify-center h-full px-4 bg-transparent relative z-10">Mercado</a>
+            </li>
+            <li class="h-full relative group">
+                <div class="absolute bottom-0 left-0 w-full h-0 bg-gradient-to-t from-amber-500 to-amber-500/0 transition-all duration-300 group-hover:h-3/4"></div>
+                <a href="./raceline.creator.html" class="flex items-center justify-center h-full px-4 bg-transparent relative z-10">Trazadas</a>
+            </li>
+            <li class="h-full relative group">
+                <div class="absolute bottom-0 left-0 w-full h-0 bg-gradient-to-t from-amber-500 to-amber-500/0 transition-all duration-300 group-hover:h-3/4"></div>
+                <a href="./timetable.html" class="flex items-center justify-center h-full px-4 bg-transparent relative z-10">Tiempos</a>
+            </li>
+        </ul>
+    </nav>
+
+    <div class="flex items-center h-full">
+      <a id="messages" href="messages.html" class="flex items-center justify-center h-full px-4 bg-[#0c0b10] hover:bg-amber-500 transition __hidden rounded-md">
+          <i class="fas fa-envelope text-white text-2xl"></i>
+          <span id="message-btn"></span>
+      </a>
+      <a id="credentials-btn" class="flex items-center justify-center h-full px-4 bg-[#0c0b10] hover:bg-amber-500 transition __hidden rounded-md">
+          SignUp/Login
+      </a>
+      <a id="profile-btn" href="./profile.html" class="flex items-center justify-center h-full px-4 bg-[#0c0b10] hover:bg-amber-500 transition __hidden rounded-md">
+          <i class="fas fa-user text-white text-2xl"></i>
+      </a>
+  </div>
+</header>
+
+    <main class="bg-neutral-800 px-[5%] py-10 h-screen">
         <div class="flex flex-col md:flex-row gap-5">
           <section id="map" class="flex basis-3/4 h-[44.5rem] bg-neutral-600 items-center justify-center z-20 rounded-lg">
           </section>
           <section class="flex flex-col overflow-auto max-h-[44.5rem] basis-2/5 ">
 
-            <div id="filter-container" class="flex flex-col max-h-[20%] basis-2/5 p-5 bg-neutral-600 rounded-lg mb-4 overflow-hidden">
+            <div id="filter-container" class="flex flex-row max-h-[15%] basis-2/5 p-5 bg-neutral-600 rounded-lg mb-4 overflow-hidden items-center">
               <form id="filter-form">
-                <label class="flex text-gray-200 font-medium" for="filter">Distancia:</label>
-                <p class="text-gray-200 font-medium"><span  id="value">500</span>Km</p>
+                <label class="flex text-gray-200 font-medium" for="filter">Distancia</label>
+                <span class="text-gray-200 font-medium"><span  id="value">500</span>Km</span>
                 <input type="range" id="distance-range" min="0" max="1000" value="500" step="1">
-
-                <div class="flex justify-end space-y-2">
-                    <button id="circuit-filter" type="button" class="px-5 py-2 bg-amber-400 text-white rounded-lg hover:bg-amber-500 transition max-w-2xl mb-4">Aplicar filtros</button>
-                </div>
               </form>
+              <span class="ml-auto my-auto space-y-2">
+                <button id="circuit-filter" type="button" class="px-5 py-2 bg-amber-400 text-white rounded-lg hover:bg-amber-500 transition max-w-2xl ">Aplicar filtros</button>
+            </span>
             </div>
             
-            <div id="card-container" class="bg-neutral-600 p-5 flex flex-col flex-1 overflow-auto rounded-lg">
+            <div id="card-container" class="transition-opacity duration-500 bg-neutral-600 p-5 flex flex-col flex-1 overflow-auto rounded-lg">
             </div>
 
           </section>
         </div>
       </main>
     <div id="modal" class="fixed inset-0 flex items-center justify-center bg-neutral-600/50 backdrop-blur-sm __hidden z-[9999]">
-        <div class="bg-white w-[75%] max-w-4xl h-[85%] rounded-xl shadow-lg overflow-auto relative animate-fade-in">
-          <button id="modal-close" class="absolute top-2 right-2 text-3xl text-gray-700 hover:text-gray-900 focus:outline-none">&times;</button>
+        <div class="bg-neutral-100 w-[75%] max-w-4xl h-[85%] rounded-xl shadow-lg overflow-auto relative animate-fade-in">
+          <button id="modal-close" class="absolute top-3 right-3 text-3xl text-gray-700 hover:text-gray-900 focus:outline-none">&times;</button>
           <div id="modal-content" class="p-4">
           </div>
         </div>
