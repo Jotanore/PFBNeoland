@@ -5,36 +5,68 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="./css/reset.css" rel="stylesheet"/>
     <link href="./css/output.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script defer type="module" src="./js/components/bundle.js"></script>
     <script defer type="module" src="./js/index.js"></script>
     <title>KartHub - Inicio</title>
 </head>
-<body id="index" class="box-border bg-white">
-    <div class="flex p-4 bg-neutral-500 items-center">
-        <h1 class="font-bold text-4xl ">KartHub</h1>
-        <div class="flex justify-end w-full">
-            <a href="messages.html" class="p-2 px-4 bg-neutral-200 rounded-full mr-4"><span id="message-btn" >Mensajes</span></a>
-            <h2 id="credentials-btn" class="p-2 px-4 bg-neutral-200 rounded-full"><a>SignUp/Login</a></h2>
-            <h2 id="profile-btn" class="p-2 px-4 bg-neutral-200 rounded-full __hidden"><a href="./profile.html">Profile</a></h2>
-        </div>
-    </div>
-    <header class="sticky top-0 bg-neutral-400/75 backdrop-blur-sm shadow-sm">
-            <ul class=" flex justify-end py-3">
-                <!--TODO: NAV HITBOX-->
-                <li class="bg-amber-400 mx-3 pt-2 rounded-full"><a class="bg-amber-400 p-2 px-4 rounded-full" href="./index.html">Inicio</a></li>
-                <li class="bg-neutral-200 p-2 px-4 mx-3 rounded-full hover:bg-amber-200"><a href="./circuits.html">Circuitos</a></li>
-                <li class="bg-neutral-200 p-2 px-4 mx-3 rounded-full hover:bg-amber-200"><a href="./events.html">Eventos</a></li>
-                <li class="bg-neutral-200 p-2 px-4 mx-3 rounded-full hover:bg-amber-200"><a href="./market.html">Mercado</a></li>
-                <!--<li class="bg-neutral-200 p-2 px-4 mx-3 rounded-full hover:bg-amber-200"><a href="./forum.html">Foro</a></li>-->
-                <li class="bg-neutral-200 p-2 px-4 mx-3 rounded-full hover:bg-amber-200"><a href="./raceline.creator.html">Creador de trazadas</a></li>
-                <li class="bg-neutral-200 p-2 px-4 mx-3 rounded-full hover:bg-amber-200"><a href="./timetable.html">Tabla de tiempos</a></li>
+<body id="index" class="box-border bg-neutral-800 overflow-auto">
+    <header class="flex items-center justify-between px-6 sticky top-0 bg-[#0c0b10] shadow-md text-white h-16">
+
+        <img src="./imgs/Karthub logo.jpg" class="h-full object-contain" alt="KartHub Logo">
+    
+        <nav class="h-full ">
+            <ul class="flex h-full">
+                <li class="h-full relative group">
+                    <div class=""></div>
+                    <a href="./index.html" class="flex items-center justify-center h-full px-4 bg-transparent relative z-10 bg-gradient-to-t from-amber-500 to-amber-500/0">Inicio</a>
+                </li>
+                <li class="h-full relative group">
+                    <div class="absolute bottom-0 left-0 w-full h-0 bg-gradient-to-t from-amber-500 to-amber-500/0 transition-all duration-300 group-hover:h-3/4"></div>
+                    <a href="./circuits.html" class="flex items-center justify-center h-full px-4 bg-transparent relative z-10">Circuitos</a>
+                </li>
+                <li class="h-full relative group">
+                    <div class="absolute bottom-0 left-0 w-full h-0 bg-gradient-to-t from-amber-500 to-amber-500/0 transition-all duration-300 group-hover:h-3/4"></div>
+                    <a href="./events.html" class="flex items-center justify-center h-full px-4 bg-transparent relative z-10">Eventos</a>
+                </li>
+                <li class="h-full relative group">
+                    <div class="absolute bottom-0 left-0 w-full h-0 bg-gradient-to-t from-amber-500 to-amber-500/0 transition-all duration-300 group-hover:h-3/4"></div>
+                    <a href="./market.html" class="flex items-center justify-center h-full px-4 bg-transparent relative z-10">Mercado</a>
+                </li>
+                <li class="h-full relative group">
+                    <div class="absolute bottom-0 left-0 w-full h-0 bg-gradient-to-t from-amber-500 to-amber-500/0 transition-all duration-300 group-hover:h-3/4"></div>
+                    <a href="./raceline.creator.html" class="flex items-center justify-center h-full px-4 bg-transparent relative z-10">Trazadas</a>
+                </li>
+                <li class="h-full relative group">
+                    <div class="absolute bottom-0 left-0 w-full h-0 bg-gradient-to-t from-amber-500 to-amber-500/0 transition-all duration-300 group-hover:h-3/4"></div>
+                    <a href="./timetable.html" class="flex items-center justify-center h-full px-4 bg-transparent relative z-10">Tiempos</a>
+                </li>
             </ul>
         </nav>
+    
+        <div class="flex items-center h-full">
+            <a id="messages" href="messages.html" class="flex items-center justify-center h-full px-4 bg-[#0c0b10] hover:bg-amber-500 transition __hidden rounded-md">
+                <i class="fas fa-envelope text-white text-2xl"></i>
+                <span id="message-btn"></span>
+            </a>
+            <a id="credentials-btn" class="flex items-center justify-center h-full px-4 bg-[#0c0b10] hover:bg-amber-500 transition __hidden rounded-md">
+                SignUp/Login
+            </a>
+            <a id="profile-btn" href="./profile.html" class="flex items-center justify-center h-full px-4 bg-[#0c0b10] hover:bg-amber-500 transition __hidden rounded-md">
+                <i class="fas fa-user text-white text-2xl"></i>
+            </a>
+        </div>
     </header>
 
-    <main id="landing-container" class="bg-white px-[5%] pt-10 min-h-screen">
-        <section class="bg-neutral-100 py-16 px-20 mb-6 rounded-lg shadow-lg">
-            <h2 class="bg-neutral-200 text-5xl font-extrabold text-center py-6 rounded-lg shadow-md">¡Bienvenido a KartHub!</h2>
+
+    <main id="landing-container" class="relative bg-neutral-800 px-[5%] pt-10 h-[calc(100vh-64px)] z-[-2] ">
+        <video autoplay muted loop class="absolute top-0 left-0 w-full h-full object-cover z-[-1]">
+            <source src="imgs/TRailer.mp4" type="video/mp4">
+            Tu navegador no soporta el formato de video.
+        </video>
+    
+        <section class="relative py-16 px-20 mb-6 rounded-lg shadow-lg bg-[rgba(255,255,255,0.9)]">
+            <h2 class="bg-amber-500 text-5xl font-extrabold text-center py-6 rounded-lg shadow-md">¡Bienvenido a KartHub!</h2>
             
             <article class="text-lg text-gray-700 mt-6 leading-relaxed">
                 <p>
@@ -44,7 +76,7 @@
                     <span class="font-semibold">creador de eventos</span>, <span class="font-semibold">mercado</span> y <span class="font-semibold">foro</span>.
                 </p>
             </article>
-    
+        
             <h2 class="text-3xl font-bold text-gray-900 mt-10">Navegación</h2>
             <ul class="mt-6 space-y-4 text-lg text-gray-700">
                 <li class="flex items-center">
@@ -60,16 +92,19 @@
                     - Descubre artículos a la venta por otros usuarios o publica tus propias ofertas.
                 </li>
                 <li class="flex items-center">
-                    <span class="text-2xl font-semibold text-gray-900 mr-2">💬 Foro</span> 
-                    - Espacio de conversación para compartir experiencias, debatir y resolver dudas sobre el karting.
+                    <span class="text-2xl font-semibold text-gray-900 mr-2">✏️ Trazadas</span> 
+                    - Herramienta para crear tus propias trazadas y compartirlas con otros usuarios.
+                </li>
+                <li class="flex items-center">
+                    <span class="text-2xl font-semibold text-gray-900 mr-2">⏱️ Tiempos</span> 
+                    - Tabla de tiempos recientes, mejores tiempos por circuito y tus propios deltas comparado con los récords.
                 </li>
             </ul>
         </section>
+        
     </main>
     
-
-    <main id="credentials-container" class="bg-gray-100 px-6 pt-10 min-h-screen flex flex-col items-center __hidden">
-        <!-- Sign Up Section -->
+    <main id="credentials-container" class="bg-neutral-800 px-6 pt-10 flex flex-col items-center __hidden overflow-hidden">
         <section id="signup-form" class="bg-white shadow-lg rounded-lg p-8 w-full max-w-lg mb-6 __hidden">
             <h2 class="text-3xl font-bold text-gray-800 text-center mb-6">Sign Up</h2>
             <form id="signup-form" action="#" enctype="multipart/form-data" class="space-y-4">
@@ -106,26 +141,9 @@
             
         </section>
     
-        <!-- Login Section -->
         <section id="login-form" class="bg-white shadow-lg rounded-lg p-8 w-full max-w-lg">
             <h2 class="text-3xl font-bold text-gray-800 text-center mb-6">Login</h2>
             <login-formo></login-formo>
-            <!-- <form id="login-form" action="#" enctype="multipart/form-data" class="space-y-4">
-                <div class="flex flex-col">
-                    <label for="login-email" class="text-gray-700 font-semibold">Email</label>
-                    <input id="login-email" type="email" name="email" placeholder="a@a.a" 
-                        class="p-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-amber-400">
-                </div>
-                <div class="flex flex-col">
-                    <label for="login-password" class="text-gray-700 font-semibold">Contraseña</label>
-                    <input id="login-password" type="password" name="password"
-                        class="p-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-amber-400">
-                </div>
-                <button type="submit"
-                    class="w-full bg-amber-500 text-white font-bold py-2 rounded-lg hover:bg-amber-600 transition duration-300">
-                    Enviar
-                </button>
-            </form> -->
             <div class="flex items-center my-4">
                 <hr class="flex-grow border-gray-300">
                 <span class="mx-4 text-gray-500">o</span>
