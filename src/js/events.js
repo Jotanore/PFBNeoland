@@ -84,7 +84,7 @@ export async function drawEvent(event){
     const date = new Date(event.date)
     const eventFrame = document.getElementById('__event-container')
         const html =
-                `<div class="bg-white shadow-md rounded-lg overflow-hidden flex items-center p-5 mb-4 border border-gray-200 w-full cursor-pointer event-card">
+                `<div class="bg-gray-100 shadow-md rounded-lg overflow-hidden flex items-center p-5 mb-4 border border-gray-200 w-full cursor-pointer event-card">
                 <div class="flex flex-col flex-1">
                 <h3 class="text-xl font-bold text-gray-800 truncate">${event.title}</h3>
                 <p data-id="${event.location}" class="text-sm text-gray-600">${date.toLocaleDateString("es-ES")} - ${event.location} - ${event.user_username}</p>
@@ -326,17 +326,47 @@ async function eventModal(event){
     console.log(modalContent)
     console.log(event)
     if (modalContent){
-    modalContent.innerHTML = `<ul class="space-y-3 text-gray-800 font-medium">
-                                <li class="text-xl font-semibold">${event.title}</li>
-                                <li class="text-gray-600">Creado por: <button id="foreign-button" data-id="${event.user_id}" class="font-semibold text-blue-500" type="button"  >${eventCreator.username}</button></li>
-                                <li class="text-gray-600">Fecha: <span class="font-semibold">${event.date}</span></li>
-                                <li class="text-gray-600">Descripción: <span class="font-semibold">${event.description}</span></li>
-                                <li class="text-gray-600">Ubicación: <span class="font-semibold">${event.location}</span></li>
-                                <li class="text-gray-600">Participantes: 
-                                    <span class="font-semibold">${participantsArray.join(', ')}</span>
-                                </li>
-                                <li class="text-gray-600">Máximo de Participantes: <span class="font-semibold">${event.maxParticipants}</span></li>
-                            </ul>`
+    modalContent.innerHTML = `<ul class="space-y-6 text-gray-800 font-medium">
+    <li class="text-4xl font-extrabold text-black">${event.title}</li>
+
+    <li class="flex justify-between items-center text-lg text-gray-700">
+        <span><span class="font-semibold">Creado por:</span> 
+            <button id="foreign-button" data-id="${event.user_id}" class="font-semibold text-blue-500 hover:text-blue-700 transition-colors" type="button">
+                ${eventCreator.username}
+            </button>
+        </span>
+        <span><span class="font-semibold"></span> </span>
+    </li>
+
+    <li class="text-lg text-gray-700">
+        <p class="text-gray-600">${event.date}</p>
+    </li>
+
+
+    <!-- Ubicación -->
+    <li class="text-lg text-gray-700">
+        <span class="font-semibold">Ubicación:</span>
+        <span class="text-gray-600">${event.location}</span>
+    </li>
+
+    <!-- Participantes -->
+    <li class="text-lg text-gray-700">
+        <span class="font-semibold">Participantes:</span>
+        <span class="text-gray-600">${participantsArray.join(', ')}</span>
+    </li>
+
+    <!-- Máximo de Participantes -->
+    <li class="text-lg text-gray-700">
+        <span class="font-semibold">Máximo de Participantes:</span>
+        <span class="text-gray-600">${event.maxParticipants}</span>
+    </li>
+    <li class="text-lg text-gray-700">
+        <span class="font-semibold">Descripción:</span>
+        <p class="text-gray-600">${event.description}</p>
+    </li>
+</ul>
+
+`
     }
     document.getElementById('foreign-button')?.addEventListener('click', () => openForeignProfile('foreign-button'))
 }

@@ -24,7 +24,7 @@ export async function drawArticle(item){
         console.log(item)
         const itemCreator = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/read/user/${item.user_id}`, 'GET')
         const marketFrame = document.getElementById('__market-container')
-        const html = `<div class="bg-white shadow-md rounded-lg overflow-hidden flex items-center p-5 mx-4 mb-4 cursor-pointer border border-gray-200">
+        const html = `<div class="bg-neutral-100 shadow-md rounded-lg overflow-hidden flex items-center p-5 mx-4 mb-4 cursor-pointer border border-gray-200">
     <!-- Imagen del artículo -->
     <div class="w-36 h-36 flex-shrink-0 rounded-lg overflow-hidden border">
         <img src="${item.img}" alt="${item.article}" class="w-full h-full object-cover">
