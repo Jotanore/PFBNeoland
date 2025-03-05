@@ -62,6 +62,7 @@ function showProfile(){
     document.getElementById('fastlaps-container')?.classList.remove("__hidden")
     document.getElementById('market-container')?.classList.remove("__hidden")
     document.getElementById('racelines-list')?.classList.remove("__hidden")
+    document.getElementById('racelineCanvas-container')?.classList.add("__hidden")
 }
 
 /**

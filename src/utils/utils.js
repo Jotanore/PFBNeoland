@@ -243,9 +243,11 @@ export function credentialsBtnManager(){
     if (userlog){
         document.getElementById('credentials-btn')?.classList.add('__hidden')
         document.getElementById('profile-btn')?.classList.remove('__hidden')
+        document.getElementById('messages')?.classList.remove('__hidden')  
     }else{
         document.getElementById('credentials-btn')?.classList.remove('__hidden')
         document.getElementById('profile-btn')?.classList.add('__hidden')    
+        document.getElementById('messages')?.classList.add('__hidden')    
 }
 
 }
