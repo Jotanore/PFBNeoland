@@ -16,8 +16,7 @@ export class Circuit{
     bestlap
     prices
     map
-    //timeTable
-    //raceLines
+
 /**
  * 
  * @param {string} _id 
@@ -25,7 +24,8 @@ export class Circuit{
  * @param {Object} location
  * @param {string} location.province
  * @param {string} location.latitude
- * @param {string} location.longitude 
+ * @param {string} location.longitude
+ * @param {string} location.googleUrl
  * @param {string} url 
  * @param {string} description
  * @param {string} bestlap
