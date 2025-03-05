@@ -67,19 +67,28 @@ export class RaceLinesList extends HTMLElement {
         }
       }
 1
-    _addNewLi(newRaceLine){
-        const lineList = this.shadowRoot.getElementById('racelines-container')
-        const raceLineList = this.shadowRoot.getElementById('race-line-list')
-        const html = `<li>${newRaceLine.circuitName} | ${newRaceLine.date} <button class="bg-amber-400 hover:bg-amber-500 text-white font-bold py-2 px-6 rounded-full shadow-md show-line">
-                            Ver
-                        </button></li>`
-        raceLineList.insertAdjacentHTML('afterbegin', html)
+_addNewLi(newRaceLine) {
+  const raceLineList = this.shadowRoot.getElementById('race-line-list');
+  
+  const html = `
+      <tr>
+          <td class="border border-gray-300 px-2 py-2">${newRaceLine.circuitName}</td>
+          <td class="border border-gray-300 px-2 py-2">${newRaceLine.date}</td>
+          <td class="border border-gray-300 px-2 py-2">
+              <button class="bg-amber-400 hover:bg-amber-500 text-white font-bold py-2 px-6 rounded-full shadow-md show-line">
+                  Ver
+              </button>
+          </td>
+      </tr>`;
 
-        const lastLine = lineList.querySelector('li');
-        const showBtn = lastLine.querySelector('.show-line');
-        showBtn.addEventListener('click', this._openRaceline.bind(this, newRaceLine))
+  raceLineList.insertAdjacentHTML('afterbegin', html);
 
+  const showBtn = raceLineList.querySelector('tr:first-child .show-line');
+
+  if (showBtn) {
+      showBtn.addEventListener('click', () => this._openRaceline(newRaceLine));
   }
+}
 
   _openRaceline(id){
     let newEvent = new CustomEvent(
