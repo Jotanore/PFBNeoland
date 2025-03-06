@@ -108,12 +108,23 @@
                     </div>
                 </div>
             <div id="sidebar" class="w-full md:w-[40%] flex flex-col ">
-                <race-lines-list id="racelines-list"></race-lines-list>
-                <!-- <div id="racelines-container"class="bg-white p-6 rounded-lg shadow-lg min-w-full max-w-3xl mx-auto">
+                <div id="racelines-container"class="bg-white p-6 rounded-lg shadow-lg min-w-full max-w-3xl mx-auto overflow-auto">
                     <h2 class="text-2xl font-semibold text-gray-800 mb-4 text-center">Racelines</h2>
-                    <ul id="race-line-list">
-                    </ul>
-                </div> -->
+                    <table class="w-full border-collapse border border-gray-300">
+                        <thead class="bg-neutral-100">
+                            <tr>
+                                <td class="border border-gray-300 px-4 py-2">Circuito</td>
+                                <td class="border border-gray-300 px-4 py-2">Fecha</td>
+                                <td class="border border-gray-300 px-4 py-2"></td>
+                            </tr>
+                        </thead>
+                        <tbody id="race-line-list">
+                            <tr class="hover:bg-gray-50">
+             
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
                 <div id="market-container" class="bg-neutral-100 p-6 rounded-lg shadow-lg max-w-3xl mx-auto mt-5 min-w-full">
                     <h2 class="text-2xl font-semibold text-gray-800 mb-4 text-center">Articulos</h2>
                     <ul id="article-list">

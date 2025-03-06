@@ -6,7 +6,7 @@
 import { Circuit, EventCard, RaceLines} from '../classes/classes.js'
 import { getUserCoords, getUserToCircuitDistance} from './circuits.js';
 import { modalOpener, modalManager, getUserFromSession, getForeignUserFromSession, getAPIData, fillSelectable, clampRacelineViewport, credentialsBtnManager, getFormattedDate} from '../utils/utils.js';
-import { fillUserForm, fillUserProfile, updateUserProfile, fillRaceLinesLit, updateRaceLineList} from './profile.js';
+import { fillUserForm, fillUserProfile, updateUserProfile, updateRaceLineList} from './profile.js';
 import { assignIndexListeners, userRegister, checkSignRedirectionFlag, onLoginComponentSubmit } from './index.page.js';
 import { assignEventButtons, eventFormManager, getEventData } from './events.js';
 import { loadForeignProfile, assignForeignProfileListeners } from './foreign.profile.js';
@@ -39,11 +39,6 @@ let circuitArray
 document.addEventListener('DOMContentLoaded', async () => {
 
     const page = document.getElementsByTagName('body')
-
-    window.addEventListener('open-raceline-event', (event) => {
-        console.log('open-raceline-event', /** @type {CustomEvent} */(event).detail)
-        openRaceLine(/** @type {CustomEvent} */(event).detail)
-      })
     
     console.log("user: ", getUserFromSession())
     if (getUserFromSession() != null) {
@@ -58,7 +53,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     fillUserProfile()
                     fillUserForm()
                     fillEventList(true)
-                    fillRaceLinesLit(true)
+                    fillRaceLinesList(true)
                     updateRaceLineList([])
                     fillMarketList(true)
                     updateUserProfile()
@@ -236,6 +231,7 @@ async function fillEventList(/** @type {boolean} */ isUser){
 async function fillRaceLinesList(/** @type {boolean} */ isUser){
 
     const user = isUser ? getUserFromSession()._id : getForeignUserFromSession()
+    const raceLineList = document.getElementById('race-line-list');
 
     const apiData = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/read/racelines/${user}` , 'GET')
     let racelines = []
@@ -243,12 +239,26 @@ async function fillRaceLinesList(/** @type {boolean} */ isUser){
        
         const date = getFormattedDate(raceline.date)
         const lineCircuit = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/read/circuit/${raceline.circuit_id}`, 'GET')
-        const html = `<li>${lineCircuit.name} | Fecha: ${date}</li>`
+        const html = `<tr>
+          <td class="border border-gray-300 px-2 py-2">${lineCircuit.name}</td>
+          <td class="border border-gray-300 px-2 py-2">${date}</td>
+          <td class="border border-gray-300 px-2 py-2">
+              <button class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-full shadow-md show-line">
+                  Ver
+              </button>
+          </td>
+      </tr>`
         //  @ts-expect-error Declaration
         raceline.circuitName = lineCircuit.name
         raceline.img = ''
         racelines.push(raceline)
-        document.getElementById('race-line-list')?.insertAdjacentHTML('afterbegin', html)
+        raceLineList.insertAdjacentHTML('afterbegin', html)
+
+        const showBtn = raceLineList.querySelector('tr:first-child .show-line');
+
+        if (showBtn) {
+        showBtn.addEventListener('click', () => openRaceLine(raceline));
+  }
     })    
 }
 
@@ -263,7 +273,7 @@ function openRaceLine(/**  @type {RaceLines} */ raceLine){
     document.getElementById('event-container')?.classList.add("__hidden")
     document.getElementById('fastlaps-container')?.classList.add("__hidden")
     document.getElementById('market-container')?.classList.add("__hidden")
-    document.getElementById('racelines-list')?.classList.add("__hidden")
+    document.getElementById('racelines-container')?.classList.add("__hidden")
     document.getElementById("profile-container")?.classList.add("__hidden")
 
     activateRaceLineCanvas()

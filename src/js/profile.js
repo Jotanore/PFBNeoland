@@ -61,7 +61,7 @@ function showProfile(){
     document.getElementById('event-container')?.classList.remove("__hidden")
     document.getElementById('fastlaps-container')?.classList.remove("__hidden")
     document.getElementById('market-container')?.classList.remove("__hidden")
-    document.getElementById('racelines-list')?.classList.remove("__hidden")
+    document.getElementById('racelines-container')?.classList.remove("__hidden")
     document.getElementById('racelineCanvas-container')?.classList.add("__hidden")
 }
 
@@ -143,7 +143,7 @@ function showProfileform(){
     document.getElementById('event-container')?.classList.add("__hidden")
     document.getElementById('fastlaps-container')?.classList.add("__hidden")
     document.getElementById('market-container')?.classList.add("__hidden")
-    document.getElementById('racelines-list')?.classList.add("__hidden")
+    document.getElementById('racelines-container')?.classList.add("__hidden")
     document.getElementById("profile-container")?.classList.add("__hidden")
     document.getElementById('racelineCanvas-container')?.classList.add("__hidden")
 }
