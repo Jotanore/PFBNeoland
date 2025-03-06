@@ -9,7 +9,7 @@
     <script defer type="module" src="./js/index.js"></script>
     <title>KartHub - Eventos</title>
 </head>
-<body id="laptimes" class="box-border bg-white">
+<body id="laptimes" class="box-border bg-neutral-800">
   <header class="flex items-center justify-between px-6 sticky top-0 bg-[#0c0b10] shadow-md text-white h-16">
 
     <img src="./imgs/Karthub logo.jpg" class="h-full object-contain" alt="KartHub Logo">
@@ -57,7 +57,7 @@
   </div>
 </header>
 
-    <main class="bg-neutral-800 pt-5 px-[5%] h-screen ">
+    <main class="bg-neutral-800 pt-5 px-[5%] h-[calc(100vh-64px)]">
 
         <div class="flex justify-end space-y-2">
             <button id="new-laptime-form-btn" type="button" class="px-5 py-2 bg-amber-400 text-white rounded-lg hover:bg-amber-500 transition max-w-2xl mb-4">Nuevo registro</button>
@@ -134,113 +134,103 @@
             </form>
         </section>
         
-        <section id="laptime-container" class="pt-5 pb-5 px-5 bg-neutral-600 min-h-screen flex flex-col items-center rounded-lg">
-            
-            <div class="grid grid-cols-5 grid-rows-5 gap-4 w-full h-full">
-              
-              <div class="col-span-2 row-span-2 bg-white rounded-lg shadow-lg p-4">
-                <form id="filter-form" class="space-y-4">
+        <section id="laptime-container" class="p-5 bg-neutral-600 h-[calc(100vh-18vh)] flex items-center rounded-lg">
+            <div class="grid grid-cols-[40%_59%] gap-4 w-full h-full">
+              <div class="flex flex-col gap-4">
+                <div class="bg-white rounded-lg shadow-lg p-4">
+                  <form id="filter-form" class="space-y-4">
                     <h2 class="text-gray-600 font-medium text-lg mb-1">
                       Filtros de mejores tiempos
                     </h2>
                     <div class="flex flex-col">
-                        <label for="opciones-filtro" class="text-gray-600 font-medium mb-1">Circuito</label>
-                        <select id="opciones-filtro" name="opciones" class="p-2 border border-gray-300 rounded-lg shadow-sm" required>
-                            <option value="all">Selecciona circuito</option>
-                     
-                        </select>
-                     </div>
-
-                    <div class="flex flex-col">
-                        <span class="text-gray-600 font-medium mb-1">Condiciones</span>
-                        <div class="flex items-center space-x-4">
-                        <label class="flex items-center space-x-1">
-                            <input type="radio" name="condiciones" id="dry-radio" value="dry" class="form-radio">
-                            <span>Seco</span>
-                        </label>
-                        <label class="flex items-center space-x-1">
-                            <input type="radio" name="condiciones" id="wet-radio" value="wet" class="form-radio">
-                            <span>Mojado</span>
-                        </label>
-                        <label class="flex items-center space-x-1">
-                            <input type="radio" name="condiciones" id="mix-radio" value="mix" class="form-radio">
-                            <span>Mixto</span>
-                        </label>
-                        <label class="flex items-center space-x-1">
-                            <input type="radio" name="condiciones" id="all-conditions-radio" value="0" checked class="form-radio">
-                            <span>Todos</span>
-                        </label>
-                        </div>
+                      <label for="opciones-filtro" class="text-gray-600 font-medium mb-1">Circuito</label>
+                      <select id="opciones-filtro" name="opciones" class="p-2 border border-gray-300 rounded-lg shadow-sm" required>
+                        <option value="all">Selecciona circuito</option>
+                      </select>
                     </div>
-                    
-                   
-                    <div class="flex flex-col">
-                        <span class="text-gray-600 font-medium mb-1">Tipo de Kart</span>
-                        <div class="flex items-center space-x-4">
-                        <label class="flex items-center space-x-1">
-                            <input type="radio" name="tipoKart" id="rental-radio" value="rental" class="form-radio">
-                            <span>Rental</span>
-                        </label>
-                        <label class="flex items-center space-x-1">
-                            <input type="radio" name="tipoKart" id="own-radio" value="own" class="form-radio">
-                            <span>Particular</span>
-                        </label>
-                        <label class="flex items-center space-x-1">
-                            <input type="radio" name="tipoKart" id="all-kart-radio" value="0" checked class="form-radio">
-                            <span>Todos</span>
-                        </label>
-                        </div>
-                    </div>
-                    
-              
-                  
-                  <div class="flex justify-end">
-                    <button id="laptime-filter-btn" type="button" class="px-5 py-2 bg-amber-400 text-white rounded-lg hover:bg-amber-500 transition">
-                      Aplicar filtros
-                    </button>
-                  </div>
-                </form>
-              </div>
-              
           
-              
-              <div class="col-span-3 row-span-5 col-start-3 bg-slate-100 overflow-auto rounded-lg shadow-md">
+                    <div class="flex flex-col">
+                      <span class="text-gray-600 font-medium mb-1">Condiciones</span>
+                      <div class="flex items-center space-x-4">
+                        <label class="flex items-center space-x-1">
+                          <input type="radio" name="condiciones" id="dry-radio" value="dry" class="form-radio">
+                          <span>Seco</span>
+                        </label>
+                        <label class="flex items-center space-x-1">
+                          <input type="radio" name="condiciones" id="wet-radio" value="wet" class="form-radio">
+                          <span>Mojado</span>
+                        </label>
+                        <label class="flex items-center space-x-1">
+                          <input type="radio" name="condiciones" id="mix-radio" value="mix" class="form-radio">
+                          <span>Mixto</span>
+                        </label>
+                        <label class="flex items-center space-x-1">
+                          <input type="radio" name="condiciones" id="all-conditions-radio" value="0" checked class="form-radio">
+                          <span>Todos</span>
+                        </label>
+                      </div>
+                    </div>
+                    
+                    <div class="flex flex-col">
+                      <span class="text-gray-600 font-medium mb-1">Tipo de Kart</span>
+                      <div class="flex items-center space-x-4">
+                        <label class="flex items-center space-x-1">
+                          <input type="radio" name="tipoKart" id="rental-radio" value="rental" class="form-radio">
+                          <span>Rental</span>
+                        </label>
+                        <label class="flex items-center space-x-1">
+                          <input type="radio" name="tipoKart" id="own-radio" value="own" class="form-radio">
+                          <span>Particular</span>
+                        </label>
+                        <label class="flex items-center space-x-1">
+                          <input type="radio" name="tipoKart" id="all-kart-radio" value="0" checked class="form-radio">
+                          <span>Todos</span>
+                        </label>
+                      </div>
+                    </div>
+                    
+                    <div class="flex justify-end">
+                      <button id="laptime-filter-btn" type="button" class="px-5 py-2 bg-amber-400 text-white rounded-lg hover:bg-amber-500 transition">
+                        Aplicar filtros
+                      </button>
+                    </div>
+                  </form>
+                </div>
+                <div class="bg-slate-100 overflow-auto rounded-lg shadow-md min-h-[40vh]">
+                    <table class="min-w-full divide-y divide-gray-200">
+                      <thead class="bg-blue-600">
+                        <tr>
+                          <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Circuito</th>
+                          <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Tiempo</th>
+                          <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Delta</th>
+                        </tr>
+                      </thead>
+                      <tbody id="personal-table-body" class="bg-white divide-y divide-gray-200">
+                      </tbody>
+                    </table>
+                  </div>
+              </div>
+              <div class="bg-slate-100 overflow-auto rounded-lg shadow-md ">
                 <table class="min-w-full divide-y divide-gray-200">
                   <thead class="bg-blue-600">
                     <tr>
                       <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Circuito</th>
                       <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Fecha</th>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Piloto</th>
                       <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Tiempo</th>
                       <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Condiciones</th>
                       <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Categoría</th>
                       <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Kart</th>
-                      
                     </tr>
                   </thead>
                   <tbody id="laptime-table-body" class="bg-white divide-y divide-gray-200">
-                    
                   </tbody>
                 </table>
               </div>
-          
-              
-              <div class="col-span-2 row-span-3 row-start-3 overflow-auto bg-slate-100 rounded-lg shadow-md">
-                <table class="min-w-full divide-y divide-gray-200">
-                  <thead class="bg-blue-600">
-                    <tr>
-                      <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Circuito</th>
-                      <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Tiempo</th>
-                      <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Delta</th>
-                    </tr>
-                  </thead>
-                  <tbody id="personal-table-body" class="bg-white divide-y divide-gray-200">
-                    
-                  </tbody>
-                </table>
-              </div>
-              
             </div>
           </section>
+          
+          
         <!-- <div id="modal" class="fixed inset-0 flex justify-center items-center bg-black/50 backdrop-blur-md z-[999] __hidden">
             <div class="bg-white w-[75%] max-w-4xl h-[85%] rounded-xl shadow-lg overflow-hidden relative animate-fade-in">
                 <span id="modal-close" class="absolute top-3 right-3 text-gray-500 hover:text-gray-700 text-3xl font-bold"><a href="#">&times;</a></span>

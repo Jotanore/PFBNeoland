@@ -776,7 +776,7 @@ function activateCanvas() {
     editCanvas.freeDrawingBrush = brush;
     brush.color = '#40ff00';
     brush.width = 3;
-    editCanvas.isDrawingMode = true;
+    editCanvas.isDrawingMode = false;
 
     let isDragging = false;
     let lastPosX = 0;
@@ -868,22 +868,16 @@ function activateCanvas() {
     editCanvas.on('mouse:down', function(opt) {
         const e = opt.e;
 
-        //panmode
-        if (panMode) {
-
-        isDragging = true;
-        // @ts-expect-error external declaration
-        editCanvas.selection = false;
-        lastPosX = e.clientX;
-        lastPosY = e.clientY;
-        }
-        
         //straightlinemode
         if (straightLineMode){
+            e.preventDefault();
+            e.stopPropagation();
+
+            isDrawing = false;
             isDragging = true;
-            isDrawing = true;
             // @ts-expect-error external declaration
             editCanvas.isDrawingMode = false
+            editCanvas.selection = false;
     
             // @ts-expect-error external declaration
             const pointer = editCanvas.getPointer(e); 
@@ -900,7 +894,14 @@ function activateCanvas() {
     
             // @ts-expect-error external declaration
             editCanvas.add(line); 
-        }
+        }else if (panMode) {
+
+            isDragging = true;
+            // @ts-expect-error external declaration
+            editCanvas.selection = false;
+            lastPosX = e.clientX;
+            lastPosY = e.clientY;
+            }
         
     });
 
@@ -927,7 +928,6 @@ function activateCanvas() {
         if (straightLineMode && isDragging) {
             // @ts-expect-error external declaration
             const pointer = editCanvas.getPointer(e); 
-            console.log(pointer) 
             // @ts-expect-error External declaration
             line.set({ x2: pointer.x, y2: pointer.y });
             // @ts-expect-error external declaration
@@ -939,24 +939,21 @@ function activateCanvas() {
 
     // ON MOUSEUP
     editCanvas.on('mouse:up', function() {
-        if (panMode){
-            isDragging = false;
-            // @ts-expect-error external declaration
+        isDragging = false;
+        
+        if (panMode) {
             clampViewport(editCanvas);
         }
+        
+        if (straightLineMode) {
+            line.set({ selectable: true, evented: true });
 
-        if(straightLineMode){
-
-            isDragging = false; 
-            // @ts-expect-error fabric line
-            line.set({ selectable: true, evented: true }); 
-
+            editCanvas.isDrawingMode = false;
+            editCanvas.selection = false;
         }
-
-
     });
-
-    // Zoom con la rueda del mouse 
+    
+ 
     // @ts-expect-error external declaration
     editCanvas.on('mouse:wheel', function(opt) {
         opt.e.preventDefault();
@@ -966,11 +963,8 @@ function activateCanvas() {
         // @ts-expect-error external declaration
         let zoom = editCanvas.getZoom();
 
-        // Aumentar o disminuir el zoom según la dirección del scroll
         zoom = opt.e.deltaY < 0 ? zoom * 1.1 : zoom / 1.1;
 
-        // Calcular el zoom mínimo permitido basado en el fondo para que, 
-        // cuando la imagen completa se vea en su lado más corto, no se pueda hacer más zoom out.
         // @ts-expect-error external declaration
         if (editCanvas.backgroundImage) {
             // @ts-expect-error external declaration
@@ -985,7 +979,7 @@ function activateCanvas() {
             }
         }
         
-        if (zoom > 20) zoom = 20;  // Zoom máximo arbitrario
+        if (zoom > 20) zoom = 20; 
 
 
         // @ts-expect-error External declaration
@@ -995,25 +989,24 @@ function activateCanvas() {
         clampViewport(editCanvas);
     });
 
-    // Cambiar color del pincel
-    const redBrushBtn = document.getElementById('red-brush')
+    const redBrushBtn = document.getElementById('red-brush');
     redBrushBtn?.addEventListener('click', () => {
-        brush.color = 'red';
+    brush.color = 'red';
+    panMode = false;
+    straightLineMode = false;
+    isDragging = false;
+    editCanvas.isDrawingMode = true;
 
-        panMode = false
-        // @ts-expect-error external declaration
-        editCanvas.selection = false;
-        // @ts-expect-error external declaration
-        editCanvas.isDrawingMode = true;
- 
-        if(drawModeBtn) drawModeBtn.style.backgroundColor ='rgb(37 99 235)'
-        redBrushBtn.style.backgroundColor = 'rgb(37 99 235)'
 
-        if(yellowBrushBtn) yellowBrushBtn.style.backgroundColor = 'rgb(59 130 246)'
-        if(greenBrushBtn) greenBrushBtn.style.backgroundColor = 'rgb(59 130 246)'
-        if(selectModeBtn) selectModeBtn.style.backgroundColor = 'rgb(59 130 246)'
-        if(togglePanButton) togglePanButton.style.backgroundColor ='rgb(59 130 246)'
-    });
+    if (drawModeBtn) drawModeBtn.style.backgroundColor = 'rgb(37 99 235)';
+    redBrushBtn.style.backgroundColor = 'rgb(37 99 235)';
+    if (yellowBrushBtn) yellowBrushBtn.style.backgroundColor = 'rgb(59 130 246)';
+    if (greenBrushBtn) greenBrushBtn.style.backgroundColor = 'rgb(59 130 246)';
+    if (selectModeBtn) selectModeBtn.style.backgroundColor = 'rgb(59 130 246)';
+    if (togglePanButton) togglePanButton.style.backgroundColor = 'rgb(59 130 246)';
+});
+
+
 
     const yellowBrushBtn = document.getElementById('yellow-brush')
     yellowBrushBtn?.addEventListener('click', () => {
@@ -1024,6 +1017,7 @@ function activateCanvas() {
         editCanvas.selection = false;
         // @ts-expect-error external declaration
         editCanvas.isDrawingMode = true;
+        straightLineMode = false
  
         if(drawModeBtn) drawModeBtn.style.backgroundColor ='rgb(37 99 235)'
         yellowBrushBtn.style.backgroundColor = 'rgb(37 99 235)'
@@ -1043,6 +1037,7 @@ function activateCanvas() {
         editCanvas.selection = false;
         // @ts-expect-error external declaration
         editCanvas.isDrawingMode = true;
+        straightLineMode = false
  
 
         if(drawModeBtn) drawModeBtn.style.backgroundColor ='rgb(37 99 235)'
@@ -1062,6 +1057,7 @@ function activateCanvas() {
         panMode = false
         // @ts-expect-error external declaration
         editCanvas.selection = true;
+        straightLineMode = false
 
 
         selectModeBtn.style.backgroundColor ='rgb(37 99 235)'
@@ -1078,11 +1074,17 @@ function activateCanvas() {
      const drawModeBtn = document.getElementById('toggle-draw-mode');
      if (drawModeBtn) drawModeBtn.style.backgroundColor ='rgb(37 99 235)'
      drawModeBtn?.addEventListener('click', () => {
-        panMode = false
+        panMode = false;
+        straightLineMode = false; 
+        isDragging = false; 
+        if (line) { 
+            line = null;
+         }
         // @ts-expect-error external declaration
         editCanvas.selection = false;
         // @ts-expect-error external declaration
         editCanvas.isDrawingMode = true;
+        straightLineMode = false
  
         switch (brush.color) {
             case 'red':
@@ -1109,6 +1111,7 @@ function activateCanvas() {
         // @ts-expect-error external declaration
         editCanvas.selection = false;
         panMode = true 
+        straightLineMode = false
 
         if (togglePanButton) togglePanButton.style.backgroundColor = 'rgb(37 99 235)';
         if (drawModeBtn) drawModeBtn.style.backgroundColor = 'rgb(59 130 246)';
@@ -1122,8 +1125,10 @@ function activateCanvas() {
     const straightLineBtn = document.getElementById('straight-line');
     straightLineBtn?.addEventListener('click', () => {
         straightLineMode = true
+        editCanvas.freeDrawingBrush.color = 'rgba(0, 0, 0, 0)';
         // @ts-expect-error external declaration
         editCanvas.selection = false;
+        
     })
 
 
@@ -1211,8 +1216,7 @@ async function uploadToWeb(){
         const apiData = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/create/raceline/`, "POST", payload);
         console.log("Respuesta del servidor:", apiData);
     }
-
-
+    alert("Trazada guardada en tu perfil!")
 }
 
 /**

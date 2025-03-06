@@ -72,9 +72,9 @@ function drawBestLapTimes(laptime){
             <tr class="hover:bg-gray-50">
                 <td class="border border-gray-300 px-4 py-2">${laptime.circuit}</td>
                 <td class="border border-gray-300 px-4 py-2">${formattedTime}</td>
-                <td class="border border-gray-300 px-4 py-2 text-${laptime.
+                <td class="border border-gray-300 px-4 py-2 ${laptime.
                     // @ts-expect-error Backend addition
-                delta > 0 ? 'red-500' : 'green-500'}">${laptime.delta > 0 ? '+' : ''}${formattedDelta}</td>
+                delta > 0 ? 'text-red-500' : 'text-green-500'}">${laptime.delta > 0 ? '+' : ''}${formattedDelta}</td>
             </tr>`
 lapTimeFrame?.insertAdjacentHTML('afterbegin', html)
 
@@ -94,6 +94,7 @@ function drawLapTimes(laptime){
                 <tr class="hover:bg-gray-50">
                         <td class="border border-gray-300 px-4 py-2">${laptime.circuit}</td>
                         <td class="border border-gray-300 px-4 py-2">${laptime.lapTimeDate}</td>
+                        <td class="border border-gray-300 px-4 py-2">${laptime.userName}</td>
                         <td class="border border-gray-300 px-4 py-2">${formattedTime}</td>
                         <td class="border border-gray-300 px-4 py-2">${laptime.lapCondition}</td>
                         <td class="border border-gray-300 px-4 py-2">${laptime.kartType}</td>

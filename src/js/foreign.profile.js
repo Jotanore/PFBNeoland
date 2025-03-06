@@ -6,8 +6,8 @@ import { API_PORT } from "./index.js"
  * window for composing a new message when clicked.
  */
 export function assignForeignProfileListeners(){
-    document.getElementById('message-btn')?.addEventListener('click', messageModal)
-
+    document.getElementById('create-message-btn')?.addEventListener('click', messageModal)
+console.log(document.getElementById('create-message-btn'))
 }
 
 /**
@@ -16,7 +16,6 @@ export function assignForeignProfileListeners(){
  * @function
  */
 function messageModal(){
-    
     modalOpener()
 
     const modal = document.getElementById('modal-content')
@@ -71,15 +70,15 @@ async function createMessage(){
     console.log(foreignUser)
 
     const messageData = {
-        title: title,
-        message: message,
+        title: title.value,
+        message: message.value,
         sender_id: user?._id,
         receiver_id: foreignUser,
         date: getNowDate(),
         isNew: true
     }
 
-
+    console.log(messageData)
     const payload = JSON.stringify(messageData)
 
     

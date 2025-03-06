@@ -17,6 +17,14 @@ export function getNowDate(){
     return `${day}/${month}/${year}`
 }
 
+export function getFormattedDate(milliseconds) {
+  const now = new Date(milliseconds);
+  const day = String(now.getDate()).padStart(2, '0');
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const year = now.getFullYear();
+  return `${day}/${month}/${year}`;
+}
+
 /**
  * Opens the modal window by removing the '__hidden' class from the modal element.
  */

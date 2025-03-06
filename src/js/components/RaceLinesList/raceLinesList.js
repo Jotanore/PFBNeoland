@@ -1,5 +1,6 @@
 import output from '../../../css/output.css' with {type: 'css'}
 import { importTemplate } from '../../lib/importTemplate.js';
+import { getFormattedDate } from '../../../utils/utils.js';
 
 
 const TEMPLATE = {
@@ -69,11 +70,11 @@ export class RaceLinesList extends HTMLElement {
 1
 _addNewLi(newRaceLine) {
   const raceLineList = this.shadowRoot.getElementById('race-line-list');
-  
+  const date = getFormattedDate(newRaceLine.date)
   const html = `
       <tr>
           <td class="border border-gray-300 px-2 py-2">${newRaceLine.circuitName}</td>
-          <td class="border border-gray-300 px-2 py-2">${newRaceLine.date}</td>
+          <td class="border border-gray-300 px-2 py-2">${date}</td>
           <td class="border border-gray-300 px-2 py-2">
               <button class="bg-amber-400 hover:bg-amber-500 text-white font-bold py-2 px-6 rounded-full shadow-md show-line">
                   Ver

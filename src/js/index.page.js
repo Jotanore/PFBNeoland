@@ -21,6 +21,7 @@ export function assignIndexListeners(){
     document.getElementById('credentials-btn')?.addEventListener('click', showCredentialsForm)
     document.getElementById('signup-link')?.addEventListener('click', showRegisterForm)
     document.getElementById('login-link')?.addEventListener('click', showLoginForm)
+   
 }
 
 /**
