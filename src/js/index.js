@@ -5,7 +5,7 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Circuit, EventCard, RaceLines} from '../classes/classes.js'
 import { getUserCoords, getUserToCircuitDistance} from './circuits.js';
-import { modalOpener, modalManager, getUserFromSession, getForeignUserFromSession, getAPIData, fillSelectable, clampRacelineViewport, credentialsBtnManager} from '../utils/utils.js';
+import { modalOpener, modalManager, getUserFromSession, getForeignUserFromSession, getAPIData, fillSelectable, clampRacelineViewport, credentialsBtnManager, getFormattedDate} from '../utils/utils.js';
 import { fillUserForm, fillUserProfile, updateUserProfile, fillRaceLinesLit, updateRaceLineList} from './profile.js';
 import { assignIndexListeners, userRegister, checkSignRedirectionFlag, onLoginComponentSubmit } from './index.page.js';
 import { assignEventButtons, eventFormManager, getEventData } from './events.js';
@@ -193,7 +193,7 @@ async function fillMarketList(/** @type {boolean} */ isUser){
     const apiData = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/read/articles/${user}` , 'GET')
     apiData.forEach(function (/** @type {MarketItem} */article){
        
-        const html = `<li>Articulo:${article.article} Fecha: ${article.price}</li>`
+        const html = `<li>${article.article} | ${article.price}€</li>`
 
         document.getElementById('article-list')?.insertAdjacentHTML('afterbegin', html)
     })
@@ -212,10 +212,11 @@ async function fillMarketList(/** @type {boolean} */ isUser){
 async function fillEventList(/** @type {boolean} */ isUser){
 
     const user = isUser ? getUserFromSession()._id : getForeignUserFromSession()
+    
     const apiData = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/read/events/${user}` , 'GET')
     apiData.forEach(function (/** @type {EventCard} */event){
        
-        const html = `<li>Evento:${event.title} Fecha: ${event.date}</li>`
+        const html = `<li>${event.title} | ${event.date}</li>`
 
         document.getElementById('event-list')?.insertAdjacentHTML('afterbegin', html)
     })
@@ -240,8 +241,9 @@ async function fillRaceLinesList(/** @type {boolean} */ isUser){
     let racelines = []
     apiData.forEach(async function (/**  @type {RaceLines} */ raceline){
        
+        const date = getFormattedDate(raceline.date)
         const lineCircuit = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/read/circuit/${raceline.circuit_id}`, 'GET')
-        const html = `<li>Linea:${lineCircuit.name} Fecha: XD</li>`
+        const html = `<li>${lineCircuit.name} | Fecha: ${date}</li>`
         //  @ts-expect-error Declaration
         raceline.circuitName = lineCircuit.name
         raceline.img = ''
@@ -437,6 +439,7 @@ async function loadCircuitLineImage(/**  @type {string} */ id){
  */
 async function loadRaceLine(/**  @type {string} */ id){
 
+    try{
     const raceline = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/read/raceline/${id}`, 'GET') 
 
     console.log(raceline)
@@ -450,7 +453,9 @@ async function loadRaceLine(/**  @type {string} */ id){
         canvas.add(img)
         // @ts-expect-error external declaration
         canvas.renderAll();
-    });
+    });} catch (error) {
+        console.error("Error obteniendo coordenadas:", error);
+    }
 }
 
 /*===============================FOREIGN PROFILE=================================*/
@@ -672,17 +677,19 @@ function circuitModal(circuit){
                         <strong class="text-gray-900">Web:</strong>
                         <a href="${circuit.url}" class="text-blue-500 hover:underline" target="_blank">${circuit.url}</a>
                     </li>
-                    <li>
-                        <strong class="text-gray-900">Mejor tiempo:</strong>
-                        <span>${circuit.bestlap}</span>
-                    </li>
+                    
                     <li class="md:col-span-2 ">
                         <strong class="text-gray-900">Mapa:</strong>
-                        <img class="w-[450px] rounded-md mt-2" src="${circuit.map}" alt="Mapa del circuito">
+                        <img class="w-[100%] rounded-md mt-2" src="${circuit.map}" alt="Mapa del circuito">
                     </li>
                 </ul>
             </div>
         `;
+
+                    // <li>
+                    //     <strong class="text-gray-900">Mejor tiempo:</strong>
+                    //     <span>${circuit.bestlap}</span>
+                    // </li>
     }
 }
 

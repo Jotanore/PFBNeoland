@@ -76,7 +76,7 @@ _addNewLi(newRaceLine) {
           <td class="border border-gray-300 px-2 py-2">${newRaceLine.circuitName}</td>
           <td class="border border-gray-300 px-2 py-2">${date}</td>
           <td class="border border-gray-300 px-2 py-2">
-              <button class="bg-amber-400 hover:bg-amber-500 text-white font-bold py-2 px-6 rounded-full shadow-md show-line">
+              <button class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-full shadow-md show-line">
                   Ver
               </button>
           </td>

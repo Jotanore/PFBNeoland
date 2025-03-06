@@ -1,4 +1,4 @@
-import { getUserFromSession, getAPIData, getNowDate, getForeignUserFromSession, modalOpener } from "../utils/utils.js"
+import { getUserFromSession, getAPIData, getNowDate, getForeignUserFromSession, modalOpener, modalCloser } from "../utils/utils.js"
 import { API_PORT } from "./index.js"
 
 /**
@@ -39,7 +39,7 @@ function messageModal(){
                     <textarea id="message" name="message" rows="4" class="w-full border border-gray-300 rounded-md p-2"></textarea>
                   </div>
                   <div class="flex justify-center">
-                    <button id="message-submit-btn" type="button" class="bg-amber-400 hover:bg-amber-500 text-white font-bold py-2 px-6 rounded-full shadow-md">
+                    <button id="message-submit-btn" type="button" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-full shadow-md">
                       Enviar
                     </button>
                   </div>
@@ -92,6 +92,10 @@ async function createMessage(){
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const APIData = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/create/message`, 'POST', payload)
     
+    title.value = ''
+    message.value = ''
+    modalCloser()
+    alert('Mensaje enviado')
 }
 
 

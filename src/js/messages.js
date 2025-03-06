@@ -57,11 +57,11 @@ function renderReceivedMessages(receivedMessagesArray){
     const receivedBtn = document.getElementById('received-btn');
     const sentBtn = document.getElementById('sent-btn');
 
-    receivedBtn?.classList.remove('bg-amber-400')
-    receivedBtn?.classList.add('bg-amber-600')
+    receivedBtn?.classList.remove('bg-red-600')
+    receivedBtn?.classList.add('bg-red-700')
 
-    sentBtn?.classList.remove('bg-amber-600')
-    sentBtn?.classList.add('bg-amber-400')
+    sentBtn?.classList.remove('bg-red-700')
+    sentBtn?.classList.add('bg-red-600')
 
     const messageContainer = document.getElementById('message-list-container')
     if(messageContainer) messageContainer.innerHTML = ''
@@ -114,11 +114,11 @@ function renderSentMessages(sentMessagesArray){
     const receivedBtn = document.getElementById('received-btn');
     const sentBtn = document.getElementById('sent-btn');
 
-    sentBtn?.classList.remove('bg-amber-400')
-    sentBtn?.classList.add('bg-amber-600')
+    sentBtn?.classList.remove('bg-red-600')
+    sentBtn?.classList.add('bg-red-700')
 
-    receivedBtn?.classList.remove('bg-amber-600')
-    receivedBtn?.classList.add('bg-amber-400')
+    receivedBtn?.classList.remove('bg-red-700')
+    receivedBtn?.classList.add('bg-red-600')
 
     const messageContainer = document.getElementById('message-list-container')
     if(messageContainer) messageContainer.innerHTML = ''
@@ -127,7 +127,7 @@ function renderSentMessages(sentMessagesArray){
 
         
 
-        const html = `<div class="bg-red-50 shadow-md rounded-lg overflow-hidden flex items-center p-2 border border-gray-200 w-full cursor-pointer h-20 message-card">
+        const html = `<div class="bg-white shadow-md rounded-lg overflow-hidden flex items-center p-2 border border-gray-200 w-full cursor-pointer h-20 message-card">
                 <div class="flex flex-col flex-grow">
                 <p class=" mr-4 w-52 truncate">Para: ${message.receiver_username}</p>
                 <span class="text-m w-52 font-bold text-gray-800 truncate">${message.title}</span>

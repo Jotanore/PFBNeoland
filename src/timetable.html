@@ -22,40 +22,41 @@
         <nav id="nav-menu" class="h-full hidden sm:block">
             <ul class="flex h-full">
             <li class="h-full relative group">
-                <a href="./index.html" class="flex items-center justify-center h-full px-4 bg-transparent relative z-10 bg-gradient-to-t from-amber-500 to-amber-500/0">Inicio</a>
+                <div class="absolute bottom-0 left-0 w-full h-0 bg-gradient-to-t from-red-600 to-red-600/0 transition-all duration-300 group-hover:h-3/4"></div>
+                <a href="./index.html" class="flex items-center justify-center h-full px-4 bg-transparent relative z-10 ">Inicio</a>
             </li>
             <li class="h-full relative group">
-                <div class="absolute bottom-0 left-0 w-full h-0 bg-gradient-to-t from-amber-500 to-amber-500/0 transition-all duration-300 group-hover:h-3/4"></div>
+                <div class="absolute bottom-0 left-0 w-full h-0 bg-gradient-to-t from-red-600 to-red-600/0 transition-all duration-300 group-hover:h-3/4"></div>
                 <a href="./circuits.html" class="flex items-center justify-center h-full px-4 bg-transparent relative z-10">Circuitos</a>
             </li>
             <li class="h-full relative group">
-                <div class="absolute bottom-0 left-0 w-full h-0 bg-gradient-to-t from-amber-500 to-amber-500/0 transition-all duration-300 group-hover:h-3/4"></div>
+                <div class="absolute bottom-0 left-0 w-full h-0 bg-gradient-to-t from-red-600 to-red-600/0 transition-all duration-300 group-hover:h-3/4"></div>
                 <a href="./events.html" class="flex items-center justify-center h-full px-4 bg-transparent relative z-10">Eventos</a>
             </li>
             <li class="h-full relative group">
-                <div class="absolute bottom-0 left-0 w-full h-0 bg-gradient-to-t from-amber-500 to-amber-500/0 transition-all duration-300 group-hover:h-3/4"></div>
+                <div class="absolute bottom-0 left-0 w-full h-0 bg-gradient-to-t from-red-600 to-red-600/0 transition-all duration-300 group-hover:h-3/4"></div>
                 <a href="./market.html" class="flex items-center justify-center h-full px-4 bg-transparent relative z-10">Mercado</a>
             </li>
             <li class="h-full relative group">
-                <div class="absolute bottom-0 left-0 w-full h-0 bg-gradient-to-t from-amber-500 to-amber-500/0 transition-all duration-300 group-hover:h-3/4"></div>
+                <div class="absolute bottom-0 left-0 w-full h-0 bg-gradient-to-t from-red-600 to-red-600/0 transition-all duration-300 group-hover:h-3/4"></div>
                 <a href="./raceline.creator.html" class="flex items-center justify-center h-full px-4 bg-transparent relative z-10">Trazadas</a>
             </li>
             <li class="h-full relative group">
-                <div class="absolute bottom-0 left-0 w-full h-0 bg-gradient-to-t from-amber-500 to-amber-500/0 transition-all duration-300 group-hover:h-3/4"></div>
-                <a href="./timetable.html" class="flex items-center justify-center h-full px-4 bg-transparent relative z-10">Tiempos</a>
+                <div class="absolute bottom-0 left-0 w-full h-0 bg-gradient-to-t from-red-600 to-red-600/0 transition-all duration-300 group-hover:h-3/4"></div>
+                <a href="./timetable.html" class="flex items-center justify-center h-full px-4 bg-transparent relative z-10 bg-gradient-to-t from-red-600 to-red-600/0">Tiempos</a>
             </li>
             </ul>
         </nav>
 
     <div class="flex items-center h-full">
-      <a id="messages" href="messages.html" class="flex items-center justify-center h-full px-4 bg-[#0c0b10] hover:bg-amber-500 transition __hidden rounded-md">
+      <a id="messages" href="messages.html" class="flex items-center justify-center h-full px-4 bg-[#0c0b10] hover:bg-red-600 transition __hidden rounded-md">
           <i class="fas fa-envelope text-white text-2xl"></i>
           <span id="message-btn"></span>
       </a>
-      <a id="credentials-btn" class="flex items-center justify-center h-full px-4 bg-[#0c0b10] hover:bg-amber-500 transition __hidden rounded-md">
+      <a id="credentials-btn" class="flex items-center justify-center h-full px-4 bg-[#0c0b10] hover:bg-red-600 transition __hidden rounded-md">
           SignUp/Login
       </a>
-      <a id="profile-btn" href="./profile.html" class="flex items-center justify-center h-full px-4 bg-[#0c0b10] hover:bg-amber-500 transition __hidden rounded-md">
+      <a id="profile-btn" href="./profile.html" class="flex items-center justify-center h-full px-4 bg-[#0c0b10] hover:bg-red-600 transition __hidden rounded-md">
           <i class="fas fa-user text-white text-2xl"></i>
       </a>
   </div>
@@ -75,7 +76,7 @@
     <main class="bg-neutral-800 pt-5 px-[5%] h-[calc(100vh-64px)]">
 
         <div class="flex justify-end space-y-2">
-            <button id="new-laptime-form-btn" type="button" class="px-5 py-2 bg-amber-400 text-white rounded-lg hover:bg-amber-500 transition max-w-2xl mb-4">Nuevo registro</button>
+            <button id="new-laptime-form-btn" type="button" class="px-5 py-2 bg-red-600 text-white rounded-lg hover:bg-red-600 transition max-w-2xl mb-4">Nuevo registro</button>
         </div>
 
         <section id="new-laptime-form"class="p-6 bg-white shadow-md rounded-xl max-w-2xl mx-auto mb-4 relative __hidden">
@@ -94,7 +95,7 @@
         
                     <div class="flex flex-col space-y-2">
                         <label for="laptimeDate" class="text-gray-600 font-medium">Fecha</label>
-                        <input id="laptimeDate" type="date" name="usuario" class="p-3 border rounded-lg focus:ring-2 focus:ring-amber-400 focus:outline-none">
+                        <input id="laptimeDate" type="date" name="usuario" class="p-3 border rounded-lg focus:ring-2 focus:ring-red-600 focus:outline-none">
                     </div>
 
                     <div class="flex flex-col space-y-2 ">
@@ -104,7 +105,7 @@
                             <option value="Rental">Rental</option>
                             <option value="Particular">Particular</option>
                           </select>
-                        <input id="laptimeKart" type="text" name="usuario" class="p-3 border rounded-lg focus:ring-2 focus:ring-amber-400 focus:outline-none">
+                        <input id="laptimeKart" type="text" name="usuario" class="p-3 border rounded-lg focus:ring-2 focus:ring-red-600 focus:outline-none">
                     </div>
 
                     <div class="flex flex-col space-y-2">
@@ -132,18 +133,18 @@
 
                     <div class="flex flex-col space-y-2">
                         <label for="laptimelink" class="text-gray-600 font-medium">POV de Vuelta</label>
-                        <input id="laptimelink" type="text" name="usuario" placeholder="Link de youtube de la replay" class="p-3 border rounded-lg focus:ring-2 focus:ring-amber-400 focus:outline-none">
+                        <input id="laptimelink" type="text" name="usuario" placeholder="Link de youtube de la replay" class="p-3 border rounded-lg focus:ring-2 focus:ring-red-600 focus:outline-none">
                     </div>
         
         
                     <div class="flex items-center space-x-2">
-                        <input id="terms" type="checkbox" class="w-5 h-5 text-amber-400 border-gray-300 rounded focus:ring-2 focus:ring-amber-400">
+                        <input id="terms" type="checkbox" class="w-5 h-5 text-red-600 border-gray-300 rounded focus:ring-2 focus:ring-red-600">
                         <label for="terms" class="text-gray-600">Acepto las normas</label>
                     </div>
         
                     <div class="flex justify-end space-x-3 pt-4">
                         <button type="reset" class="px-5 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition">Restablecer</button>
-                        <button type="submit" class="px-5 py-2 bg-amber-400 text-white rounded-lg hover:bg-amber-500 transition">Enviar</button>
+                        <button type="submit" class="px-5 py-2 bg-red-600text-white rounded-lg hover:bg-red-700 transition">Enviar</button>
                     </div>
                 </fieldset>
             </form>
@@ -151,8 +152,6 @@
         
         <section id="laptime-container" class="p-5 bg-neutral-600 h-[calc(100vh-18vh)] flex items-center rounded-lg">
             <div class="grid grid-cols-1 md:grid-cols-[40%_59%] gap-4 w-full h-full">
-        
-                <!-- Filtros -->
                 <div class="flex flex-col gap-4">
                     <div class="bg-white rounded-lg shadow-lg p-4">
                         <form id="filter-form" class="space-y-4">
@@ -160,15 +159,12 @@
                                 Filtros de mejores tiempos
                             </h2>
                             
-                            <!-- Circuito -->
                             <div class="flex flex-col">
                                 <label for="opciones-filtro" class="text-gray-600 font-medium mb-1">Circuito</label>
                                 <select id="opciones-filtro" name="opciones" class="p-2 border border-gray-300 rounded-lg shadow-sm" required>
                                     <option value="all">Selecciona circuito</option>
                                 </select>
                             </div>
-        
-                            <!-- Condiciones -->
                             <div class="flex flex-col">
                                 <span class="text-gray-600 font-medium mb-1">Condiciones</span>
                                 <div class="flex items-center space-x-4">
@@ -191,7 +187,6 @@
                                 </div>
                             </div>
                             
-                            <!-- Tipo de Kart -->
                             <div class="flex flex-col">
                                 <span class="text-gray-600 font-medium mb-1">Tipo de Kart</span>
                                 <div class="flex items-center space-x-4">
@@ -210,16 +205,14 @@
                                 </div>
                             </div>
                             
-                            <!-- Botón de Filtro -->
                             <div class="flex justify-end">
-                                <button id="laptime-filter-btn" type="button" class="px-5 py-2 bg-amber-400 text-white rounded-lg hover:bg-amber-500 transition">
+                                <button id="laptime-filter-btn" type="button" class="px-5 py-2 bg-red-600 text-white rounded-lg hover:bg-red-600 transition">
                                     Aplicar filtros
                                 </button>
                             </div>
                         </form>
                     </div>
                     
-                    <!-- Tabla de mejores tiempos -->
                     <div class="bg-slate-100 overflow-x-auto rounded-lg shadow-md min-h-[40vh]">
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-blue-600">
@@ -235,7 +228,6 @@
                     </div>
                 </div>
                 
-                <!-- Tabla de tiempos -->
                 <div class="bg-slate-100 overflow-x-auto rounded-lg shadow-md">
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-blue-600">
