@@ -157,6 +157,13 @@ function closeNewMarketForm(){
 export function assignMarketButtons(){
     document.getElementById('new-item-form-btn')?.addEventListener('click', openNewMarketForm)
     document.getElementById('new-item-close')?.addEventListener('click', closeNewMarketForm)
+    
+    const menuToggle = document.getElementById('menu-toggle');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    menuToggle.addEventListener('click', () => {
+    mobileMenu.classList.toggle('hidden');
+  });
 }
 
 

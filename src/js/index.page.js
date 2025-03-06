@@ -21,7 +21,12 @@ export function assignIndexListeners(){
     document.getElementById('credentials-btn')?.addEventListener('click', showCredentialsForm)
     document.getElementById('signup-link')?.addEventListener('click', showRegisterForm)
     document.getElementById('login-link')?.addEventListener('click', showLoginForm)
-   
+    const menuToggle = document.getElementById('menu-toggle');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    menuToggle.addEventListener('click', () => {
+    mobileMenu.classList.toggle('hidden');
+  });
 }
 
 /**

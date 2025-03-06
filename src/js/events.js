@@ -13,7 +13,12 @@ export function assignEventButtons(){
     document.getElementById('new-event-form-btn')?.addEventListener('click', openNewEventForm)
     document.getElementById('new-event-close')?.addEventListener('click', closeNewEventForm)
     document.getElementById('filter-btn')?.addEventListener('click', filterEvents)
-    
+    const menuToggle = document.getElementById('menu-toggle');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    menuToggle.addEventListener('click', () => {
+    mobileMenu.classList.toggle('hidden');
+  });
 }
 
 /**
@@ -84,38 +89,40 @@ export async function drawEvent(event){
     const date = new Date(event.date)
     const eventFrame = document.getElementById('__event-container')
         const html =
-                `<div class="bg-gray-100 shadow-md rounded-lg overflow-hidden flex items-center p-5 mb-4 border border-gray-200 w-full cursor-pointer event-card">
-                <div class="flex flex-col flex-1">
-                <h3 class="text-xl font-bold text-gray-800 truncate">${event.title}</h3>
-                <p data-id="${event.location}" class="text-sm text-gray-600">${date.toLocaleDateString("es-ES")} - ${event.location} - ${event.user_username}</p>
-                <p class="text-gray-700 text-sm my-2 line-clamp-2">${event.description}</p>
+                `<div class="bg-gray-100 shadow-md rounded-lg overflow-hidden flex flex-col sm:flex-row items-start p-5 mb-4 border border-gray-200 w-full cursor-pointer event-card">
+                    <div class="flex flex-col flex-1 mb-4 sm:mb-0">
+                        <h3 class="text-xl font-bold text-gray-800 truncate">${event.title}</h3>
+                        <p data-id="${event.location}" class="text-sm text-gray-600">${date.toLocaleDateString("es-ES")} - ${event.location} - ${event.user_username}</p>
+                        <p class="text-gray-700 text-sm my-2 line-clamp-2">${event.description}</p>
+                    </div>
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:ml-4 w-full sm:w-auto">
+                        <p class="px-4 text-center sm:text-left mb-2 sm:mb-0"><span class="participant-count">${event.participants.length}</span>/${event.maxParticipants} inscritos</p>
+                        <div class="flex space-x-2 w-full sm:w-auto justify-center sm:justify-start">
+                            <button data-id="${event._id}" class="border-2 border-black bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-3 m-2 rounded join-event w-full sm:w-auto">
+                                Me apunto
+                            </button>
+                            <button data-id="${event._id}" class="border-2 border-black bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-3 m-2 rounded forfeit-event w-full sm:w-auto">
+                                Desapuntarse
+                            </button>
+                            <button data-id="${event._id}" class="border-2 border-black bg-gray-400 hover:bg-red-500 text-white font-bold py-1 px-3 rounded delete-event hidden w-full sm:w-auto">
+                                Delete
+                            </button>
+                        </div>
+                    </div>
                 </div>
-                <p class="px-4"><span class="participant-count">${event.participants.length}</span>/${event.maxParticipants} inscritos</p>
-                <p class="font-bold mr-4 log-warn">Debes estar logueado para unirte</p>
-                <button data-id="${event._id}" class="border-2 border-black bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-3 m-4 rounded join-event">
-                    Me apunto
-                </button>
-                <button data-id="${event._id}" class="border-2 border-black bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-3 m-4 rounded forfeit-event">
-                    Desapuntarse
-                </button>
-                <button data-id="${event._id}" class="border-2 border-black bg-gray-400 hover:bg-red-500 text-white font-bold py-1 px-3 rounded delete-event hidden">
-                    Delete
-                </button>
-                </div>`
+                `
         eventFrame?.insertAdjacentHTML('afterbegin', html)
         
     const lastCard = eventFrame?.firstElementChild;
     const deleteBtn = lastCard?.querySelector('.delete-event');
     const joinBtn = lastCard?.querySelector('.join-event');
     const forfeitBtn = lastCard?.querySelector('.forfeit-event');
-    const logWarn = lastCard?.querySelector('.log-warn');
 
     joinBtn?.addEventListener('click', joinEvent)
     forfeitBtn?.addEventListener('click', forfeitEvent)
     deleteBtn?.addEventListener('click', deleteEventCard);
 
     if(userlog){
-        logWarn?.classList.add('hidden')
         const user = getUserFromSession()
 
         if(event.user_id === user?._id){

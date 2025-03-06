@@ -14,34 +14,39 @@
 <body id="profile" class="box-border bg-neutral-800">
     <header class="flex items-center justify-between px-6 sticky top-0 bg-[#0c0b10] shadow-md text-white h-16">
 
-        <img src="./imgs/Karthub logo.jpg" class="h-full object-contain" alt="KartHub Logo">
-    
-        <nav class="h-full ">
+
+        <img src="./imgs/Karthub logo.jpg" class=" hidden sm:block h-full object-contain" alt="KartHub Logo">
+
+        <button id="menu-toggle" class="block sm:hidden text-white">
+            <i class="fas fa-bars text-2xl"></i>
+        </button>
+
+       
+        <nav id="nav-menu" class="h-full hidden sm:block">
             <ul class="flex h-full">
-                <li class="h-full relative group">
-                    <div class="absolute bottom-0 left-0 w-full h-0 bg-gradient-to-t from-amber-500 to-amber-500/0 transition-all duration-300 group-hover:h-3/4"></div>
-                    <a href="./index.html" class="flex items-center justify-center h-full px-4 bg-transparent relative z-10 ">Inicio</a>
-                </li>
-                <li class="h-full relative group">
-                    <div class="absolute bottom-0 left-0 w-full h-0 bg-gradient-to-t from-amber-500 to-amber-500/0 transition-all duration-300 group-hover:h-3/4"></div>
-                    <a href="./circuits.html" class="flex items-center justify-center h-full px-4 bg-transparent relative z-10">Circuitos</a>
-                </li>
-                <li class="h-full relative group">
-                    <div class="absolute bottom-0 left-0 w-full h-0 bg-gradient-to-t from-amber-500 to-amber-500/0 transition-all duration-300 group-hover:h-3/4"></div>
-                    <a href="./events.html" class="flex items-center justify-center h-full px-4 bg-transparent relative z-10">Eventos</a>
-                </li>
-                <li class="h-full relative group">
-                    <div class="absolute bottom-0 left-0 w-full h-0 bg-gradient-to-t from-amber-500 to-amber-500/0 transition-all duration-300 group-hover:h-3/4"></div>
-                    <a href="./market.html" class="flex items-center justify-center h-full px-4 bg-transparent relative z-10">Mercado</a>
-                </li>
-                <li class="h-full relative group">
-                    <div class="absolute bottom-0 left-0 w-full h-0 bg-gradient-to-t from-amber-500 to-amber-500/0 transition-all duration-300 group-hover:h-3/4"></div>
-                    <a href="./raceline.creator.html" class="flex items-center justify-center h-full px-4 bg-transparent relative z-10">Trazadas</a>
-                </li>
-                <li class="h-full relative group">
-                    <div class="absolute bottom-0 left-0 w-full h-0 bg-gradient-to-t from-amber-500 to-amber-500/0 transition-all duration-300 group-hover:h-3/4"></div>
-                    <a href="./timetable.html" class="flex items-center justify-center h-full px-4 bg-transparent relative z-10">Tiempos</a>
-                </li>
+            <li class="h-full relative group">
+                <a href="./index.html" class="flex items-center justify-center h-full px-4 bg-transparent relative z-10 bg-gradient-to-t from-amber-500 to-amber-500/0">Inicio</a>
+            </li>
+            <li class="h-full relative group">
+                <div class="absolute bottom-0 left-0 w-full h-0 bg-gradient-to-t from-amber-500 to-amber-500/0 transition-all duration-300 group-hover:h-3/4"></div>
+                <a href="./circuits.html" class="flex items-center justify-center h-full px-4 bg-transparent relative z-10">Circuitos</a>
+            </li>
+            <li class="h-full relative group">
+                <div class="absolute bottom-0 left-0 w-full h-0 bg-gradient-to-t from-amber-500 to-amber-500/0 transition-all duration-300 group-hover:h-3/4"></div>
+                <a href="./events.html" class="flex items-center justify-center h-full px-4 bg-transparent relative z-10">Eventos</a>
+            </li>
+            <li class="h-full relative group">
+                <div class="absolute bottom-0 left-0 w-full h-0 bg-gradient-to-t from-amber-500 to-amber-500/0 transition-all duration-300 group-hover:h-3/4"></div>
+                <a href="./market.html" class="flex items-center justify-center h-full px-4 bg-transparent relative z-10">Mercado</a>
+            </li>
+            <li class="h-full relative group">
+                <div class="absolute bottom-0 left-0 w-full h-0 bg-gradient-to-t from-amber-500 to-amber-500/0 transition-all duration-300 group-hover:h-3/4"></div>
+                <a href="./raceline.creator.html" class="flex items-center justify-center h-full px-4 bg-transparent relative z-10">Trazadas</a>
+            </li>
+            <li class="h-full relative group">
+                <div class="absolute bottom-0 left-0 w-full h-0 bg-gradient-to-t from-amber-500 to-amber-500/0 transition-all duration-300 group-hover:h-3/4"></div>
+                <a href="./timetable.html" class="flex items-center justify-center h-full px-4 bg-transparent relative z-10">Tiempos</a>
+            </li>
             </ul>
         </nav>
     
@@ -52,6 +57,17 @@
             </a>
         </div>
     </header>
+
+    <nav id="mobile-menu" class="sm:hidden fixed inset-0 bg-[#0c0b10]/90 z-50 hidden">
+        <div class="flex flex-col items-center py-10 space-y-4">
+          <a href="./index.html" class="text-white text-xl">Inicio</a>
+          <a href="./circuits.html" class="text-white text-xl">Circuitos</a>
+          <a href="./events.html" class="text-white text-xl">Eventos</a>
+          <a href="./market.html" class="text-white text-xl">Mercado</a>
+          <a href="./raceline.creator.html" class="text-white text-xl">Trazadas</a>
+          <a href="./timetable.html" class="text-white text-xl">Tiempos</a>
+        </div>
+      </nav>
 
     <main class="bg-neutral-800 px-[5%] pt-5 flex flex-col, flex-1 ">
         <section class="bg-neutral-600 py-10 w-screen px-20 mb-4 rounded-lg ">

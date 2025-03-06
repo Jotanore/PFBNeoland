@@ -8,6 +8,13 @@ import { API_PORT } from "./index.js"
 export function assignForeignProfileListeners(){
     document.getElementById('create-message-btn')?.addEventListener('click', messageModal)
 console.log(document.getElementById('create-message-btn'))
+
+const menuToggle = document.getElementById('menu-toggle');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    menuToggle.addEventListener('click', () => {
+    mobileMenu.classList.toggle('hidden');
+  });
 }
 
 /**

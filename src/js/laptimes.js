@@ -9,6 +9,13 @@ export function assignLapTimeButtons(){
     document.getElementById('new-laptime-form-btn')?.addEventListener('click', openNewLapTimeForm)
     document.getElementById('new-laptime-close')?.addEventListener('click', closeNewLapTimeForm)
     document.getElementById('laptime-filter-btn')?.addEventListener('click', filterLapTimes)
+
+    const menuToggle = document.getElementById('menu-toggle');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    menuToggle.addEventListener('click', () => {
+    mobileMenu.classList.toggle('hidden');
+  });
 }
 
 /**

@@ -732,6 +732,13 @@ function assignCircuitListeners(){
         // @ts-expect-error intput not on HTMLElement
         if(valueDisplay) valueDisplay.textContent = rangeInput.value; 
     });
+
+    const menuToggle = document.getElementById('menu-toggle');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    menuToggle.addEventListener('click', () => {
+    mobileMenu.classList.toggle('hidden');
+  });
 }
 
    
@@ -1278,6 +1285,13 @@ function clampViewport(editCanvas) {
  */
 function raceLineButtonsAssign(){
     document.getElementById('map-selection-confirm')?.addEventListener('click', loadCircuitImage)
+
+    const menuToggle = document.getElementById('menu-toggle');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    menuToggle.addEventListener('click', () => {
+    mobileMenu.classList.toggle('hidden');
+  });
 }
 
 /**

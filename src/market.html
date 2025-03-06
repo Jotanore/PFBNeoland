@@ -13,34 +13,37 @@
 <body id="market" class="box-border bg-white">
     <header class="flex items-center justify-between px-6 sticky z-30 top-0 bg-[#0c0b10] shadow-md text-white h-16">
 
-        <img src="./imgs/Karthub logo.jpg" class="h-full object-contain" alt="KartHub Logo">
-    
-        <nav class="h-full ">
+        <img src="./imgs/Karthub logo.jpg" class=" hidden sm:block h-full object-contain" alt="KartHub Logo">
+
+        <button id="menu-toggle" class="block sm:hidden text-white">
+            <i class="fas fa-bars text-2xl"></i>
+        </button>
+
+        <nav id="nav-menu" class="h-full hidden sm:block">
             <ul class="flex h-full">
-                <li class="h-full relative group">
-                    <div class="absolute bottom-0 left-0 w-full h-0 bg-gradient-to-t from-amber-500 to-amber-500/0 transition-all duration-300 group-hover:h-3/4"></div>
-                    <a href="./index.html" class="flex items-center justify-center h-full px-4 bg-transparent relative z-10 ">Inicio</a>
-                </li>
-                <li class="h-full relative group">
-                    <div class="absolute bottom-0 left-0 w-full h-0 bg-gradient-to-t from-amber-500 to-amber-500/0 transition-all duration-300 group-hover:h-3/4"></div>
-                    <a href="./circuits.html" class="flex items-center justify-center h-full px-4 bg-transparent relative z-10">Circuitos</a>
-                </li>
-                <li class="h-full relative group">
-                    <div class="absolute bottom-0 left-0 w-full h-0 bg-gradient-to-t from-amber-500 to-amber-500/0 transition-all duration-300 group-hover:h-3/4"></div>
-                    <a href="./events.html" class="flex items-center justify-center h-full px-4 bg-transparent relative z-10">Eventos</a>
-                </li>
-                <li class="h-full relative group">
-                    <div class=""></div>
-                    <a href="./market.html" class="flex items-center justify-center h-full px-4 bg-transparent relative z-10 bg-gradient-to-t from-amber-500 to-amber-500/0">Mercado</a>
-                </li>
-                <li class="h-full relative group">
-                    <div class="absolute bottom-0 left-0 w-full h-0 bg-gradient-to-t from-amber-500 to-amber-500/0 transition-all duration-300 group-hover:h-3/4"></div>
-                    <a href="./raceline.creator.html" class="flex items-center justify-center h-full px-4 bg-transparent relative z-10">Trazadas</a>
-                </li>
-                <li class="h-full relative group">
-                    <div class="absolute bottom-0 left-0 w-full h-0 bg-gradient-to-t from-amber-500 to-amber-500/0 transition-all duration-300 group-hover:h-3/4"></div>
-                    <a href="./timetable.html" class="flex items-center justify-center h-full px-4 bg-transparent relative z-10">Tiempos</a>
-                </li>
+            <li class="h-full relative group">
+                <a href="./index.html" class="flex items-center justify-center h-full px-4 bg-transparent relative z-10 bg-gradient-to-t from-amber-500 to-amber-500/0">Inicio</a>
+            </li>
+            <li class="h-full relative group">
+                <div class="absolute bottom-0 left-0 w-full h-0 bg-gradient-to-t from-amber-500 to-amber-500/0 transition-all duration-300 group-hover:h-3/4"></div>
+                <a href="./circuits.html" class="flex items-center justify-center h-full px-4 bg-transparent relative z-10">Circuitos</a>
+            </li>
+            <li class="h-full relative group">
+                <div class="absolute bottom-0 left-0 w-full h-0 bg-gradient-to-t from-amber-500 to-amber-500/0 transition-all duration-300 group-hover:h-3/4"></div>
+                <a href="./events.html" class="flex items-center justify-center h-full px-4 bg-transparent relative z-10">Eventos</a>
+            </li>
+            <li class="h-full relative group">
+                <div class="absolute bottom-0 left-0 w-full h-0 bg-gradient-to-t from-amber-500 to-amber-500/0 transition-all duration-300 group-hover:h-3/4"></div>
+                <a href="./market.html" class="flex items-center justify-center h-full px-4 bg-transparent relative z-10">Mercado</a>
+            </li>
+            <li class="h-full relative group">
+                <div class="absolute bottom-0 left-0 w-full h-0 bg-gradient-to-t from-amber-500 to-amber-500/0 transition-all duration-300 group-hover:h-3/4"></div>
+                <a href="./raceline.creator.html" class="flex items-center justify-center h-full px-4 bg-transparent relative z-10">Trazadas</a>
+            </li>
+            <li class="h-full relative group">
+                <div class="absolute bottom-0 left-0 w-full h-0 bg-gradient-to-t from-amber-500 to-amber-500/0 transition-all duration-300 group-hover:h-3/4"></div>
+                <a href="./timetable.html" class="flex items-center justify-center h-full px-4 bg-transparent relative z-10">Tiempos</a>
+            </li>
             </ul>
         </nav>
     
@@ -58,15 +61,26 @@
         </div>
     </header>
 
+    <nav id="mobile-menu" class="sm:hidden fixed inset-0 bg-[#0c0b10]/90 z-50 hidden">
+        <div class="flex flex-col items-center py-10 space-y-4">
+          <a href="./index.html" class="text-white text-xl">Inicio</a>
+          <a href="./circuits.html" class="text-white text-xl">Circuitos</a>
+          <a href="./events.html" class="text-white text-xl">Eventos</a>
+          <a href="./market.html" class="text-white text-xl">Mercado</a>
+          <a href="./raceline.creator.html" class="text-white text-xl">Trazadas</a>
+          <a href="./timetable.html" class="text-white text-xl">Tiempos</a>
+        </div>
+      </nav>
+
     <main class="bg-neutral-800 min-h-screen px-[5%] pt-5">
 
         <div class="flex justify-end space-y-2">
             <button id="new-item-form-btn" type="button" class="px-5 py-2 bg-amber-400 text-white rounded-lg hover:bg-amber-500 transition max-w-2xl mb-4">Nuevo artículo</button>
         </div>
 
-        <section id="new-item-form" class="p-6 bg-white shadow-md rounded-xl w-full max-w-4xl mx-auto mb-4 __hidden relative ">
+        <section id="new-item-form" class="p-6 bg-white shadow-md rounded-xl w-full max-w-4xl mx-auto mb-4 __hidden relative">
             <span id="new-item-close" class="absolute top-3 right-3 text-gray-500 hover:text-gray-700 text-3xl font-bold"><a href="#">&times;</a></span>
-
+        
             <form id="form" action="#" enctype="multipart/form-data" class="space-y-6">
                 <fieldset>
                     <legend class="text-2xl font-semibold text-gray-700 border-b pb-3 mb-5">Nuevo Artículo</legend>
@@ -101,13 +115,14 @@
                         <label for="terms" class="text-gray-600">Acepto las normas</label>
                     </div>
         
-                    <div class="flex justify-end space-x-3 pt-4">
-                        <button type="reset" class="px-5 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition">Restablecer</button>
+                    <div class="flex flex-col sm:flex-row justify-end space-x-3 pt-4">
+                        <button type="reset" class="px-5 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition mb-2 sm:mb-0">Restablecer</button>
                         <button type="submit" class="px-5 py-2 bg-amber-400 text-white rounded-lg hover:bg-amber-500 transition">Enviar</button>
                     </div>
                 </fieldset>
             </form>
         </section>
+        
         
         <section id="__market-container" class="pt-5 pb-5 bg-neutral-600 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 rounded-lg">
         </section>

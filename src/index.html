@@ -14,36 +14,39 @@
     <header class="flex items-center justify-between px-6 sticky top-0 bg-[#0c0b10] shadow-md text-white h-16">
 
         <img src="./imgs/Karthub logo.jpg" class=" hidden sm:block h-full object-contain" alt="KartHub Logo">
-    
-        <nav class="h-full">
+
+        <button id="menu-toggle" class="block sm:hidden text-white">
+            <i class="fas fa-bars text-2xl"></i>
+        </button>
+
+        <nav id="nav-menu" class="h-full hidden sm:block">
             <ul class="flex h-full">
-                <li class="h-full relative group">
-                    <div class=""></div>
-                    <a href="./index.html" class="flex items-center justify-center h-full px-4 bg-transparent relative z-10 bg-gradient-to-t from-amber-500 to-amber-500/0">Inicio</a>
-                </li>
-                <li class="h-full relative group">
-                    <div class="absolute bottom-0 left-0 w-full h-0 bg-gradient-to-t from-amber-500 to-amber-500/0 transition-all duration-300 group-hover:h-3/4"></div>
-                    <a href="./circuits.html" class="flex items-center justify-center h-full px-4 bg-transparent relative z-10">Circuitos</a>
-                </li>
-                <li class="h-full relative group">
-                    <div class="absolute bottom-0 left-0 w-full h-0 bg-gradient-to-t from-amber-500 to-amber-500/0 transition-all duration-300 group-hover:h-3/4"></div>
-                    <a href="./events.html" class="flex items-center justify-center h-full px-4 bg-transparent relative z-10">Eventos</a>
-                </li>
-                <li class="h-full relative group">
-                    <div class="absolute bottom-0 left-0 w-full h-0 bg-gradient-to-t from-amber-500 to-amber-500/0 transition-all duration-300 group-hover:h-3/4"></div>
-                    <a href="./market.html" class="flex items-center justify-center h-full px-4 bg-transparent relative z-10">Mercado</a>
-                </li>
-                <li class="h-full relative group">
-                    <div class="absolute bottom-0 left-0 w-full h-0 bg-gradient-to-t from-amber-500 to-amber-500/0 transition-all duration-300 group-hover:h-3/4"></div>
-                    <a href="./raceline.creator.html" class="flex items-center justify-center h-full px-4 bg-transparent relative z-10">Trazadas</a>
-                </li>
-                <li class="h-full relative group">
-                    <div class="absolute bottom-0 left-0 w-full h-0 bg-gradient-to-t from-amber-500 to-amber-500/0 transition-all duration-300 group-hover:h-3/4"></div>
-                    <a href="./timetable.html" class="flex items-center justify-center h-full px-4 bg-transparent relative z-10">Tiempos</a>
-                </li>
+            <li class="h-full relative group">
+                <a href="./index.html" class="flex items-center justify-center h-full px-4 bg-transparent relative z-10 bg-gradient-to-t from-amber-500 to-amber-500/0">Inicio</a>
+            </li>
+            <li class="h-full relative group">
+                <div class="absolute bottom-0 left-0 w-full h-0 bg-gradient-to-t from-amber-500 to-amber-500/0 transition-all duration-300 group-hover:h-3/4"></div>
+                <a href="./circuits.html" class="flex items-center justify-center h-full px-4 bg-transparent relative z-10">Circuitos</a>
+            </li>
+            <li class="h-full relative group">
+                <div class="absolute bottom-0 left-0 w-full h-0 bg-gradient-to-t from-amber-500 to-amber-500/0 transition-all duration-300 group-hover:h-3/4"></div>
+                <a href="./events.html" class="flex items-center justify-center h-full px-4 bg-transparent relative z-10">Eventos</a>
+            </li>
+            <li class="h-full relative group">
+                <div class="absolute bottom-0 left-0 w-full h-0 bg-gradient-to-t from-amber-500 to-amber-500/0 transition-all duration-300 group-hover:h-3/4"></div>
+                <a href="./market.html" class="flex items-center justify-center h-full px-4 bg-transparent relative z-10">Mercado</a>
+            </li>
+            <li class="h-full relative group">
+                <div class="absolute bottom-0 left-0 w-full h-0 bg-gradient-to-t from-amber-500 to-amber-500/0 transition-all duration-300 group-hover:h-3/4"></div>
+                <a href="./raceline.creator.html" class="flex items-center justify-center h-full px-4 bg-transparent relative z-10">Trazadas</a>
+            </li>
+            <li class="h-full relative group">
+                <div class="absolute bottom-0 left-0 w-full h-0 bg-gradient-to-t from-amber-500 to-amber-500/0 transition-all duration-300 group-hover:h-3/4"></div>
+                <a href="./timetable.html" class="flex items-center justify-center h-full px-4 bg-transparent relative z-10">Tiempos</a>
+            </li>
             </ul>
         </nav>
-    
+            
         <div class="flex items-center h-full">
             <a id="messages" href="messages.html" class="flex items-center justify-center h-full px-4 bg-[#0c0b10] hover:bg-amber-500 transition __hidden rounded-md">
                 <i class="fas fa-envelope text-white text-2xl"></i>
@@ -58,16 +61,35 @@
         </div>
     </header>
 
-    <main id="landing-container" class="relative bg-neutral-800 px-[5%] pt-10 h-[calc(100vh-64px)] z-[-2] ">
-        <video autoplay muted loop class="absolute top-0 left-0 w-full h-full object-cover z-[-1]">
+    <nav id="mobile-menu" class="sm:hidden fixed inset-0 bg-[#0c0b10]/90 z-50 hidden">
+        <div class="flex flex-col items-center py-10 space-y-4">
+          <a href="./index.html" class="text-white text-xl">Inicio</a>
+          <a href="./circuits.html" class="text-white text-xl">Circuitos</a>
+          <a href="./events.html" class="text-white text-xl">Eventos</a>
+          <a href="./market.html" class="text-white text-xl">Mercado</a>
+          <a href="./raceline.creator.html" class="text-white text-xl">Trazadas</a>
+          <a href="./timetable.html" class="text-white text-xl">Tiempos</a>
+        </div>
+      </nav>
+
+    <main id="landing-container" class="relative bg-neutral-800 px-[5%] pt-10 min-h-[calc(100vh-64px)] flex items-center justify-center">
+    
+        <!-- Video de Fondo -->
+        <video autoplay muted loop class="absolute top-0 left-0 w-full h-full object-cover z-[0]">
             <source src="imgs/TRailer.mp4" type="video/mp4">
             Tu navegador no soporta el formato de video.
         </video>
     
-        <section class="relative py-16 px-20 mb-6 rounded-lg shadow-lg bg-[rgba(255,255,255,0.9)]">
-            <h2 class="bg-amber-500 text-5xl font-extrabold text-center py-6 rounded-lg shadow-md">¡Bienvenido a KartHub!</h2>
+        <!-- Contenido Principal -->
+        <section class="relative py-10 px-6 sm:px-10 lg:px-20 mb-6 rounded-lg shadow-lg bg-[rgba(255,255,255,0.9)] max-w-4xl mx-auto text-center">
             
-            <article class="text-lg text-gray-700 mt-6 leading-relaxed">
+            <!-- Título -->
+            <h2 class="bg-amber-500 text-4xl sm:text-5xl font-extrabold text-center py-4 sm:py-6 rounded-lg shadow-md">
+                ¡Bienvenido a KartHub!
+            </h2>
+            
+            <!-- Descripción -->
+            <article class="text-base sm:text-lg text-gray-700 mt-6 leading-relaxed text-left">
                 <p>
                     <span class="font-semibold text-gray-900">KartHub</span> es una plataforma diseñada para unificar el mundo del karting en España. 
                     Aquí encontrarás información detallada sobre circuitos en el territorio español, incluyendo mapas de pistas y 
@@ -75,33 +97,36 @@
                     <span class="font-semibold">creador de eventos</span>, <span class="font-semibold">mercado</span> y <span class="font-semibold">foro</span>.
                 </p>
             </article>
-        
-            <h2 class="text-3xl font-bold text-gray-900 mt-10">Navegación</h2>
-            <ul class="mt-6 space-y-4 text-lg text-gray-700">
-                <li class="flex items-center">
-                    <span class="text-2xl font-semibold text-gray-900 mr-2">🏎️ Circuitos</span> 
-                    - Información detallada sobre los circuitos de España, accesibles a través del mapa interactivo.
+    
+            <!-- Sección de Navegación -->
+            <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 mt-8 sm:mt-10">Navegación</h2>
+            <ul class="mt-6 space-y-3 sm:space-y-4 text-base sm:text-lg text-gray-700 text-left">
+                <li class="flex items-start">
+                    <span class="text-2xl font-semibold text-gray-900 mr-2">🏎️</span> 
+                    <span>Información detallada sobre los circuitos de España, accesibles a través del mapa interactivo.</span>
                 </li>
-                <li class="flex items-center">
-                    <span class="text-2xl font-semibold text-gray-900 mr-2">📅 Eventos</span> 
-                    - Listado de competiciones, carreras, quedadas y ligas, ya sean oficiales o amateurs.
+                <li class="flex items-start">
+                    <span class="text-2xl font-semibold text-gray-900 mr-2">📅</span> 
+                    <span>Listado de competiciones, carreras, quedadas y ligas, ya sean oficiales o amateurs.</span>
                 </li>
-                <li class="flex items-center">
-                    <span class="text-2xl font-semibold text-gray-900 mr-2">🛒 Mercado</span> 
-                    - Descubre artículos a la venta por otros usuarios o publica tus propias ofertas.
+                <li class="flex items-start">
+                    <span class="text-2xl font-semibold text-gray-900 mr-2">🛒</span> 
+                    <span>Descubre artículos a la venta por otros usuarios o publica tus propias ofertas.</span>
                 </li>
-                <li class="flex items-center">
-                    <span class="text-2xl font-semibold text-gray-900 mr-2">✏️ Trazadas</span> 
-                    - Herramienta para crear tus propias trazadas y compartirlas con otros usuarios.
+                <li class="flex items-start">
+                    <span class="text-2xl font-semibold text-gray-900 mr-2">✏️</span> 
+                    <span>Herramienta para crear tus propias trazadas y compartirlas con otros usuarios.</span>
                 </li>
-                <li class="flex items-center">
-                    <span class="text-2xl font-semibold text-gray-900 mr-2">⏱️ Tiempos</span> 
-                    - Tabla de tiempos recientes, mejores tiempos por circuito y tus propios deltas comparado con los récords.
+                <li class="flex items-start">
+                    <span class="text-2xl font-semibold text-gray-900 mr-2">⏱️</span> 
+                    <span>Tabla de tiempos recientes, mejores tiempos por circuito y tus propios deltas comparado con los récords.</span>
                 </li>
             </ul>
+            
         </section>
-        
+    
     </main>
+    
     
     <main id="credentials-container" class="bg-neutral-800 px-6 pt-10 flex flex-col items-center __hidden overflow-hidden">
         <section id="signup-form" class="bg-white shadow-lg rounded-lg p-8 w-full max-w-lg mb-6 __hidden">
