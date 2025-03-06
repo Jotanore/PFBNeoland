@@ -22,35 +22,24 @@ const router = Router()
 
 
  //USERS============
-router.post('/create/user', async (req, res) => {
+//USERS============
+router.post('/api/create/user', async (req, res) => {
     res.json(await db.users.create(req.body))
-    // crud.create(USERS_URL, req.body, (data) => {
-    //     res.json(data)
-    //   });
 })
 
-router.get('/read/users', async (req, res) => {
+router.get('/api/read/users', async (req, res) => {
     res.json(await db.users.get())
-    // crud.read(USERS_URL, (data) => {
-    //     res.json(data)
-    //   });
 });
 
-router.get('/read/user/:id', async (req, res) => {
+router.get('/api/read/user/:id', async (req, res) => {
     res.json((await db.users.get({_id: new ObjectId(req.params.id)}))[0])
-    // crud.read(USERS_URL, (data) => {
-    //     res.json(data)
-    //   });
 });
 
-router.put('/update/user/:id', async (req, res) => {
+router.put('/api/update/user/:id', async (req, res) => {
     res.json(await db.users.update(req.params.id, req.body))
-    // crud.update(USERS_URL, req.params.id, req.body, (data) => {
-    //     res.json(data)
-    //   });
 });
 
-router.post('/login', async (req, res) => {
+router.post('/api/login', async (req, res) => {
     const user = await db.users.logIn(req.body)
     if (user) {
       // TODO: use OAuth2
@@ -69,117 +58,294 @@ router.post('/login', async (req, res) => {
 
 
 //CIRCUITS=================
-router.get('/read/circuits', async (req, res) => {
-    res.json(await db.circuits.get())
-    // crud.read(CIRCUITS_URL, (data) => {
-    //     res.json(data)
-    //   });
+
+router.get('/api/read/circuits', async (req, res) => {
+
+    let query = [];
+    let filter = undefined
+
+    if(req.headers.filters){
+        const filters = JSON.parse(req.headers.filters)
+
+        const circuitLocation = await db.circuits.getLocation()
+
+        circuitLocation.forEach(function (circuit){
+            const circuitCoords = [
+                Number(circuit.location.latitude), 
+                Number(circuit.location.longitude)
+            ]
+
+            const userCoords = [
+                Number(filters.userCoords[0]),
+                Number(filters.userCoords[1])
+            ]
+
+            const R = 6371; 
+            // Destructure coords
+            // const {latitude, longitude} = coordsObject
+            // Does math
+            const dLat = (circuitCoords[0] - userCoords[0]) * Math.PI / 180;
+            const dLon = (circuitCoords[1] - userCoords[1]) * Math.PI / 180;
+            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(userCoords[0] * Math.PI / 180) * Math.cos(circuitCoords[0] * Math.PI / 180) *
+                Math.sin(dLon/2) * Math.sin(dLon/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            // Stores the distance fixing to 1 decimal
+            const d = Math.round(R * c)
+
+            if (Number(d) < Number(filters.distance)){
+                
+                query.push(circuit._id)
+            }  
+
+        })
+
+        filter = { _id: {$in: query}}
+    }
+    res.json(await db.circuits.get(filter))
+
 });
 
-router.get('/read/circuit/:id', async (req, res) => {
+router.get('/api/read/circuit/:id', async (req, res) => {
     res.json((await db.circuits.get({_id: new ObjectId(req.params.id)}))[0])
-    // crud.read(USERS_URL, (data) => {
-    //     res.json(data)
-    //   });
 });
 
 
 //EVENTS=================
-router.post('/create/event', requireAuth, async (req, res) => {
+router.post('/api/create/event', requireAuth, async (req, res) => {
     res.json(await db.events.create(req.body))
-    // crud.create(EVENTS_URL, req.body, (data) => {
-    //     res.json(data)
-    // });
+})
+
+router.post('/api/join/event/:eventid', requireAuth, async (req, res) => {
+
+    const eventid = req.params.eventid;
+    const userId = req.body.user_id;
+    console.log(eventid,userId)
+
+
+        const event = await db.events.getById({ _id: new ObjectId(eventid) }); 
+
+        if (event.participants.length >= Number(event.maxParticipants)){
+            return res.status(400).json({ message: "Este evento esta completo" });
+        }
+        if (!event.participants.includes(userId)) {
+            event.participants.push(userId);
+        } else {
+            return res.status(400).json({ message: "Ya estás inscrito en este evento" });
+        }
+
+        await db.events.update( eventid, { participants: event.participants  });
+
+        res.json({ message: "Usuario agregado al evento", event });
+
+})
+
+router.post('/api/forfeit/event/:eventid', requireAuth, async (req, res) => {
+
+    const eventid = req.params.eventid;
+    const userId = req.body.user_id;
+    console.log(eventid,userId)
+    const event = await db.events.getById({ _id: new ObjectId(eventid) });
+    const update = await db.events.deleteParticipant(eventid, userId)
+    res.json( { message: "Usuario fuera del evento", event, update })  
 })
 
 
-router.get('/read/events', async (req, res) => {
-    res.json(await db.events.get())
-    // crud.read(EVENTS_URL, (data) => {
-    //     res.json(data)
-    //   });
+
+router.get('/api/read/events', async (req, res) => {
+
+    let query = {};
+
+    if(req.headers.filters){
+        const filters = JSON.parse(req.headers.filters)
+
+        if(filters.circuit && filters.circuit !== 'all'){
+            query.location_id = filters.circuit
+        }
+
+        if (filters.minDate && filters.maxDate) {
+            query.$expr = {
+                $and: [
+                    { $gte: [{ $toDate: "$date" }, new Date(filters.minDate)] },
+                    { $lte: [{ $toDate: "$date" }, new Date(filters.maxDate)] }
+                ]
+            };
+        }
+
+        if (!filters.minDate && filters.maxDate) {
+            const today = Date.now()
+            query.$expr = {
+                $and: [
+                    { $gte: [{ $toDate: "$date" }, today] },
+                    { $lte: [{ $toDate: "$date" }, new Date(filters.maxDate)] }
+                ]
+            };
+        }
+
+        if (filters.minDate && !filters.maxDate) {
+            query.$expr = {
+                $and: [
+                    { $gte: [{ $toDate: "$date" }, new Date(filters.minDate)] }
+                    
+                ]
+            };
+        }
+        
+
+
+    }
+
+    res.json(await db.events.get(query))
 }); 
 
-router.get('/read/events/:userid', async (req, res) => {
+router.get('/api/read/events/:userid', async (req, res) => {
     const userId = req.params.userid
     res.json(await db.events.get({user_id: userId}))
-    // crud.read(EVENTS_URL, (data) => {
-    //     res.json(data)
-    //   });
 }); 
 
-router.delete('/delete/event/:id', async (req, res) => {
+router.get('/api/read/event/:id', async (req, res) => {
+    const _id = req.params.id
+    res.json((await db.events.get({_id: new ObjectId(_id)}))[0])
+}); 
+
+router.delete('/api/delete/event/:id', async (req, res) => {
     res.json(await db.events.delete(req.params.id))
-//     crud.delete(EVENTS_URL, req.params.id, (data) => {
-//      res.json(data)
-//    });
  })
 
 //MARKET=================
-router.post('/create/article', async (req, res) => {
+
+router.post('/api/create/article', async (req, res) => {
     res.json(await db.market.create(req.body))
-    // crud.create(ARTICLES_URL, req.body, (data) => {
-    //     res.json(data)
-    // });
 })
 
 
-router.get('/read/articles', async (req, res) => {
+router.get('/api/read/articles', async (req, res) => {
     res.json(await db.market.get())
-    // crud.read(ARTICLES_URL, (data) => {
-    //     res.json(data)
-    //   });
 });
 
-router.get('/read/articles/:userid', async (req, res) => {
+router.get('/api/read/articles/:userid', async (req, res) => {
     const userId = req.params.userid
     res.json(await db.market.get({user_id: userId}))
-    // crud.read(ARTICLES_URL, (data) => {
-    //     res.json(data)
-    //   });
 });
 
-router.delete('/delete/article/:id', async (req, res) => {
+router.delete('/api/delete/article/:id', async (req, res) => {
     res.json(await db.market.delete(req.params.id))
-    //  crud.delete(ARTICLES_URL, req.params.id, (data) => {
-    //   res.json(data)
-    // });
   })
-
-
-//FORUM TODO===(or not, hehe)================
-router.get('/read/forum-topics', (req, res) => {
-    crud.read(FORUM_TOPICS_URL, (data) => {
-        res.json(data)
-      });
-})
 
 
 
 //RACELINES=============================
 
-router.post('/create/raceline', async (req, res) => {
+router.post('/api/create/raceline', async (req, res) => {
     res.json(await db.raceLines.create(req.body))
-    // crud.create(ARTICLES_URL, req.body, (data) => {
-    //     res.json(data)
-    // });
 })
 
-router.get('/read/racelines', async (req, res) => {
+router.get('/api/read/racelines', async (req, res) => {
     res.json(await db.raceLines.get())
-    // crud.read(ARTICLES_URL, (data) => {
-    //     res.json(data)
-    //   });
 });
 
-router.get('/read/racelines/:userid', async (req, res) => {
+router.get('/api/read/raceline/:id', async (req, res) => {
+    const id = req.params.id
+    res.json((await db.raceLines.get({_id: new ObjectId(id)}))[0])
+});
+
+router.get('/api/read/racelines/:userid', async (req, res) => {
     const userId = req.params.userid
     res.json(await db.raceLines.get({user_id: userId}))
-    // crud.read(ARTICLES_URL, (data) => {
-    //     res.json(data)
-    //   });
+
 });
 
+//LAPTIME===========================
+
+
+router.post('/api/create/laptime', requireAuth, async (req, res) => {
+    res.json(await db.lapTimes.create(req.body))
+})
+
+router.get('/api/read/laptimes', async (req, res) => {
+
+    let query = {};
+
+    if(req.headers.filters){
+        const filters = JSON.parse(req.headers.filters)
+        console.log(filters)
+
+        if(filters.circuit && filters.circuit !== 'all'){
+            query.circuit_id = filters.circuit
+        }
+
+        if (filters.conditions && filters.lapConditions !== '' ) {
+            query.lapCondition = filters.conditions
+        }
+
+        if (filters.kartType && filters.kartType !== '' ) {
+            query.kartType = filters.kartType
+        }
+    }
+
+    if(req.headers.filters){
+        res.json(await db.lapTimes.get(query, { laptime: -1 }))
+    }else{
+        res.json(await db.lapTimes.get(query))
+    }
+    
+
+});
+
+router.get('/api/read/bestlaptimes/:userid', async (req, res) => {
+
+    const userId = req.params.userid
+
+    let query = {};
+
+    query.user_id = userId
+    query.lapCondition = 'Seco'
+    query.kartType = 'Rental'
+
+    const personalLaps = (await db.lapTimes.get(query, { laptime: 1} ))
+
+    let result = new Set(personalLaps.map(a => a.circuit_id));
+
+    const bestLaptimes = []
+
+    for (const circuitId of result) { 
+
+        const bestCircuitLap = await db.lapTimes.get({ circuit_id: circuitId, lapCondition: 'Seco', kartType: 'Rental' }, { laptime: 1 })
+
+        const bestLap = personalLaps.find(lap => lap.circuit_id === circuitId)
+        bestLaptimes.push({...bestLap, delta: (Number(bestLap.laptime) - Number(bestCircuitLap[0].laptime))})
+        
+    }
+    res.json(bestLaptimes)
+
+});
+
+//MESSAGES================================
+
+router.post('/api/create/message', requireAuth, async (req, res) => {
+    res.json(await db.messages.create(req.body))
+
+})
+
+router.get('/api/read/messages/:userid', async (req, res) => {
+    const userId = req.params.userid
+    res.json(await db.messages.get({
+        $or: [
+            {sender_id: userId},
+            {receiver_id: userId}
+        ]
+    }))
+
+});
+
+router.patch('/api/update/message/:messageid', async (req, res) => {
+    const messageId = req.params.messageid
+    const update = req.body
+    
+    res.json(await db.messages.update(messageId ,update))
+    
+
+});
 //========================================
 
 
@@ -206,7 +372,7 @@ function gooogleOauth2() {
     return '123456'
   }
 
-export const db = {
+  export const db = {
     users: {
         create: createUser,
         get: getUsers,
@@ -215,11 +381,15 @@ export const db = {
 
     },
     circuits: {
-        get: getCircuits
+        get: getCircuits,
+        getLocation: getCircuitLocation
     },
     events: {
         create: createEvent,
         get: getEvents,
+        getById: getEventById,
+        deleteParticipant: updatePopParticipantFromArray,
+        update: updateEvent,
         delete: deleteEvent
     },
     market: {
@@ -230,7 +400,17 @@ export const db = {
     raceLines:{
         create: createRaceLine,
         get: getRaceLines
+    },
+    lapTimes:{
+        create: createLapTime,
+        get: getLapTimes
+    },
+    messages:{
+      create: createMessage,
+      get: getMessages,
+      update: updateMessage
     }
+
 }
 
 /*=================================USERS===========================================*/
@@ -289,6 +469,13 @@ async function getCircuits(filter) {
     return await circuitCollection.find(filter).toArray();
   }
 
+
+  async function getCircuitLocation(filter) {
+    const client = new MongoClient(URI);
+    const karthubDB = client.db('karthub');
+    const circuitCollection = karthubDB.collection('circuits');
+    return await circuitCollection.find(filter, { projection: { location: 1, _id: 1 } }).toArray();
+  }
 /*=================================EVENTS===========================================*/
 
 async function createEvent(event) {
@@ -306,6 +493,32 @@ async function getEvents(filter) {
     const eventCollection = karthubDB.collection('events');
     return await eventCollection.find(filter).toArray();
 }
+
+async function getEventById(filter) {
+    const client = new MongoClient(URI);
+    const karthubDB = client.db('karthub');
+    const eventCollection = karthubDB.collection('events');
+    return await eventCollection.findOne(filter)
+}
+
+async function updateEvent(id, updates) {
+    const client = new MongoClient(URI);
+    const karthubDB = client.db('karthub');
+    const eventCollection = karthubDB.collection('events');
+    const returnValue = await eventCollection.updateOne({ _id: new ObjectId(id) }, { $set: updates });
+    console.log('db updateEvent', returnValue, updates)
+    return returnValue
+  }
+
+  async function updatePopParticipantFromArray(id, user_id) {
+    const client = new MongoClient(URI);
+    const karthubDB = client.db('karthub');
+    const eventCollection = karthubDB.collection('events');
+    const returnValue = await eventCollection.updateOne({ _id: new ObjectId(id) }, { $pull: { participants: user_id } });
+    console.log('db updateArrayEvent', returnValue, user_id)
+    return returnValue
+  }
+
 
 /**
  * Deletes an article from the 'events' collection in the 'karthub' database.
@@ -382,4 +595,55 @@ async function getRaceLines(filter) {
     const karthubDB = client.db('karthub');
     const raceLineCollection = karthubDB.collection('racelines');
     return await raceLineCollection.find(filter).toArray();
+}
+
+//=================================LAPTIMES========================
+
+async function createLapTime(lapTime) {
+    const client = new MongoClient(URI);
+    const karthubDB = client.db('karthub');
+    const lapTimeCollection = karthubDB.collection('laptimes');
+    const returnValue = await lapTimeCollection.insertOne(lapTime);
+    console.log('db createlapTime', returnValue, lapTime._id)
+    return lapTime
+}
+
+async function getLapTimes(filter, direction) {
+    const client = new MongoClient(URI);
+    const karthubDB = client.db('karthub');
+    const lapTimeCollection = karthubDB.collection('laptimes');
+    if(direction){
+      return await lapTimeCollection.find(filter).sort(direction).toArray();
+    }else{
+      return await lapTimeCollection.find(filter).toArray();
+    }
+    
+}
+
+//=================================MESSAGES========================
+
+
+async function createMessage(message) {
+  const client = new MongoClient(URI);
+  const karthubDB = client.db('karthub');
+  const messagesCollection = karthubDB.collection('messages');
+  const returnValue = await messagesCollection.insertOne(message);
+  console.log('db createMessage', returnValue, message._id)
+  return message
+}
+
+async function getMessages(filter) {
+  const client = new MongoClient(URI);
+  const karthubDB = client.db('karthub');
+  const messagesCollection = karthubDB.collection('messages');
+  return await messagesCollection.find(filter).toArray();
+}
+
+async function updateMessage(id, updates) {
+  const client = new MongoClient(URI);
+  const karthubDB = client.db('karthub');
+  const messagesCollection = karthubDB.collection('messages');
+  const returnValue = await messagesCollection.updateOne({ _id: new ObjectId(id) }, { $set: updates });
+  console.log('db updateMessage', returnValue, updates)
+  return returnValue
 }
