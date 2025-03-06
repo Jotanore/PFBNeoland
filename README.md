@@ -4,7 +4,7 @@
 
 ## Descripción
 
-La aplicación consiste en una serie de herramientas para el mundillo del karting. Tiene información acerca de los circuitos, un creador de eventos, un mercado simple para listar objetos, un creador de trazadas para poder pintar y visualizar tus trazadas en los circuitos, una tabla de tiempos de los usuarios y sistema de perfiles y mensajería. Se accede desde el index.html y por ahora no hay un sistema de permisos.
+La aplicación consiste en una serie de herramientas para el mundillo del karting. Tiene información acerca de los circuitos, un creador de eventos, un mercado simple para listar objetos, un creador de trazadas para poder pintar y visualizar tus trazadas en los circuitos, una tabla de tiempos de los usuarios y sistema de perfiles y mensajería. Se accede desde el index.html y por ahora no hay un sistema de permisos. Ésta es la parte Front del proyecto.
 
 La aplicación se encuentra aqui: [Karthub](https://karthubsite.netlify.app/)
 
@@ -38,6 +38,9 @@ Conocimientos del curso aplicados en este repositorio:
 * Archivo api.mjs en la carpeta netlify/functions para poder desplegar el servidor en netlify, y netlify.toml en la raiz para su configuración
 * En una etapa de la app, se usó REDUX para la gestión de datos local.
 
+La parte Back-end de este proyecto se encuentra aqui: [PFBServerNeoland](https://github.com/Jotanore/PFBServerNeoland)
+Aun no teniendo parte back en este repositorio, existen las funcionalidades del server Express.js y Mongo en la carpeta de netlify, dentro del archivo api.mjs
+
 ## Dependencias de la aplicación
 
 * Node >= 20.0.0
@@ -69,7 +72,7 @@ Conocimientos del curso aplicados en este repositorio:
 npm install
 ```
 
-Ejecutar en el terminal el servidor del backend.
+Ejecutar en el terminal el servidor del backend. (Recuerdo que esta es solo la parte Front y no dispone de este comando)
 
 ```bash
 npm run express-server
@@ -79,9 +82,7 @@ Acceso desde: [http://127.0.0.1:6431](http://localhost:6431)
 
 La configuración de los puertos está definida en el archivo .env, no incluído en el repositorio de git.
 
-La aplicación gestiona los datos por medio de MongoDB, salvo la gestión de usuarios que también utiliza REDUX. Para acceder a la administración se realiza un login que simula un OAuth que genera un toquen para identificar al usuario. El usuario deberá estar creado previamente en base de datos, puesto que no existe el registro
-
-En lo relativo al interfaz, para la parte pública se aplican estilos responsive en función del tamaño de la pantalla para su uso en distintos dispositivos, con elementos Grid y Flex para esta funcionalidad. En la parte de administración, al mostrarse mucha información por medio de tablas, no se aplican estos estilos responsives, esta preparada para la gestión desde pc.
+En lo relativo al interfaz, para la parte pública se aplican estilos responsive en función del tamaño de la pantalla para su uso en distintos dispositivos, con elementos Grid y Flex para esta funcionalidad.
 
 Cada función/componente se ha creado intentando cumplir con los estándares de SOLID.
 
