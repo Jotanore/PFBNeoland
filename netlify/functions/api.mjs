@@ -21,25 +21,25 @@ const router = Router()
 
 
 
- //USERS============
+
 //USERS============
-router.post('/api/create/user', async (req, res) => {
+router.post('/create/user', async (req, res) => {
     res.json(await db.users.create(req.body))
 })
 
-router.get('/api/read/users', async (req, res) => {
+router.get('/read/users', async (req, res) => {
     res.json(await db.users.get())
 });
 
-router.get('/api/read/user/:id', async (req, res) => {
+router.get('/read/user/:id', async (req, res) => {
     res.json((await db.users.get({_id: new ObjectId(req.params.id)}))[0])
 });
 
-router.put('/api/update/user/:id', async (req, res) => {
+router.put('/update/user/:id', async (req, res) => {
     res.json(await db.users.update(req.params.id, req.body))
 });
 
-router.post('/api/login', async (req, res) => {
+router.post('/login', async (req, res) => {
     const user = await db.users.logIn(req.body)
     if (user) {
       // TODO: use OAuth2
@@ -59,7 +59,7 @@ router.post('/api/login', async (req, res) => {
 
 //CIRCUITS=================
 
-router.get('/api/read/circuits', async (req, res) => {
+router.get('/read/circuits', async (req, res) => {
 
     let query = [];
     let filter = undefined
@@ -90,7 +90,7 @@ router.get('/api/read/circuits', async (req, res) => {
                 Math.cos(userCoords[0] * Math.PI / 180) * Math.cos(circuitCoords[0] * Math.PI / 180) *
                 Math.sin(dLon/2) * Math.sin(dLon/2);
             const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-            // Stores the distance fixing to 1 decimal
+
             const d = Math.round(R * c)
 
             if (Number(d) < Number(filters.distance)){
@@ -106,17 +106,17 @@ router.get('/api/read/circuits', async (req, res) => {
 
 });
 
-router.get('/api/read/circuit/:id', async (req, res) => {
+router.get('/read/circuit/:id', async (req, res) => {
     res.json((await db.circuits.get({_id: new ObjectId(req.params.id)}))[0])
 });
 
 
 //EVENTS=================
-router.post('/api/create/event', requireAuth, async (req, res) => {
+router.post('/create/event', requireAuth, async (req, res) => {
     res.json(await db.events.create(req.body))
 })
 
-router.post('/api/join/event/:eventid', requireAuth, async (req, res) => {
+router.post('/join/event/:eventid', requireAuth, async (req, res) => {
 
     const eventid = req.params.eventid;
     const userId = req.body.user_id;
@@ -140,7 +140,7 @@ router.post('/api/join/event/:eventid', requireAuth, async (req, res) => {
 
 })
 
-router.post('/api/forfeit/event/:eventid', requireAuth, async (req, res) => {
+router.post('/forfeit/event/:eventid', requireAuth, async (req, res) => {
 
     const eventid = req.params.eventid;
     const userId = req.body.user_id;
@@ -152,7 +152,7 @@ router.post('/api/forfeit/event/:eventid', requireAuth, async (req, res) => {
 
 
 
-router.get('/api/read/events', async (req, res) => {
+router.get('/read/events', async (req, res) => {
 
     let query = {};
 
@@ -198,37 +198,37 @@ router.get('/api/read/events', async (req, res) => {
     res.json(await db.events.get(query))
 }); 
 
-router.get('/api/read/events/:userid', async (req, res) => {
+router.get('/read/events/:userid', async (req, res) => {
     const userId = req.params.userid
     res.json(await db.events.get({user_id: userId}))
 }); 
 
-router.get('/api/read/event/:id', async (req, res) => {
+router.get('/read/event/:id', async (req, res) => {
     const _id = req.params.id
     res.json((await db.events.get({_id: new ObjectId(_id)}))[0])
 }); 
 
-router.delete('/api/delete/event/:id', async (req, res) => {
+router.delete('/delete/event/:id', async (req, res) => {
     res.json(await db.events.delete(req.params.id))
  })
 
 //MARKET=================
 
-router.post('/api/create/article', async (req, res) => {
+router.post('/create/article', async (req, res) => {
     res.json(await db.market.create(req.body))
 })
 
 
-router.get('/api/read/articles', async (req, res) => {
+router.get('/read/articles', async (req, res) => {
     res.json(await db.market.get())
 });
 
-router.get('/api/read/articles/:userid', async (req, res) => {
+router.get('/read/articles/:userid', async (req, res) => {
     const userId = req.params.userid
     res.json(await db.market.get({user_id: userId}))
 });
 
-router.delete('/api/delete/article/:id', async (req, res) => {
+router.delete('/delete/article/:id', async (req, res) => {
     res.json(await db.market.delete(req.params.id))
   })
 
@@ -236,20 +236,20 @@ router.delete('/api/delete/article/:id', async (req, res) => {
 
 //RACELINES=============================
 
-router.post('/api/create/raceline', async (req, res) => {
+router.post('/create/raceline', async (req, res) => {
     res.json(await db.raceLines.create(req.body))
 })
 
-router.get('/api/read/racelines', async (req, res) => {
+router.get('/read/racelines', async (req, res) => {
     res.json(await db.raceLines.get())
 });
 
-router.get('/api/read/raceline/:id', async (req, res) => {
+router.get('/read/raceline/:id', async (req, res) => {
     const id = req.params.id
     res.json((await db.raceLines.get({_id: new ObjectId(id)}))[0])
 });
 
-router.get('/api/read/racelines/:userid', async (req, res) => {
+router.get('/read/racelines/:userid', async (req, res) => {
     const userId = req.params.userid
     res.json(await db.raceLines.get({user_id: userId}))
 
@@ -258,11 +258,11 @@ router.get('/api/read/racelines/:userid', async (req, res) => {
 //LAPTIME===========================
 
 
-router.post('/api/create/laptime', requireAuth, async (req, res) => {
+router.post('/create/laptime', requireAuth, async (req, res) => {
     res.json(await db.lapTimes.create(req.body))
 })
 
-router.get('/api/read/laptimes', async (req, res) => {
+router.get('/read/laptimes', async (req, res) => {
 
     let query = {};
 
@@ -292,7 +292,7 @@ router.get('/api/read/laptimes', async (req, res) => {
 
 });
 
-router.get('/api/read/bestlaptimes/:userid', async (req, res) => {
+router.get('/read/bestlaptimes/:userid', async (req, res) => {
 
     const userId = req.params.userid
 
@@ -322,12 +322,12 @@ router.get('/api/read/bestlaptimes/:userid', async (req, res) => {
 
 //MESSAGES================================
 
-router.post('/api/create/message', requireAuth, async (req, res) => {
+router.post('/create/message', requireAuth, async (req, res) => {
     res.json(await db.messages.create(req.body))
 
 })
 
-router.get('/api/read/messages/:userid', async (req, res) => {
+router.get('/read/messages/:userid', async (req, res) => {
     const userId = req.params.userid
     res.json(await db.messages.get({
         $or: [
@@ -338,7 +338,7 @@ router.get('/api/read/messages/:userid', async (req, res) => {
 
 });
 
-router.patch('/api/update/message/:messageid', async (req, res) => {
+router.patch('/update/message/:messageid', async (req, res) => {
     const messageId = req.params.messageid
     const update = req.body
     
