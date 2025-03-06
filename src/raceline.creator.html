@@ -75,20 +75,27 @@
 </nav>
 
     <main class="bg-neutral-800 px-6 pt-10 min-h-screen flex flex-col items-center">
-        <section id="raceline-landing" class="bg-neutral-100 shadow-lg rounded-lg p-8 w-full max-w-lg mb-6 ">
+        <section id="raceline-landing" class="bg-neutral-100 shadow-lg rounded-lg p-8 w-full max-w-lg mb-6">
             <h2 class="text-3xl font-bold text-gray-800 text-center mb-6">Raceline Creator</h2>
+        
+            <div id="mobile-warning" class="hidden text-center text-red-600 font-semibold">
+                🚫 Esta función solo está disponible en escritorio. Accede desde el PC.
+            </div>
+    
             <form id="dropdown-circuits" action="#" enctype="multipart/form-data" class="space-y-4">
                 <div class="flex flex-col">
                     <label for="opciones" class="text-gray-700 font-semibold">Selecciona circuito</label>
-                    <select id="opciones" name="opciones" class="p-2 border border-gray-300 rounded-lg shadow-sm " required>
+                    <select id="opciones" name="opciones" class="p-2 border border-gray-300 rounded-lg shadow-sm" required>
                         <option value="0">Selecciona circuito</option>
-                      </select>
-                      <button id="map-selection-confirm" type="button"
-                      class="w-full bg-red-600 text-white font-bold py-2 rounded-lg hover:bg-red-700 transition duration-300 mt-4">
-                      Send it
-                  </button>
+                    </select>
+                    <button id="map-selection-confirm" type="button"
+                        class="w-full bg-red-600 text-white font-bold py-2 rounded-lg hover:bg-red-700 transition duration-300 mt-4">
+                        Send it
+                    </button>
                 </div>
+            </form>
         </section>
+
         <div id="edit-canvas-container" class="flex flex-row md:flex-row gap-6 __hidden mb-10 ">
             <canvas data-id="" id="circuitCanvas" width="1000" height="700" class="rounded-lg"></canvas>
             <div id="toolbar" class="bg-neutral-200 py-3 px-5 ml-2 rounded-lg gap-4">

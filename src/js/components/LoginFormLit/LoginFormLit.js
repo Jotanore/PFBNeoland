@@ -33,15 +33,15 @@ export class LoginFormLit extends LitElement {
                 <div class="flex flex-col">
                     <label for="login-email" class="text-gray-700 font-semibold">Email</label>
                     <input id="login-email" type="email" name="email" placeholder="a@a.a" .value=${this.email} @input="${this._emailChanged}" 
-                        class="p-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-amber-400">
+                        class="p-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-700">
                 </div>
                 <div class="flex flex-col">
                     <label for="login-password" class="text-gray-700 font-semibold">Contraseña</label>
                     <input id="login-password" type="password" name="password"
-                        class="p-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-amber-400" .value=${this.password} @input="${this._passwordChanged}">
+                        class="p-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-700" .value=${this.password} @input="${this._passwordChanged}">
                 </div>
                 <button type="submit"
-                    class="w-full bg-amber-500 text-white font-bold py-2 rounded-lg hover:bg-amber-600 transition duration-300" id="loginButton" title="Login" ?disabled=${this.email === '' || this.password === ''}>
+                    class="w-full bg-red-600 text-white font-bold py-2 rounded-lg hover:bg-red-700 transition duration-300" id="loginButton" title="Login" ?disabled=${this.email === '' || this.password === ''}>
                     Enviar
                 </button>
             </form>

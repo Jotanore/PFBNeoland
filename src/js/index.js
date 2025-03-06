@@ -117,6 +117,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 raceLineButtonsAssign()
                 fillSelectable('opciones')
                 activateCanvas()
+                mobileDetector()
             break
             case 'laptimes':
                 /**
@@ -1309,6 +1310,13 @@ function raceLineButtonsAssign(){
     menuToggle.addEventListener('click', () => {
     mobileMenu.classList.toggle('hidden');
   });
+}
+
+function mobileDetector(){
+    if (window.innerWidth <= 768) {
+        document.getElementById('mobile-warning').classList.remove('hidden');
+        document.getElementById('dropdown-circuits').classList.add('hidden');
+    }
 }
 
 /**
