@@ -88,9 +88,10 @@ export function fillUserProfile(){
         const surnameElement = document.getElementById('user-surname');
         if (surnameElement) surnameElement.innerHTML = user.surnames;
     
-        /** @type {HTMLElement | null} */
-        const emailElement = document.getElementById('user-email');
-        if (emailElement) emailElement.innerHTML = user.email;
+        // /** @type {HTMLElement | null} */
+        // const emailElement = document.getElementById('user-email');
+        // if (emailElement) emailElement.innerHTML = user.email;
+        // console.log(user, user.email)
     
         /** @type {HTMLElement | null} */
         const locationElement = document.getElementById('user-location');
@@ -184,8 +185,7 @@ export function updateUserProfile(){
             instagram: document.getElementById('profile-instagramUser')?.value ? document.getElementById('profile-instagramUser')?.value : storedUser.instagram
         }
         // @ts-expect-error value not existing
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const confirmPassword = document.getElementById('profile-passwordRepeat')?.value
+        // const confirmPassword = document.getElementById('profile-passwordRepeat')?.value
 
         // if (newUser.password !== confirmPassword){ 
         //     alert("Contraseña no coincide")

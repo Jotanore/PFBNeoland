@@ -98,10 +98,10 @@ export async function drawEvent(event){
                     <div class="flex flex-col sm:flex-row sm:items-center sm:ml-4 w-full sm:w-auto">
                         <p class="px-4 text-center sm:text-left mb-2 sm:mb-0"><span class="participant-count">${event.participants.length}</span>/${event.maxParticipants} inscritos</p>
                         <div class="flex space-x-2 w-full sm:w-auto justify-center sm:justify-start">
-                            <button data-id="${event._id}" class="border-2 border-black bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-3 m-2 rounded join-event w-full sm:w-auto">
+                            <button data-id="${event._id}" class="border-2 border-black bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-3 rounded join-event w-full sm:w-auto">
                                 Me apunto
                             </button>
-                            <button data-id="${event._id}" class="border-2 border-black bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-3 m-2 rounded forfeit-event w-full sm:w-auto">
+                            <button data-id="${event._id}" class="border-2 border-black bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-3  rounded forfeit-event w-full sm:w-auto">
                                 Desapuntarse
                             </button>
                             <button data-id="${event._id}" class="border-2 border-black bg-gray-400 hover:bg-red-500 text-white font-bold py-1 px-3 rounded delete-event hidden w-full sm:w-auto">
