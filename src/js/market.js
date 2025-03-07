@@ -44,7 +44,7 @@ export async function drawArticle(item){
         <!-- Precio y botones -->
         <div class="flex justify-between items-center mt-3">
             <span class="text-lg font-bold text-amber-500">${item.price}€</span>
-            <button data-id="${item._id}" class="px-4 py-2 text-sm font-medium text-white bg-red-500 rounded-lg hover:bg-red-600 transition delete-item">
+            <button data-id="${item._id}" class="px-4 py-2 text-sm font-medium text-white bg-red-500 rounded-lg hover:bg-red-600 transition delete-item hidden">
                 Eliminar
             </button>
         </div>
@@ -52,10 +52,23 @@ export async function drawArticle(item){
 </div>`
     marketFrame?.insertAdjacentHTML('afterbegin', html)
 
+    
 
     const lastCard = marketFrame?.firstElementChild;
     const deleteBtn = lastCard?.querySelector('.delete-item');
     deleteBtn?.addEventListener('click', deleteMarketCard);
+
+    if(userlog){
+        const user = getUserFromSession()
+
+        if(item.user_id === user?._id){
+            deleteBtn?.classList.remove('hidden')
+        }else{
+
+        deleteBtn?.classList.add('hidden')
+
+    }
+}
 
     lastCard?.addEventListener('click', function(e){
         const target = e.target;
