@@ -2,6 +2,12 @@ import { getAPIData,  getUserFromSession, getNowDate} from "../utils/utils.js";
 import { openForeignProfile } from './foreign.profile.js';
 import { API_PORT} from "./index.js"
 
+/**
+ * Retrieves the messages of the current user and renders them in the messages
+ * section of the messages.html page.
+ *
+ * @returns {void}
+ */
 export async function getMessages() {
 
     const user = getUserFromSession();
