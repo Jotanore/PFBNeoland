@@ -234,9 +234,19 @@ async function fillRaceLinesList(/** @type {boolean} */ isUser){
     const user = isUser ? getUserFromSession()._id : getForeignUserFromSession()
     const raceLineList = document.getElementById('race-line-list');
 
+    let userButton = ''
+
     const apiData = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/read/racelines/${user}` , 'GET')
     let racelines = []
     apiData.forEach(async function (/**  @type {RaceLines} */ raceline){
+
+        if(isUser){
+            userButton = `<button class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-full shadow-md show-line">
+                      Ver
+                  </button>`
+        }else{
+            userButton = ``
+        }
        
         const date = getFormattedDate(raceline.date)
         const lineCircuit = await getAPIData(`${location.protocol}//${location.hostname}${API_PORT}/api/read/circuit/${raceline.circuit_id}`, 'GET')
@@ -244,9 +254,7 @@ async function fillRaceLinesList(/** @type {boolean} */ isUser){
           <td class="border border-gray-300 px-2 py-2">${lineCircuit.name}</td>
           <td class="border border-gray-300 px-2 py-2">${date}</td>
           <td class="border border-gray-300 px-2 py-2">
-              <button class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-full shadow-md show-line">
-                  Ver
-              </button>
+            ${userButton}
           </td>
       </tr>`
         //  @ts-expect-error Declaration

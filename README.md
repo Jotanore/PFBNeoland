@@ -28,6 +28,7 @@ Conocimientos del curso aplicados en este repositorio:
 * Tailwind
 * JavaScript nativo
 * Javascript nativo y Lit Element para la creación de Web Components
+* Uso de librerías externas (En este caso Leaflet.js y Fabric.js)
 * Servidores node.js
   * Estático, CRUD y de api por JSON para simular una base de datos (en desuso)
   * Servidor Express.js, actualmente activo.
@@ -43,7 +44,7 @@ Aun no teniendo parte back en este repositorio, existen las funcionalidades del 
 
 ## Dependencias de la aplicación
 
-* Node >= 20.0.0
+* Node
 * Express
 * MongoDB
 * JSDoc
@@ -52,7 +53,7 @@ Aun no teniendo parte back en este repositorio, existen las funcionalidades del 
 * ESLint
 * Lint-Staged
 * StyleLint
-* Netlify (sólo si se va a desplegar en netlify)
+* Netlify
 * Jest
 
 ## Plugings de VS Code recomendados
@@ -97,4 +98,4 @@ Utilizamos [Jest] como herramienta de testeo. Para poder ejecutar los test:
 npm run test
 ```
 
-El fichero de configuración de jest es jest.config.js
+El fichero de configuración de Jest es jest.config.js
