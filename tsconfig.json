@@ -1,5 +1,5 @@
 {
-  "include": ["./src/js/**/*.js"],
+  "include": ["./src/js/**/*.js", "src/js/__tests__/circuits.test.js"],
   "exclude": [],
   "compileOnSave": false,
   "compilerOptions": {

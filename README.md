@@ -53,6 +53,7 @@ Aun no teniendo parte back en este repositorio, existen las funcionalidades del 
 * Lint-Staged
 * StyleLint
 * Netlify (sólo si se va a desplegar en netlify)
+* Jest
 
 ## Plugings de VS Code recomendados
 
@@ -80,10 +81,20 @@ npm run express-server
 
 Acceso desde: [http://127.0.0.1:6431](http://localhost:6431)
 
-La configuración de los puertos está definida en el archivo .env, no incluído en el repositorio de git.
+La configuración de los puertos está definida en el archivo .env.
 
-En lo relativo al interfaz, para la parte pública se aplican estilos responsive en función del tamaño de la pantalla para su uso en distintos dispositivos, con elementos Grid y Flex para esta funcionalidad.
+En lo relativo al interfaz, se aplican estilos responsive en función del tamaño de la pantalla para su uso en distintos dispositivos, con elementos Grid y Flex para esta funcionalidad.
 
-Cada función/componente se ha creado intentando cumplir con los estándares de SOLID.
+Cada función se ha creado intentando cumplir con los estándares de SOLID.
 
-Existe la validación de tipados por medio de JSDoc en los comentarios, y ESLint tanto en los Git Hooks como apoyo por medio del plugin de VS Code.
+Existe la validación de tipados por medio de JSDoc en los comentarios, y ESLint.
+
+## Testeo
+
+Utilizamos [Jest] como herramienta de testeo. Para poder ejecutar los test:
+
+```bash
+npm run test
+```
+
+El fichero de configuración de jest es jest.config.js

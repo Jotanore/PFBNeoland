@@ -307,7 +307,7 @@ function activateRaceLineCanvas() {
     canvas = new fabric.Canvas('racelineCanvas');
 
     // @ts-expect-error External declaration
-    // eslint-disable-next-line no-undef
+     
     // fabric.Image.fromURL('./imgs/kotar.jpg', function(img) {
     //     img.scaleToWidth(1000);
     //     img.selectable = false;
